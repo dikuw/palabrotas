@@ -1,0 +1,1 @@
+Built with React.js frontend with Vite, node.js with Express backend, MongoDB database
