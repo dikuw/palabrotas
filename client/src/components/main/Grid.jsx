@@ -13,7 +13,7 @@ const StyledGrid = styled.div`
 export default function Grid(props) {
   return (
     <StyledGrid>
-      {props.documents.map((item) => 
+      {props.contents.map((item) => 
         <Card key={item._id} index={item._id} item={item} />
       )}
     </StyledGrid>

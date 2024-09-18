@@ -3,7 +3,7 @@ import { create } from 'zustand';
 export const useContentStore = create((set) => ({
   contents: [],
   setContents: (contents) => set({ contents }),
-  createContent: async (newContent) => {
+  addContent: async (newContent) => {
     const res = await fetch("/api/content/addContent", {
       method: "POST",
       headers: {
