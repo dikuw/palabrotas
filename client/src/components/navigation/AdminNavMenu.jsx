@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 const Ul = styled.ul`
@@ -52,10 +53,11 @@ const Link = styled.a`
 `;
 
 export default function AdminNavMenu(props) {
+  const navigate = useNavigate();
 
   const handleClick = (link, menuOpen) => {
     props.setOpen(!menuOpen)
-    props.history.push(link);
+    navigate(link);
   }
  
   return (
