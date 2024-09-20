@@ -53,6 +53,41 @@ function App() {
             </>
           }
         />
+        <Route path="/admin" 
+          element={
+            <>
+              <Banner bannerString={"Site Administration"} />
+              <Navigation isLoggedIn={isLoggedIn} isAdmin={user.isAdmin} logoutUser={logoutUser} />
+              <Admin />
+            </>
+          }
+        />
+        <Route path="/register" 
+          element={
+            <>
+              <Navigation isLoggedIn={isLoggedIn} isAdmin={user.isAdmin} logoutUser={logoutUser} />
+              <Banner bannerString={"Register a New Account"} />
+              <Register 
+                isLoggedIn={isLoggedIn} 
+              />
+            </>
+          }
+        />
+        <Route path="/login" 
+          element={
+            <>
+              <Navigation isLoggedIn={isLoggedIn} isAdmin={user.isAdmin} logoutUser={logoutUser} />
+              <Banner bannerString={"Log In"} />
+              <LocalLogin
+                // isLoggedIn={isLoggedIn} 
+                // isPasswordIncorrect={isPasswordIncorrect}
+                // resetPasswordIncorrect={resetPasswordIncorrect}
+                // loginUser={loginUser}
+                // forgotUser={forgotUser} 
+              />
+            </>
+          }
+        />
       </Routes>
       <Footer />
     </div>
