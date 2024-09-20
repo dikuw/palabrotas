@@ -19,7 +19,7 @@ const Ul = styled.ul`
     background-color: #fafafa;
     border-right: solid 1px black;
     position: fixed;
-    transform: ${({ menuOpen }) => menuOpen ? 'translateX(0)' : 'translateX(-100%)'};
+    transform: ${({ $menuOpen }) => $menuOpen ? 'translateX(0)' : 'translateX(-100%)'};
     top: 0;
     left: 0;
     height: 100vh;
@@ -64,7 +64,7 @@ export default function NavMenu(props) {
   };
  
   return (
-    <Ul>
+    <Ul $menuOpen={menuOpen}>
       <Li><Link onClick={() => handleClick('/', menuOpen) } >Home</Link></Li>
       {props.isLoggedIn ? (
           <>

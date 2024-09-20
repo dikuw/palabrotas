@@ -19,19 +19,19 @@ const StyledBurger = styled.div`
   div {
     width: 2rem;
     height: 0.25rem;
-    background-color: ${({ menuOpen }) => menuOpen ? '#ccc' : '#333'};
+    background-color: ${({ $menuOpen }) => $menuOpen ? '#ccc' : '#333'};
     border-radius: 10px;
     transform-origin: 1px;
     transition: all 0.3s linear;
     &:nth-child(1) {
-      transform: ${({ menuOpen }) => menuOpen ? 'rotate(45deg)' : 'rotate(0)'};
+      transform: ${({ $menuOpen }) => $menuOpen ? 'rotate(45deg)' : 'rotate(0)'};
     }
     &:nth-child(2) {
-      transform: ${({ menuOpen }) => menuOpen ? 'translateX(100%)' : 'translateX(0)'};
-      opacity: ${({ menuOpen }) => menuOpen ? 0 : 1};
+      transform: ${({ $menuOpen }) => $menuOpen ? 'translateX(100%)' : 'translateX(0)'};
+      opacity: ${({ $menuOpen }) => $menuOpen ? 0 : 1};
     }
     &:nth-child(3) {
-      transform: ${({ menuOpen }) => menuOpen ? 'rotate(-45deg)' : 'rotate(0)'};
+      transform: ${({ $menuOpen }) => $menuOpen ? 'rotate(-45deg)' : 'rotate(0)'};
     }
   }
 `;
@@ -43,15 +43,15 @@ export default function Burger(props) {
 
   return (
     <>
-      <StyledBurger onClick={() => setMenuOpen(!menuOpen)}>
+      <StyledBurger $menuOpen={menuOpen} onClick={() => setMenuOpen(!menuOpen)} >
         <div />
         <div />
         <div />
       </StyledBurger>
       {(currentRoute === "/admin" || currentRoute === "/orders" || currentRoute === "/inventory" || currentRoute === "/shippingOptions") ? (
-          <AdminNavMenu isLoggedIn={props.isLoggedIn} isAdmin={props.isAdmin} menuOpen={menuOpen} setOpen={setMenuOpen} />
+          <AdminNavMenu isLoggedIn={props.isLoggedIn} isAdmin={props.isAdmin} />
         ) : (
-          <NavMenu isLoggedIn={props.isLoggedIn} isAdmin={props.isAdmin} menuOpen={menuOpen} setOpen={setMenuOpen} logoutUser={props.logoutUser} />
+          <NavMenu isLoggedIn={props.isLoggedIn} isAdmin={props.isAdmin} logoutUser={props.logoutUser} />
        )
       }
     </>
