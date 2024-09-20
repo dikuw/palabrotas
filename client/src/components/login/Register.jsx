@@ -5,7 +5,8 @@ import { InvisibleActionButton, VisibleActionButton } from '../shared/index';
 import { useUserStore } from '../../store/user';
 
 const StyledWrapperDiv = styled.div`
-  max-width: 1200px;
+  width: 90%;
+  max-width: 1000px;
   display: flex;
   flex-direction: column;
   margin: 30px auto;

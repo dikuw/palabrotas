@@ -40,7 +40,7 @@ function App() {
   }
 
   return (
-    <div>
+    <div className="app-container">
       <TopBanner isLoggedIn={isLoggedIn} name={user.name}/>
       <Header /> 
       <Routes>

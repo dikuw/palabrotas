@@ -4,6 +4,13 @@ import styled from 'styled-components';
 import InvisibleActionButton from '../shared/InvisibleActionButton';
 
 const StyledDiv = styled.div`
+  min-height: 500px;
+  display: flex;
+  flex-wrap: wrap;
+  width: 90%;
+  max-width: 1000px;
+  margin: 30px auto;
+  justify-content: center; 
   margin-bottom: 12px;
 `;
 

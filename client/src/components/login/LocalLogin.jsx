@@ -4,7 +4,8 @@ import styled from 'styled-components';
 import { InvisibleActionButton, VisibleActionButton } from '../shared/index.js';
 
 const StyledWrapperDiv = styled.div`
-  max-width: 1200px;
+  width: 90%;
+  max-width: 1000px;
   display: flex;
   flex-direction: column;
   margin: 30px auto;

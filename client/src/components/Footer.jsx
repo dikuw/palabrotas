@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 const StyledFooter = styled.footer`
+  width: 100%;
   display: flex;
   flex-flow: row wrap;
   padding: 30px 30px 0px 30px;

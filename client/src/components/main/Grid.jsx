@@ -6,8 +6,10 @@ const StyledGrid = styled.div`
   min-height: 500px;
   display: flex;
   flex-wrap: wrap;
-  max-width: 1200px;
+  width: 90%;
+  max-width: 1000px;
   margin: 30px auto;
+  justify-content: center; 
 `;
 
 export default function Grid(props) {
