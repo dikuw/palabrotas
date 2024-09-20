@@ -2,6 +2,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { useAppStore } from '../../store/app';
+
 const Ul = styled.ul`
   list-style: none;
   display: flex;
@@ -54,18 +56,19 @@ const Link = styled.a`
 
 export default function AdminNavMenu(props) {
   const navigate = useNavigate();
-
+  const { menuOpen, setMenuOpen } = useAppStore();
+  
   const handleClick = (link, menuOpen) => {
-    props.setOpen(!menuOpen)
+    setMenuOpen(!menuOpen)
     navigate(link);
   }
  
   return (
-    <Ul menuOpen={props.menuOpen}>
-      {!props.isLoggedIn && <Li><Link onClick={() => handleClick('/login', props.menuOpen) } >{"Log In"}</Link></Li>}
+    <Ul>
+      {!props.isLoggedIn && <Li><Link onClick={() => handleClick('/login', menuOpen) } >{"Log In"}</Link></Li>}
       {props.isAdmin &&
         <>
-          <Li><Link onClick={() => handleClick('/', props.menuOpen) } >{"Back to Site"}</Link></Li>
+          <Li><Link onClick={() => handleClick('/', menuOpen) } >{"Back to Site"}</Link></Li>
         </>
       }
     </Ul>

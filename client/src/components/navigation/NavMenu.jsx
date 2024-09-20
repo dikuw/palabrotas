@@ -2,6 +2,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { useAppStore } from '../../store/app';
+
 const Ul = styled.ul`
   list-style: none;
   display: flex;
@@ -54,25 +56,26 @@ const Link = styled.a`
 
 export default function NavMenu(props) {
   const navigate = useNavigate();
+  const { menuOpen, setMenuOpen } = useAppStore();
 
   const handleClick = (link, menuOpen) => {
-    props.setOpen(!menuOpen);
+    setMenuOpen(!menuOpen);
     navigate(link);
   };
  
   return (
-    <Ul menuOpen={props.menuOpen}>
-      <Li><Link onClick={() => handleClick('/', props.menuOpen) } >Home</Link></Li>
+    <Ul>
+      <Li><Link onClick={() => handleClick('/', menuOpen) } >Home</Link></Li>
       {props.isLoggedIn ? (
           <>
-            <Li><Link onClick={() => handleClick('/account', props.menuOpen) } >{"Account"}</Link></Li>
+            <Li><Link onClick={() => handleClick('/account', menuOpen) } >{"Account"}</Link></Li>
             <Li><Link onClick={() => props.logoutUser() } >{"Log Out"}</Link></Li>
           </>
         ) : (
-          <Li><Link onClick={() => handleClick('/login', props.menuOpen) } >{"Log In"}</Link></Li>
+          <Li><Link onClick={() => handleClick('/login', menuOpen) } >{"Log In"}</Link></Li>
         )
       }
-      {props.isAdmin && <Li><Link onClick={() => handleClick('/admin', props.menuOpen) } >{"Administer"}</Link></Li>}
+      {props.isAdmin && <Li><Link onClick={() => handleClick('/admin', menuOpen) } >{"Administer"}</Link></Li>}
     </Ul>
   );
 }

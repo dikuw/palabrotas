@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import NavMenu from './NavMenu';
 import AdminNavMenu from './AdminNavMenu';
 
+import { useAppStore } from '../../store/app';
+
 const StyledBurger = styled.div`
   width: 2rem;
   height: 2rem;
@@ -35,21 +37,21 @@ const StyledBurger = styled.div`
 `;
 
 export default function Burger(props) {
-  const [menuOpen, setOpen] = useState(false);
+  const { menuOpen, setMenuOpen } = useAppStore();
   const location = useLocation();
   const currentRoute = location.pathname;
 
   return (
     <>
-      <StyledBurger onClick={() => setOpen(!menuOpen)}>
+      <StyledBurger onClick={() => setMenuOpen(!menuOpen)}>
         <div />
         <div />
         <div />
       </StyledBurger>
       {(currentRoute === "/admin" || currentRoute === "/orders" || currentRoute === "/inventory" || currentRoute === "/shippingOptions") ? (
-          <AdminNavMenu isLoggedIn={props.isLoggedIn} isAdmin={props.isAdmin} menuOpen={menuOpen} setOpen={setOpen} />
+          <AdminNavMenu isLoggedIn={props.isLoggedIn} isAdmin={props.isAdmin} menuOpen={menuOpen} setOpen={setMenuOpen} />
         ) : (
-          <NavMenu isLoggedIn={props.isLoggedIn} isAdmin={props.isAdmin} menuOpen={menuOpen} setOpen={setOpen} getCartItemCount={props.getCartItemCount} logoutUser={props.logoutUser} />
+          <NavMenu isLoggedIn={props.isLoggedIn} isAdmin={props.isAdmin} menuOpen={menuOpen} setOpen={setMenuOpen} logoutUser={props.logoutUser} />
        )
       }
     </>
