@@ -5,7 +5,7 @@ export const useUserStore = create((set) => ({
   setUsers: (users) => set({ users }),
 
   registerUser: async (newUser) => {
-    const res = await fetch("/api/users/addUser", {
+    const res = await fetch("/api/user/addUser", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
