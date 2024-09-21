@@ -50,13 +50,14 @@ export const checkAlreadyRegistered = async (req, res, next) => {
   next();
 }
 
-export const register = async (req, res) => {
+export const register = async (req, res, next) => {
   const user = new User({ 
     email: req.body.email, 
     name: req.body.name,
   });
-  const register = promisify(User.register, User);
-  await register(user, req.body.password);
+  await User.register(user, req.body.password);
+  // const register = promisify(User.register, User);
+  // await register(user, req.body.password);
   next();
 };
 
