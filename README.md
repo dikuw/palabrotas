@@ -1,1 +1,1 @@
-Built with React.js frontend with Vite, node.js with Express backend, MongoDB database
+Built with React.js frontend with Vite, node.js with Express backend, MongoDB database, and passport.js for authentication.
