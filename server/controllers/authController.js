@@ -1,10 +1,10 @@
-const passport = require('passport');
-const crypto = require('crypto');
-const User = require('../models/User');
-const promisify = require('es6-promisify');
+import passport from 'passport';
+import crypto from 'crypto';
+import User from '../models/User.js';
+// const promisify = require('es6-promisify');
 // const mail = require('../handlers/mail');
 
-exports.passportLocal = (req, res, next) => {
+export const passportLocal = (req, res, next) => {
   passport.authenticate('local', function(err, user) {
     if (err) { return next(err); }
     if (!user) { return res.json({ error: err }); }
@@ -15,7 +15,7 @@ exports.passportLocal = (req, res, next) => {
   })(req, res, next);
 }
 
-exports.passportFB = (req, res, next) => {
+export const passportFB = (req, res, next) => {
   passport.authenticate('facebook'),
   function(req, res){
     // The request will be redirected to Instagram for authentication, so this
@@ -24,7 +24,7 @@ exports.passportFB = (req, res, next) => {
   next();
 }
 
-exports.passportIG = (req, res, next) => {
+export const passportIG = (req, res, next) => {
   passport.authenticate('instagram'),
   function(req, res){
     // The request will be redirected to Instagram for authentication, so this
@@ -33,7 +33,7 @@ exports.passportIG = (req, res, next) => {
   next();
 }
 
-exports.passportTW = (req, res, next) => {
+export const passportTW = (req, res, next) => {
   passport.authenticate('twitter'),
   function(req, res){
     // The request will be redirected to Twitter for authentication, so this
@@ -58,7 +58,7 @@ export const logout = async (req, res) => {
   };
 };
 
-exports.isLoggedIn = (req, res, next) => {
+export const isLoggedIn = (req, res, next) => {
   if (req.isAuthenticated()) {
     next();
     return;
@@ -67,7 +67,7 @@ exports.isLoggedIn = (req, res, next) => {
   res.redirect('/login');
 };
 
-exports.isAdmin = (req, res, next) => {
+export const isAdmin = (req, res, next) => {
   if (req.user.isAdmin) {
     next();
     return;
@@ -76,7 +76,7 @@ exports.isAdmin = (req, res, next) => {
   res.redirect('/Devices');
 };
 
-exports.forgot = async (req, res) => {
+export const forgot = async (req, res) => {
   const user = await User.findOne({ email: req.body.email });
   if (!user) {
     req.flash('error', 'No user associated with that email. Please register a new account.');
@@ -96,7 +96,7 @@ exports.forgot = async (req, res) => {
   res.redirect('/');
 };
 
-exports.reset = async (req, res) => {
+export const reset = async (req, res) => {
   const user = await User.findOne({
     resetPasswordToken: req.params.token,
     resetPasswordExpires: { $gt: Date.now() }
@@ -108,7 +108,7 @@ exports.reset = async (req, res) => {
   res.render('reset', { title: 'Reset your Password' });
 };
 
-exports.confirmPasswords = (req, res, next) => {
+export const confirmPasswords = (req, res, next) => {
   if (req.body.password === req.body['password-confirm']) {
     next();
     return;
@@ -117,7 +117,7 @@ exports.confirmPasswords = (req, res, next) => {
   res.redirect('back');
 };
 
-exports.update = async (req, res) => {
+export const update = async (req, res) => {
   const user = await User.findOne({
     resetPasswordToken: req.params.token,
     resetPasswordExpires: { $gt: Date.now() }
@@ -126,7 +126,8 @@ exports.update = async (req, res) => {
     req.flash('error', 'Password reset is invalid or has expired');
     return res.redirect('/login');
   }
-  const setPassword = promisify(user.setPassword, user);
+  await User.setPassword(req.body.password);
+  // const setPassword = promisify(user.setPassword, user);
   await setPassword(req.body.password);
   user.resetPasswordToken = undefined;
   user.resetPasswordExpires = undefined;

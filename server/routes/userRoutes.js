@@ -1,4 +1,6 @@
 import express from 'express';
+import passport from 'passport';
+import { login } from '../controllers/authController.js';
 import { addUser, register } from '../controllers/userController.js';
 
 // // start from Hely, maybe want to add this in the future
@@ -17,10 +19,8 @@ router.post('/register',
   // userController.checkAlreadyRegistered,
   // // end from Hely
   register,
-  // // start from Hely, maybe want to add this in the future
-  // passport.authenticate('local'),
-  // authController.login
-  // // end from Hely
+  passport.authenticate('local'),
+  login
 );
 // router.post('/login', authController.passportLocal, authController.login);
 // router.post('/auth/facebook', authController.passportFB, authController.login);
