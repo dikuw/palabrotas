@@ -100,9 +100,15 @@ export default function Register(props) {
         password: passwordRef.current.value,
         confirmPassword: confirmPasswordRef.current.value,
       };
-      await registerUser(user);
-      // props.registerUser(user);
-      // event.currentTarget.reset();
+      await registerUser(user).then((res) => {
+        console.log('res', res);
+        if (res.email) {
+          navigate("/");
+      } else {
+        //  TODO Surface errors to user (e.g. account is already registered)
+          console.log('error', res);
+        }
+      });
     }
   };
 
