@@ -5,7 +5,7 @@ export const useUserStore = create((set) => ({
   setUsers: (users) => set({ users }),
 
   registerUser: async (newUser) => {
-    const res = await fetch("/api/user/addUser", {
+    const res = await fetch("/api/user/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -14,7 +14,7 @@ export const useUserStore = create((set) => ({
     })
     const data = await res.json();
     set((state) => ({ users: [...state.users, data.data] }));
-    set({ isLoggedIn: true });
+    return data;
   },
 
   logoutUser: () => set({ users: [] }),
