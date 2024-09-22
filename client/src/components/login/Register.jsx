@@ -101,7 +101,6 @@ export default function Register(props) {
         confirmPassword: confirmPasswordRef.current.value,
       };
       await registerUser(user).then((res) => {
-        console.log('res', res);
         if (res.email) {
           navigate("/");
       } else {
