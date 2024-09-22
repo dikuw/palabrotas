@@ -1,21 +1,28 @@
 import { create } from 'zustand';
+import { devtools } from 'zustand/middleware';
 
-export const useUserStore = create((set) => ({
-  users: [],
-  setUsers: (users) => set({ users }),
+export const useUserStore = create(
+  // TODO: remove devtools prior to production
+  devtools(
+    (set) => ({
+      users: [],
+      setUsers: (users) => set({ users }),
 
-  registerUser: async (newUser) => {
-    const res = await fetch("/api/user/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+      registerUser: async (newUser) => {
+        const res = await fetch("/api/user/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newUser),
+        })
+        const data = await res.json();
+        set((state) => ({ users: [...state.users, data] }));
+        return data;
       },
-      body: JSON.stringify(newUser),
-    })
-    const data = await res.json();
-    set((state) => ({ users: [...state.users, data.data] }));
-    return data;
-  },
 
-  logoutUser: () => set({ users: [] }),
-}));
+      logoutUser: () => set({ users: [] }),
+    }),
+    { name: "user-store" }
+  )
+);
