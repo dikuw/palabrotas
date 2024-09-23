@@ -2,6 +2,7 @@ import React, { useRef }  from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { InvisibleActionButton, VisibleActionButton } from '../shared/index.js';
+import { useUserStore } from '../../store/user';
 
 const StyledWrapperDiv = styled.div`
   width: 90%;
@@ -42,6 +43,8 @@ const StyledWarningDiv = styled.div`
 export default function LocalLogin(props) {
   const navigate = useNavigate();
 
+  const { loginUser } = useUserStore();
+
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const forgotEmailRef = useRef(null);
@@ -52,7 +55,7 @@ export default function LocalLogin(props) {
     passwordRef.current.style.background = "#fff";
     forgotEmailRef.current.style.background = "#fff";
     warningRef.current.innerHTML = "";
-    props.resetPasswordIncorrect();
+    // props.resetPasswordIncorrect();
   }
 
   const validateForm = () => {
@@ -79,8 +82,8 @@ export default function LocalLogin(props) {
         email: emailRef.current.value,
         password: passwordRef.current.value,
       };
-      props.loginUser(user);
-      event.currentTarget.reset();
+      loginUser(user);
+      // event.currentTarget.reset();
     }
   };
   
