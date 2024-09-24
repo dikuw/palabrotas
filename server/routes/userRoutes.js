@@ -1,6 +1,6 @@
 import express from 'express';
 import passport from 'passport';
-import { login, passportLocal } from '../controllers/authController.js';
+import { login, passportLocal, authStatus} from '../controllers/authController.js';
 import { addUser, register } from '../controllers/userController.js';
 
 // // start from Hely, maybe want to add this in the future
@@ -13,6 +13,7 @@ router.post("/addUser", addUser);
 
 //  ** User Routes **  //
 // router.get('/getUser', userController.getCurrentUser);
+router.get('/authStatus', authStatus);
 router.post('/register', 
   // // start from Hely, maybe want to add this in the future
   // userController.validateRegister,

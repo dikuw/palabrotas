@@ -40,7 +40,7 @@ const StyledWarningDiv = styled.div`
 export default function Register(props) {
   const navigate = useNavigate();
 
-  const { registerUser } = useUserStore();
+  const { registerUser, checkAuthStatus } = useUserStore();
   
   const nameRef = useRef(null);
   const emailRef = useRef(null);
@@ -102,6 +102,7 @@ export default function Register(props) {
       };
       await registerUser(user).then((res) => {
         if (res.email) {
+          console.log('checkAuthStatus', checkAuthStatus());
           navigate("/");
       } else {
         //  TODO Surface errors to user (e.g. account is already registered)

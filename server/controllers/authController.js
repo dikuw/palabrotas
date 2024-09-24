@@ -15,6 +15,14 @@ export const passportLocal = (req, res, next) => {
   })(req, res, next);
 }
 
+export const authStatus = (req, res) => {
+  if (req.isAuthenticated()) {
+    res.status(200).json({ authenticated: true, user: req.user });
+  } else {
+    res.status(200).json({ authenticated: false });
+  }
+};
+
 export const passportFB = (req, res, next) => {
   passport.authenticate('facebook'),
   function(req, res){

@@ -2,9 +2,10 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
 export const useUserStore = create(
-  // TODO: remove devtools prior to production
+  // TODO: remove devtools prior to production (start)
   devtools(
     (set) => ({
+  // TODO: remove devtools prior to production (end)
       users: [],
       setUsers: (users) => set({ users }),
       registerUser: async (newUser) => {
@@ -30,8 +31,19 @@ export const useUserStore = create(
         const data = await res.json();
         console.log('data', data);
       },
+      checkAuthStatus: async () => {
+        const res = await fetch('/api/user/authStatus', {
+          method: 'GET',
+          credentials: 'include',
+        })
+        const data = await res.json();
+        console.log('checkAuthStatus data', data);
+        return data.authenticated;
+      },
       logoutUser: () => set({ users: [] }),
     }),
+    // TODO: remove devtools prior to production (start)
     { name: "user-store" }
   )
+  // TODO: remove devtools prior to production (end)
 );
