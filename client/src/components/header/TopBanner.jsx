@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { useUserStore } from '../../store/user';
 
 const BannerDiv = styled.div`
   display: block;
@@ -11,10 +12,22 @@ const BannerDiv = styled.div`
 `;
 
 export default function TopBanner(props) {
- 
+
+  const { checkAuthStatus } = useUserStore();
+  const [authStatus, setAuthStatus] = useState(null);
+
+  useEffect(() => {
+    const fetchAuthStatus = async () => {
+      const status = await checkAuthStatus();
+      setAuthStatus(status);
+    };
+
+    fetchAuthStatus();
+  }, [checkAuthStatus]);
+
   return (
     <BannerDiv>
-      {"Welcome"} {props.isLoggedIn ? props.name : "guest"}!
+      {"Welcome"} {authStatus ? authStatus.user.name : "guest"}!
     </BannerDiv>
   )
 }

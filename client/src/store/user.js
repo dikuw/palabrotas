@@ -36,7 +36,7 @@ export const useUserStore = create(
           credentials: 'include',
         })
         const data = await res.json();
-        return data.authenticated;
+        return data;
       },
       logoutUser: () => set({ users: [] }),
     }),
