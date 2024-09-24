@@ -29,7 +29,6 @@ export const useUserStore = create(
           body: JSON.stringify(user),
         })
         const data = await res.json();
-        console.log('data', data);
       },
       checkAuthStatus: async () => {
         const res = await fetch('/api/user/authStatus', {
@@ -37,7 +36,6 @@ export const useUserStore = create(
           credentials: 'include',
         })
         const data = await res.json();
-        console.log('checkAuthStatus data', data);
         return data.authenticated;
       },
       logoutUser: () => set({ users: [] }),
