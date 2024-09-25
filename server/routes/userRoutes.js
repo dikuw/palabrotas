@@ -1,6 +1,6 @@
 import express from 'express';
 import passport from 'passport';
-import { login, passportLocal, authStatus} from '../controllers/authController.js';
+import { login, logout, passportLocal, authStatus} from '../controllers/authController.js';
 import { addUser, register } from '../controllers/userController.js';
 
 // // start from Hely, maybe want to add this in the future
@@ -30,7 +30,7 @@ router.post('/login', passportLocal, login);
 // router.get('/auth/instagram/callback', authController.login);
 // router.post('/auth/twitter', authController.passportTW, authController.login);
 // router.get('/auth/twitter/callback', authController.login);
-// router.post('/logout', authController.logout);
+router.post('/logout', logout);
 // router.post('/forgot', authController.forgot);
 
 export default router;
