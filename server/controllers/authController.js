@@ -17,9 +17,17 @@ export const passportLocal = (req, res, next) => {
 
 export const authStatus = (req, res) => {
   if (req.isAuthenticated()) {
-    res.status(200).json({ authenticated: true, user: req.user });
+    res.json({
+      authenticated: true,
+      user: {
+        id: req.user._id,
+        name: req.user.name,
+        email: req.user.email,
+        isAdmin: req.user.isAdmin || false
+      }
+    });
   } else {
-    res.status(200).json({ authenticated: false });
+    res.json({ authenticated: false, user: null });
   }
 };
 
@@ -57,13 +65,18 @@ export const login = async (req, res) => {
   });
 };
 
-export const logout = async (req, res) => {
+export const logout = (req, res) => {
   if (req.user) {
-    req.logout();
-    res.send({ msg: 'logged out' });
+    req.logout((err) => {
+      if (err) {
+        console.error('Logout error:', err);
+        return res.status(500).json({ error: 'Could not log out, please try again' });
+      }
+      res.json({ msg: 'logged out' });
+    });
   } else {
-    res.send({ msg: 'no user to log out' })
-  };
+    res.json({ msg: 'no user to log out' });
+  }
 };
 
 export const isLoggedIn = (req, res, next) => {

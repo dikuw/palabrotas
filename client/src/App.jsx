@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import './styles/styles.css';
 
+import { useUserStore } from './store/user';
 import { useContentStore } from './store/content';
 
 import TopBanner from './components/header/TopBanner';
@@ -15,39 +16,49 @@ import Admin from './components/admin/Admin';
 import Footer from './components/Footer';
 
 function App() {
-  const [user, setUser] = useState({
-    name: "",
-    email: "",
-  });
   const { getContents, contents } = useContentStore();
+  const { checkAuthStatus, logoutUser } = useUserStore();
 
-  useEffect(() => {
-    getContents();
-  }, [getContents]);
-
+  const [authStatus, setAuthStatus] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isPasswordIncorrect, setIsPasswordIncorrect] = useState(false);
 
   const navigate = useNavigate(); 
 
-  const logoutUser = async (user) => {
-    const payload = { ...user };
-    await apis.logout(payload).then(res => {
+  const logoutUserClick = async (user) => {
+    await logoutUser(user).then(res => {
       setIsLoggedIn(false);
       navigate("/");
     });
   }
 
+  useEffect(() => {
+    getContents();
+  }, [getContents]);
+
+  useEffect(() => {
+    const fetchAuthStatus = async () => {
+      const status = await checkAuthStatus();
+      setAuthStatus(status);
+      setIsLoggedIn(authStatus ? authStatus.authenticated : false);
+    };
+
+    fetchAuthStatus();
+  }, [checkAuthStatus]);
+
+  console.log('authStatus', authStatus);
+  console.log('isLoggedIn', isLoggedIn);
+
   return (
     <div className="app-container">
-      <TopBanner isLoggedIn={isLoggedIn} name={user.name}/>
+      <TopBanner isLoggedIn={isLoggedIn} name={authStatus ? authStatus.user.name : "guest"}/>
       <Header /> 
       <Routes>
         <Route exact path="/" 
           element={
             <>
-              <Navigation isLoggedIn={isLoggedIn} isAdmin={user.isAdmin} logoutUser={logoutUser} />
+              <Navigation isLoggedIn={isLoggedIn} isAdmin={authStatus ? authStatus.user.isAdmin : false} logoutUser={logoutUser} />
               {isLoading ? <Popup popupText={"Finding latest content..."}/> : null}
               <Grid contents={contents} />
             </>
@@ -57,7 +68,7 @@ function App() {
           element={
             <>
               <Banner bannerString={"Site Administration"} />
-              <Navigation isLoggedIn={isLoggedIn} isAdmin={user.isAdmin} logoutUser={logoutUser} />
+              <Navigation isLoggedIn={isLoggedIn} isAdmin={authStatus ? authStatus.user.isAdmin : false} logoutUser={logoutUser} />
               <Admin />
             </>
           }
@@ -65,7 +76,7 @@ function App() {
         <Route path="/register" 
           element={
             <>
-              <Navigation isLoggedIn={isLoggedIn} isAdmin={user.isAdmin} logoutUser={logoutUser} />
+              <Navigation isLoggedIn={isLoggedIn} isAdmin={authStatus ? authStatus.user.isAdmin : false} logoutUser={logoutUser} />
               <Banner bannerString={"Register a New Account"} />
               <Register 
                 isLoggedIn={isLoggedIn} 
@@ -76,7 +87,7 @@ function App() {
         <Route path="/login" 
           element={
             <>
-              <Navigation isLoggedIn={isLoggedIn} isAdmin={user.isAdmin} logoutUser={logoutUser} />
+              <Navigation isLoggedIn={isLoggedIn} isAdmin={authStatus ? authStatus.user.isAdmin : false} logoutUser={logoutUser} />
               <Banner bannerString={"Log In"} />
               <LocalLogin
                 // isLoggedIn={isLoggedIn} 
