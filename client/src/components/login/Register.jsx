@@ -2,7 +2,7 @@ import React, { useState }  from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { InvisibleActionButton, VisibleActionButton } from '../shared/index';
-import { useUserStore } from '../../store/user';
+import { useAuthStore } from '../../store/auth';
 
 const StyledWrapperDiv = styled.div`
   width: 90%;
@@ -37,7 +37,7 @@ const StyledInput = styled.input`
 
 export default function Register(props) {
   const navigate = useNavigate();
-  const { registerUser } = useUserStore();
+  const { registerUser } = useAuthStore();
   
   const [formData, setFormData] = useState({
     name: "",

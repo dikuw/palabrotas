@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import './styles/styles.css';
 
-import { useUserStore } from './store/user';
+import { useAuthStore } from './store/auth';
 import { useContentStore } from './store/content';
 
 import TopBanner from './components/header/TopBanner';
@@ -17,48 +17,28 @@ import Footer from './components/Footer';
 
 function App() {
   const { getContents, contents } = useContentStore();
-  const { checkAuthStatus, logoutUser } = useUserStore();
+  const { authStatus, loginUser, logoutUser } = useAuthStore();
 
-  const [authStatus, setAuthStatus] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isPasswordIncorrect, setIsPasswordIncorrect] = useState(false);
 
   const navigate = useNavigate(); 
-
-  const logoutUserClick = async (user) => {
-    await logoutUser(user).then(res => {
-      setIsLoggedIn(false);
-      navigate("/");
-    });
-  }
 
   useEffect(() => {
     getContents();
   }, [getContents]);
 
-  useEffect(() => {
-    const fetchAuthStatus = async () => {
-      const status = await checkAuthStatus();
-      setAuthStatus(status);
-      setIsLoggedIn(authStatus ? authStatus.authenticated : false);
-    };
-
-    fetchAuthStatus();
-  }, [checkAuthStatus]);
-
   console.log('authStatus', authStatus);
-  console.log('isLoggedIn', isLoggedIn);
 
   return (
     <div className="app-container">
-      <TopBanner isLoggedIn={isLoggedIn} name={authStatus ? authStatus.user.name : "guest"}/>
+      <TopBanner isLoggedIn={authStatus.isLoggedIn} name={authStatus.user ? authStatus.user.name : "guest"}/>
       <Header /> 
       <Routes>
         <Route exact path="/" 
           element={
             <>
-              <Navigation isLoggedIn={isLoggedIn} isAdmin={authStatus ? authStatus.user.isAdmin : false} logoutUser={logoutUser} />
+              <Navigation isLoggedIn={authStatus.isLoggedIn} isAdmin={authStatus.user ? authStatus.user.isAdmin : false} logoutUser={logoutUser} />
               {isLoading ? <Popup popupText={"Finding latest content..."}/> : null}
               <Grid contents={contents} />
             </>
@@ -68,7 +48,7 @@ function App() {
           element={
             <>
               <Banner bannerString={"Site Administration"} />
-              <Navigation isLoggedIn={isLoggedIn} isAdmin={authStatus ? authStatus.user.isAdmin : false} logoutUser={logoutUser} />
+              <Navigation isLoggedIn={authStatus.isLoggedIn} isAdmin={authStatus.user ? authStatus.user.isAdmin : false} logoutUser={logoutUser} />
               <Admin />
             </>
           }
@@ -76,10 +56,10 @@ function App() {
         <Route path="/register" 
           element={
             <>
-              <Navigation isLoggedIn={isLoggedIn} isAdmin={authStatus ? authStatus.user.isAdmin : false} logoutUser={logoutUser} />
+              <Navigation isLoggedIn={authStatus.isLoggedIn} isAdmin={authStatus.user ? authStatus.user.isAdmin : false} logoutUser={logoutUser} />
               <Banner bannerString={"Register a New Account"} />
               <Register 
-                isLoggedIn={isLoggedIn} 
+                isLoggedIn={authStatus.isLoggedIn} 
               />
             </>
           }
@@ -87,13 +67,13 @@ function App() {
         <Route path="/login" 
           element={
             <>
-              <Navigation isLoggedIn={isLoggedIn} isAdmin={authStatus ? authStatus.user.isAdmin : false} logoutUser={logoutUser} />
+              <Navigation isLoggedIn={authStatus.isLoggedIn} isAdmin={authStatus.user ? authStatus.user.isAdmin : false} logoutUser={logoutUser} />
               <Banner bannerString={"Log In"} />
               <LocalLogin
-                // isLoggedIn={isLoggedIn} 
+                isLoggedIn={authStatus.isLoggedIn} 
                 // isPasswordIncorrect={isPasswordIncorrect}
                 // resetPasswordIncorrect={resetPasswordIncorrect}
-                // loginUser={loginUser}
+                loginUser={loginUser}
                 // forgotUser={forgotUser} 
               />
             </>
