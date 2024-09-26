@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
+import { useTranslation } from "react-i18next";
 import './styles/styles.css';
 
 import { useAuthStore } from './store/auth';
@@ -18,6 +19,8 @@ import Admin from './components/admin/Admin';
 import Footer from './components/Footer';
 
 function App() {
+  const { t } = useTranslation();
+
   const { getContents, contents } = useContentStore();
   const { authStatus, loginUser, logoutUser, getCurrentUser } = useAuthStore();
 
@@ -39,7 +42,7 @@ function App() {
 
   return (
     <div className="app-container">
-      <TopBanner isLoggedIn={authStatus.isLoggedIn} name={authStatus.user ? authStatus.user.name : "guest"}/>
+      <TopBanner isLoggedIn={authStatus.isLoggedIn} name={authStatus.user ? authStatus.user.name : t("guest")}/>
       <Header /> 
       <Routes>
         <Route exact path="/" 
