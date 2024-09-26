@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import './styles/styles.css';
 
 import { useAuthStore } from './store/auth';
@@ -9,6 +9,7 @@ import TopBanner from './components/header/TopBanner';
 import Header from './components/header/Header';
 import Banner from './components/header/Banner';
 import Navigation from './components/navigation/Navigation';
+import Popup from './components/shared/Popup';
 import Register from './components/login/Register';
 import LocalLogin from './components/login/LocalLogin';
 import Grid from './components/main/Grid';
@@ -22,10 +23,14 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [isPasswordIncorrect, setIsPasswordIncorrect] = useState(false);
 
-  const navigate = useNavigate(); 
-
   useEffect(() => {
-    getContents();
+    setIsLoading(true);
+
+    async function initialize() {
+      await getContents();
+      setIsLoading(false);
+    }
+    initialize();
   }, [getContents]);
 
   console.log('authStatus', authStatus);
