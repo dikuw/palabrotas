@@ -1,6 +1,5 @@
 import express from 'express';
 import session from 'express-session';
-import mongoose from 'mongoose';
 import MongoStore from 'connect-mongo';
 import cors from 'cors';
 import { connectDB } from './database/index.js';
