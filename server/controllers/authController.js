@@ -155,7 +155,7 @@ export const confirmPasswords = (req, res, next) => {
   res.redirect('back');
 };
 
-export const update = async (req, res) => {
+export const updateUser = async (req, res) => {
   const user = await User.findOne({
     resetPasswordToken: req.params.token,
     resetPasswordExpires: { $gt: Date.now() }
@@ -171,6 +171,6 @@ export const update = async (req, res) => {
   user.resetPasswordExpires = undefined;
   const updatedUser = await user.save();
   await req.login(updatedUser);
-  req.flash('Success', 'Your password has been reset. You are logged in.');
-  res.redirect('/');
+  // req.flash('Success', 'Your password has been reset. You are logged in.');
+  // res.redirect('/');
 };
