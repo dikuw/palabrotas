@@ -1,6 +1,6 @@
 import express from 'express';
 import passport from 'passport';
-import { login, logout, passportLocal, authStatus} from '../controllers/authController.js';
+import { login, logout, getCurrentUser, authStatus} from '../controllers/authController.js';
 import { addUser, register } from '../controllers/userController.js';
 
 const router = express.Router();
@@ -8,7 +8,7 @@ const router = express.Router();
 router.post("/addUser", addUser);
 
 //  ** User Routes **  //
-// router.get('/getUser', userController.getCurrentUser);
+router.get('/getUser', getCurrentUser);
 router.get('/authStatus', authStatus);
 router.post('/register', 
   // // start from Hely, maybe want to add this in the future

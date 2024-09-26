@@ -64,6 +64,26 @@ export const useAuthStore = create(
           console.error('Error during logout:', error);
         }
       },
+      getCurrentUser: async () => {
+        const res = await fetch("/api/user/getUser", {
+          method: "GET",
+          credentials: 'include',
+        })
+        const data = await res.json();
+        if (data.user) {
+          set({ 
+            authStatus: { 
+              isLoggedIn: true, 
+              user: data.user, 
+              isLoading: false 
+            } 
+          });
+          return data;
+        } else {
+          throw new Error('Authentication failed');
+        }
+        return data;
+      }
     }),
     // TODO: remove devtools prior to production (start)
     { name: "auth-store" }

@@ -18,7 +18,7 @@ import Footer from './components/Footer';
 
 function App() {
   const { getContents, contents } = useContentStore();
-  const { authStatus, loginUser, logoutUser } = useAuthStore();
+  const { authStatus, loginUser, logoutUser, getCurrentUser } = useAuthStore();
 
   const [isLoading, setIsLoading] = useState(false);
   const [isPasswordIncorrect, setIsPasswordIncorrect] = useState(false);
@@ -28,6 +28,7 @@ function App() {
 
     async function initialize() {
       await getContents();
+      await getCurrentUser();
       setIsLoading(false);
     }
     initialize();

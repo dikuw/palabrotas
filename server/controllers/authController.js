@@ -4,6 +4,14 @@ import User from '../models/User.js';
 // const promisify = require('es6-promisify');
 // const mail = require('../handlers/mail');
 
+export const getCurrentUser = async (req, res) => {
+  if (req.user) {
+    res.json({ user: req.user });
+  } else {
+    res.json({ error: 'No user found' });
+  };
+};
+
 export const passportLocal = (req, res, next) => {
   passport.authenticate('local', function(err, user) {
     if (err) { return next(err); }
