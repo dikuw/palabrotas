@@ -59,9 +59,18 @@ export const passportTW = (req, res, next) => {
 }
 
 export const login = async (req, res) => {
-  req.login(req.user, function(err) {
-    if (err) { res.json({ error: err }); }
-    return res.send(req.user);
+  // req.login(req.user, function(err) {
+  //   if (err) { res.json({ error: err }); }
+  //   return res.send(req.user);
+  // });
+  res.json({
+    authenticated: true,
+    user: {
+      id: req.user._id,
+      name: req.user.name,
+      email: req.user.email,
+      isAdmin: req.user.isAdmin || false
+    }
   });
 };
 
