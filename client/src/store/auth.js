@@ -30,7 +30,7 @@ export const useAuthStore = create(
         }
       },
       loginUser: async (credentials) => {
-        const res = await fetch("/api/user/login", {
+        const res = await fetch("/api/auth/login", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -54,7 +54,7 @@ export const useAuthStore = create(
       },
       logoutUser: async () => {
         try {
-          const response = await fetch('/api/user/logout', {
+          const response = await fetch('/api/auth/logout', {
             method: 'POST',
             credentials: 'include',
           });
@@ -65,7 +65,7 @@ export const useAuthStore = create(
         }
       },
       getCurrentUser: async () => {
-        const res = await fetch("/api/user/getUser", {
+        const res = await fetch("/api/auth/getUser", {
           method: "GET",
           credentials: 'include',
         })
