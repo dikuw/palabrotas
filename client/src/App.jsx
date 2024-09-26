@@ -12,6 +12,7 @@ import Navigation from './components/navigation/Navigation';
 import Popup from './components/shared/Popup';
 import Register from './components/login/Register';
 import LocalLogin from './components/login/LocalLogin';
+import Account from './components/account/Account';
 import Grid from './components/main/Grid';
 import Admin from './components/admin/Admin';
 import Footer from './components/Footer';
@@ -81,6 +82,19 @@ function App() {
                 // resetPasswordIncorrect={resetPasswordIncorrect}
                 loginUser={loginUser}
                 // forgotUser={forgotUser} 
+              />
+            </>
+          }
+        />
+        <Route path="/account" 
+          element={
+            <>
+              <Navigation isLoggedIn={authStatus.isLoggedIn} isAdmin={authStatus.user ? authStatus.user.isAdmin : false} />
+              <Banner bannerString={"Your Account"} />
+              <Account 
+                isLoggedIn={authStatus.isLoggedIn} 
+                // user={user}
+                // userOrders={userOrders}
               />
             </>
           }
