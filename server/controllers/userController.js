@@ -1,13 +1,5 @@
 import User from '../models/User.js';
 
-export const getCurrentUser = async (req, res) => {
-  if (req.user) {
-    res.json({ user: req.user });
-  } else {
-    res.json({ error: 'No user found' });
-  };
-};
-
 export const validateRegister = async (req, res, next) => {
   req.sanitizeBody('name');
   req.checkBody('name', 'Please enter a name').notEmpty();
