@@ -83,7 +83,28 @@ export const useAuthStore = create(
           throw new Error('Authentication failed');
         }
         return data;
-      }
+      },
+      updateUser: async (user) => {
+        const res = await fetch("/api/user/update", {
+          method: "POST",
+          credentials: 'include',
+          body: JSON.stringify(user),
+        })
+        const data = await res.json();
+        if (data.user) {
+          set({ 
+            authStatus: { 
+              isLoggedIn: true, 
+              user: data.user, 
+              isLoading: false 
+            } 
+          });
+          return data;
+        } else {
+          throw new Error('Update failed');
+        }
+        return data;
+      },
     }),
     // TODO: remove devtools prior to production (start)
     { name: "auth-store" }
