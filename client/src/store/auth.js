@@ -47,7 +47,7 @@ export const useAuthStore = create(
               isLoading: false 
             } 
           });
-          return true;
+          return data;
         } else {
           throw new Error('Authentication failed');
         }
