@@ -3,10 +3,6 @@ import passport from 'passport';
 import { login, logout, passportLocal, authStatus} from '../controllers/authController.js';
 import { addUser, register } from '../controllers/userController.js';
 
-// // start from Hely, maybe want to add this in the future
-// const passport = require('passport');
-// // end from Hely
-
 const router = express.Router();
 
 router.post("/addUser", addUser);
@@ -23,7 +19,7 @@ router.post('/register',
   passport.authenticate('local'),
   login
 );
-router.post('/login', passportLocal, login);
+router.post('/login', passport.authenticate('local'), login);
 // router.post('/auth/facebook', authController.passportFB, authController.login);
 // router.get('/auth/facebook/callback', authController.login);
 // router.post('/auth/instagram', authController.passportIG, authController.login);
