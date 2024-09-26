@@ -1,4 +1,4 @@
-import React, { useRef }  from 'react';
+import React, { useState }  from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { InvisibleActionButton, VisibleActionButton } from '../shared/index';
@@ -30,103 +30,97 @@ const StyledWrapperDiv = styled.div`
   }
 `;
 
-const StyledWarningDiv = styled.div`
-  text-align: center;
-  padding: 0vw 3vw;
-  color: red;
-  font-weight: 600;
+const StyledInput = styled.input`
+  background-color: ${props => props.$hasError ? 'var(--warning)' : 'var(--almostWhite)'};
+  color: ${props => props.$hasError ? 'red' : 'inherit'};
 `;
 
 export default function Register(props) {
   const navigate = useNavigate();
-
-  const { registerUser, checkAuthStatus } = useUserStore();
+  const { registerUser } = useUserStore();
   
-  const nameRef = useRef(null);
-  const emailRef = useRef(null);
-  const passwordRef = useRef(null);
-  const confirmPasswordRef = useRef(null);
-  const warningRef = useRef(null);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
 
-  const resetValidation = () => {
-    nameRef.current.style.background = "#fff";
-    emailRef.current.style.background = "#fff";
-    passwordRef.current.style.background = "#fff";
-    confirmPasswordRef.current.style.background = "#fff";
-    warningRef.current.innerHTML = "";
-  }
+  const [errors, setErrors] = useState({});
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    setErrors(prev => ({ ...prev, [name]: '' }));
+  };
 
   const validateForm = () => {
-    let passVal = true;
-    if (!passwordRef.current.value) {
-      passwordRef.current.style.background = "#ffc2c2";
-      confirmPasswordRef.current.style.background = "#ffc2c2";
-      warningRef.current.innerHTML = "Password cannot be blank! Please try again.";
-      passVal = false;
+    let newErrors = {};
+    if (!formData.name) newErrors.name = "Please provide your name.";
+    if (!formData.email) newErrors.email = "Please provide your email.";
+    if (!formData.password) newErrors.password = "Password cannot be blank.";
+    if (!formData.confirmPassword) newErrors.confirmPassword = "Confirm Password cannot be blank.";
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.password = "Passwords do not match.";
+      newErrors.confirmPassword = "Passwords do not match.";
     }
-    if (!confirmPasswordRef.current.value) {
-      passwordRef.current.style.background = "#ffc2c2";
-      confirmPasswordRef.current.style.background = "#ffc2c2";
-      warningRef.current.innerHTML = "Confirm Password cannot be blank! Please try again.";
-      passVal = false;
-    }
-    if (passwordRef.current.value !== confirmPasswordRef.current.value) {
-      passwordRef.current.style.background = "#ffc2c2";
-      confirmPasswordRef.current.style.background = "#ffc2c2";
-      warningRef.current.innerHTML = "Passwords do not match! Please try again.";
-      passVal = false;
-    }
-    if (!nameRef.current.value) {
-      nameRef.current.style.background = "#ffc2c2";
-      warningRef.current.innerHTML = "Please provide your name.";
-      passVal = false;
-    }
-    // TODO Validate email address for format using a library
-    // **  📧 📧 📧  **
-    if (!emailRef.current.value) {
-      emailRef.current.style.background = "#ffc2c2";
-      warningRef.current.innerHTML = "Please provide your email.";
-      passVal = false;
-    }
-    return passVal;
-  }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const registerClick = async (event) => {
     event.preventDefault();
     if (validateForm()) {
-      const user = {
-        name: nameRef.current.value,
-        email: emailRef.current.value,
-        password: passwordRef.current.value,
-        confirmPassword: confirmPasswordRef.current.value,
-      };
-      await registerUser(user).then((res) => {
-        if (res.email) {
-          console.log('checkAuthStatus', checkAuthStatus());
+      try {
+        const result = await registerUser(formData);
+        if (result.user.email) {
           navigate("/");
-      } else {
-        //  TODO Surface errors to user (e.g. account is already registered)
-          console.log('error', res);
         }
-      });
+      } catch (error) {
+        setErrors({ general: error.message || 'Registration failed. Please try again.' });
+      }
     }
-  };
-
-  const goBack = () => {
-    navigate("/login");
   };
 
   return (
     <StyledWrapperDiv>
       <form onSubmit={registerClick}>
-        <input name="name" ref={nameRef} type="text" placeholder={"Name"} onFocus={resetValidation} />
-        <input name="email" ref={emailRef} type="text" placeholder={"Email"} onFocus={resetValidation} />
-        <input name="password" ref={passwordRef} type="password" placeholder={"Password"} onFocus={resetValidation} />
-        <input name="confirmPassword" ref={confirmPasswordRef} type="password" placeholder={"Confirm Password"} onFocus={resetValidation} />
-        <VisibleActionButton type="submit" buttonLabel={"Register"} />
+        <StyledInput
+          name="name"
+          type="text"
+          placeholder={errors.name || "Name"}
+          value={errors.name ? "" : formData.name}
+          onChange={handleChange}
+          $hasError={!!errors.name}
+        />
+        <StyledInput
+          name="email"
+          type="email"
+          placeholder={errors.email || "Email"}
+          value={errors.email ? "" : formData.email}
+          onChange={handleChange}
+          $hasError={!!errors.email}
+        />
+        <StyledInput
+          name="password"
+          type="password"
+          placeholder={errors.password || "Password"}
+          value={errors.password ? "" : formData.password}
+          onChange={handleChange}
+          $hasError={!!errors.password}
+        />
+        <StyledInput
+          name="confirmPassword"
+          type="password"
+          placeholder={errors.confirmPassword || "Confirm Password"}
+          value={errors.confirmPassword ? "" : formData.confirmPassword}
+          onChange={handleChange}
+          $hasError={!!errors.confirmPassword}
+        />
+        <VisibleActionButton type="submit" buttonLabel="Register" />
       </form>
-      <StyledWarningDiv ref={warningRef}></StyledWarningDiv>
-      <InvisibleActionButton clickHandler={goBack} buttonLabel={"Back to Log In"} />
+      {errors.general && <div style={{ color: 'red' }}>{errors.general}</div>}
+      <InvisibleActionButton clickHandler={() => navigate("/login")} buttonLabel="Back to Log In" />
     </StyledWrapperDiv>
-  )
+  );
 };
