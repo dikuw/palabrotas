@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { useTranslation } from "react-i18next";
 
 import { useAppStore } from '../../store/app';
 
@@ -56,6 +57,7 @@ const Link = styled.a`
 
 export default function NavMenu(props) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { menuOpen, setMenuOpen } = useAppStore();
 
   const handleClick = (link, menuOpen) => {
@@ -65,17 +67,17 @@ export default function NavMenu(props) {
  
   return (
     <Ul $menuOpen={menuOpen}>
-      <Li><Link onClick={() => handleClick('/', menuOpen) } >Home</Link></Li>
+      <Li><Link onClick={() => handleClick('/', menuOpen) } >{t("Home")}</Link></Li>
       {props.isLoggedIn ? (
           <>
-            <Li><Link onClick={() => handleClick('/account', menuOpen) } >{"Account"}</Link></Li>
-            <Li><Link onClick={() => props.logoutUser() } >{"Log Out"}</Link></Li>
+            <Li><Link onClick={() => handleClick('/account', menuOpen) } >{t("Account")}</Link></Li>
+            <Li><Link onClick={() => props.logoutUser() } >{t("Log Out")}</Link></Li>
           </>
         ) : (
-          <Li><Link onClick={() => handleClick('/login', menuOpen) } >{"Log In"}</Link></Li>
+          <Li><Link onClick={() => handleClick('/login', menuOpen) } >{t("Log In")}</Link></Li>
         )
       }
-      {props.isAdmin && <Li><Link onClick={() => handleClick('/admin', menuOpen) } >{"Administer"}</Link></Li>}
+      {props.isAdmin && <Li><Link onClick={() => handleClick('/admin', menuOpen) } >{t("Administer")}</Link></Li>}
     </Ul>
   );
 }

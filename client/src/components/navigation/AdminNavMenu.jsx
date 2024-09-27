@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { useAppStore } from '../../store/app';
+import { useTranslation } from "react-i18next";
 
 const Ul = styled.ul`
   list-style: none;
@@ -56,6 +57,7 @@ const Link = styled.a`
 
 export default function AdminNavMenu(props) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { menuOpen, setMenuOpen } = useAppStore();
   
   const handleClick = (link, menuOpen) => {
@@ -65,10 +67,10 @@ export default function AdminNavMenu(props) {
  
   return (
     <Ul>
-      {!props.isLoggedIn && <Li><Link onClick={() => handleClick('/login', menuOpen) } >{"Log In"}</Link></Li>}
+      {!props.isLoggedIn && <Li><Link onClick={() => handleClick('/login', menuOpen) } >{t("Log In")}</Link></Li>}
       {props.isAdmin &&
         <>
-          <Li><Link onClick={() => handleClick('/', menuOpen) } >{"Back to Site"}</Link></Li>
+          <Li><Link onClick={() => handleClick('/', menuOpen) } >{t("Back to Site")}</Link></Li>
         </>
       }
     </Ul>
