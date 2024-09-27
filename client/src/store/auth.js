@@ -80,7 +80,13 @@ export const useAuthStore = create(
           });
           return data;
         } else {
-          throw new Error('Authentication failed');
+          set({ 
+            authStatus: { 
+              isLoggedIn: false, 
+              user: null, 
+              isLoading: false 
+            } 
+          });
         }
         return data;
       },
