@@ -93,7 +93,7 @@ function App() {
           element={
             <>
               <Navigation isLoggedIn={authStatus.isLoggedIn} isAdmin={authStatus.user ? authStatus.user.isAdmin : false} />
-              <Banner bannerString={"Your Account"} />
+              <Banner bannerString={t("Your Account")} />
               <Account 
                 isLoggedIn={authStatus.isLoggedIn} 
                 // user={user}
