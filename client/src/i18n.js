@@ -51,6 +51,7 @@ i18n
           "Terms of Use": "Terms of Use",
           "Created by" : "Created by",
           "Site Administration" : "Site Administration" ,
+          "Your Content" : "Your Content",
         }
       },
       es: {
@@ -103,6 +104,7 @@ i18n
           "Terms of Use": "Términos de Uso",
           "Created by" : "Creado por",
           "Site Administration" : "Administración del sitio",
+          "Your Content" : "Su Contenido",
         }
       }
     },
