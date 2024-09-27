@@ -92,7 +92,7 @@ function App() {
         <Route path="/account" 
           element={
             <>
-              <Navigation isLoggedIn={authStatus.isLoggedIn} isAdmin={authStatus.user ? authStatus.user.isAdmin : false} />
+              <Navigation isLoggedIn={authStatus.isLoggedIn} isAdmin={authStatus.user ? authStatus.user.isAdmin : false} logoutUser={logoutUser} />
               <Banner bannerString={t("Your Account")} />
               <Account 
                 isLoggedIn={authStatus.isLoggedIn} 
