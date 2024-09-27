@@ -48,7 +48,7 @@ export default function Burger(props) {
         <div />
         <div />
       </StyledBurger>
-      {(currentRoute === "/admin" || currentRoute === "/orders" || currentRoute === "/inventory" || currentRoute === "/shippingOptions") ? (
+      {(currentRoute === "/admin" || currentRoute === "/contents") ? (
           <AdminNavMenu isLoggedIn={props.isLoggedIn} isAdmin={props.isAdmin} />
         ) : (
           <NavMenu isLoggedIn={props.isLoggedIn} isAdmin={props.isAdmin} logoutUser={props.logoutUser} />
