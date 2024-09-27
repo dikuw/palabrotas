@@ -5,7 +5,8 @@ import { useAuthStore } from '../../store/auth';
 // import { NoPermissionDiv } from '../shared/index';
 
 const StyledWrapperDiv = styled.div`
-  max-width: 1200px;
+  width: 90%;
+  max-width: 1000px;
   display: flex;
   flex-direction: column;
   margin: 30px auto;
@@ -80,7 +81,7 @@ const StyledInput = styled.input`
 `;
 
 export default function Account(props) {
-  const { updateUser } = useAuthStore();
+  const { authStatus, updateUser } = useAuthStore();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -130,7 +131,6 @@ export default function Account(props) {
   // }
   return (
     <StyledWrapperDiv>
-      <div>{"Update Your Account"}</div>
       <StyledForm onSubmit={updateClick}>
       <StyledFormRowDiv>
           <StyledLabel htmlFor="name">{"Name"}: </StyledLabel>
