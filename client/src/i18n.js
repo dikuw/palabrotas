@@ -57,6 +57,9 @@ i18n
           "Log Out" : "Log Out",
           "Administer" : "Administer",
           "Add" : "Add",
+          "title" : "Title",
+          "description" : "Description",
+          "Add Content" : "Add Content",
         }
       },
       es: {
@@ -115,6 +118,9 @@ i18n
           "Log Out" : "Cerrar Sesión",
           "Administer" : "Administrar",
           "Add" : "Agregar",
+          "Add Content" : "Agregar Contenido",
+          "title" : "Título",
+          "description" : "Descripción",
         }
       }
     },
