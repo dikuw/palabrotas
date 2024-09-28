@@ -52,6 +52,11 @@ i18n
           "Created by" : "Created by",
           "Site Administration" : "Site Administration" ,
           "Your Content" : "Your Content",
+          "Home" : "Home",
+          "Account" : "Account",
+          "Log Out" : "Log Out",
+          "Administer" : "Administer",
+          "Add" : "Add",
         }
       },
       es: {
@@ -105,6 +110,11 @@ i18n
           "Created by" : "Creado por",
           "Site Administration" : "Administración del sitio",
           "Your Content" : "Su Contenido",
+          "Home" : "Inicio",
+          "Account" : "Cuenta",
+          "Log Out" : "Cerrar Sesión",
+          "Administer" : "Administrar",
+          "Add" : "Agregar",
         }
       }
     },
