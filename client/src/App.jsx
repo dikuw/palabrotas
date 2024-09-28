@@ -15,6 +15,7 @@ import Register from './components/login/Register';
 import LocalLogin from './components/login/LocalLogin';
 import Account from './components/account/Account';
 import Grid from './components/main/Grid';
+import AddContent from './components/content/AddContent';
 import Admin from './components/admin/Admin';
 import Footer from './components/Footer';
 
@@ -98,6 +99,17 @@ function App() {
                 isLoggedIn={authStatus.isLoggedIn} 
                 // user={user}
                 // userOrders={userOrders}
+              />
+            </>
+          }
+        />
+        <Route path="/addContent" 
+          element={
+            <>
+              <Navigation isLoggedIn={authStatus.isLoggedIn} isAdmin={authStatus.user ? authStatus.user.isAdmin : false} logoutUser={logoutUser} />
+              <Banner bannerString={t("Add Content")} />
+              <AddContent
+                isLoggedIn={authStatus.isLoggedIn} 
               />
             </>
           }
