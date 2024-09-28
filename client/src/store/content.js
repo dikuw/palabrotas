@@ -13,6 +13,7 @@ export const useContentStore = create((set) => ({
     })
     const data = await res.json();
     set((state) => ({ contents: [...state.contents, data.data] }));
+    return data;
   },
   getContents: async () => {
     const res = await fetch("/api/content/getContents", {
