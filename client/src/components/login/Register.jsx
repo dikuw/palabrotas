@@ -1,5 +1,6 @@
 import React, { useState }  from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from "react-i18next";
 import styled from 'styled-components';
 import { InvisibleActionButton, VisibleActionButton } from '../shared/index';
 import { useAuthStore } from '../../store/auth';
@@ -35,7 +36,8 @@ const StyledInput = styled.input`
   color: ${props => props.$hasError ? 'red' : 'inherit'};
 `;
 
-export default function Register(props) {
+export default function Register() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { registerUser } = useAuthStore();
   
@@ -56,13 +58,13 @@ export default function Register(props) {
 
   const validateForm = () => {
     let newErrors = {};
-    if (!formData.name) newErrors.name = "Please provide your name.";
-    if (!formData.email) newErrors.email = "Please provide your email.";
-    if (!formData.password) newErrors.password = "Password cannot be blank.";
-    if (!formData.confirmPassword) newErrors.confirmPassword = "Confirm Password cannot be blank.";
+    if (!formData.name) newErrors.name = t("Please provide your name.");
+    if (!formData.email) newErrors.email = t("Please provide your email.");
+    if (!formData.password) newErrors.password = t("Password cannot be blank.");
+    if (!formData.confirmPassword) newErrors.confirmPassword = t("Confirm Password cannot be blank.");
     if (formData.password !== formData.confirmPassword) {
-      newErrors.password = "Passwords do not match.";
-      newErrors.confirmPassword = "Passwords do not match.";
+      newErrors.password = t("Passwords do not match.");
+      newErrors.confirmPassword = t("Passwords do not match.");
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -77,7 +79,7 @@ export default function Register(props) {
           navigate("/");
         }
       } catch (error) {
-        setErrors({ general: error.message || 'Registration failed. Please try again.' });
+        setErrors({ general: error.message || t('Registration failed. Please try again.') });
       }
     }
   };
@@ -88,7 +90,7 @@ export default function Register(props) {
         <StyledInput
           name="name"
           type="text"
-          placeholder={errors.name || "Name"}
+          placeholder={errors.name || t("Name")}
           value={errors.name ? "" : formData.name}
           onChange={handleChange}
           $hasError={!!errors.name}
@@ -96,7 +98,7 @@ export default function Register(props) {
         <StyledInput
           name="email"
           type="email"
-          placeholder={errors.email || "Email"}
+          placeholder={errors.email || t("Email")}
           value={errors.email ? "" : formData.email}
           onChange={handleChange}
           $hasError={!!errors.email}
@@ -104,7 +106,7 @@ export default function Register(props) {
         <StyledInput
           name="password"
           type="password"
-          placeholder={errors.password || "Password"}
+          placeholder={errors.password || t("Password")}
           value={errors.password ? "" : formData.password}
           onChange={handleChange}
           $hasError={!!errors.password}
@@ -112,15 +114,15 @@ export default function Register(props) {
         <StyledInput
           name="confirmPassword"
           type="password"
-          placeholder={errors.confirmPassword || "Confirm Password"}
+          placeholder={errors.confirmPassword || t("Confirm Password")}
           value={errors.confirmPassword ? "" : formData.confirmPassword}
           onChange={handleChange}
           $hasError={!!errors.confirmPassword}
         />
-        <VisibleActionButton type="submit" buttonLabel="Register" />
+        <VisibleActionButton type="submit" buttonLabel={t("Register")} />
       </form>
       {errors.general && <div style={{ color: 'red' }}>{errors.general}</div>}
-      <InvisibleActionButton clickHandler={() => navigate("/login")} buttonLabel="Back to Log In" />
+      <InvisibleActionButton clickHandler={() => navigate("/login")} buttonLabel={t("Back to Log In")} />
     </StyledWrapperDiv>
   );
 };
