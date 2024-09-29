@@ -34,11 +34,13 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get("/", (req, res) => {
-  res.send("This is the Palabrotas backend/API.");
-});
-
 configureRoutes(app);
+
+if (process.env.ENV === 'development') {  
+  app.get("/", (req, res) => {
+    res.send("This is the Palabrotas backend/API.");
+  });
+}
 
 if (process.env.ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../client/dist')));
