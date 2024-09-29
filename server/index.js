@@ -20,7 +20,7 @@ const __dirname = dirname(__filename);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(cors({credentials: true, origin: process.env.ORIGIN}));
+// app.use(cors({credentials: true, origin: process.env.ORIGIN}));
 
 if (process.env.ENV !== 'production') {
   app.use(cors({credentials: true, origin: process.env.ORIGIN}));
@@ -45,11 +45,6 @@ app.use((req, res, next) => {
 
 configureRoutes(app);
 
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Something broke!');
-});
-
 if (process.env.ENV === 'development') {  
   app.get("/", (req, res) => {
     res.send("This is the Palabrotas backend/API.");
@@ -57,10 +52,8 @@ if (process.env.ENV === 'development') {
 }
 
 if (process.env.ENV === 'production') {
-  console.log('Serving static files from:', path.join(__dirname, '../client/build'));
   app.use(express.static(path.join(__dirname, '../client/dist')));
   app.get('*', (req, res) => {
-    console.log('Caught all route, serving index.html');
     res.sendFile(path.join(__dirname, '../client/dist', 'index.html'));
   });
 }
