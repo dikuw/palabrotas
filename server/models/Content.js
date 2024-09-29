@@ -19,7 +19,20 @@ const contentSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
+  owner: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'User',
+    required: 'You must supply an owner'
+  },
 }, { timestamps: true });
+
+function autopopulate(next) {
+  this.populate('owner');
+  next();
+};
+
+contentSchema.pre('find', autopopulate);
+contentSchema.pre('findOne', autopopulate);
 
 const Content = mongoose.model('Content', contentSchema);
 

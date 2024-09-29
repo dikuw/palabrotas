@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from "react-i18next";
 import styled from 'styled-components';
 
+import { useAuthStore } from '../../store/auth';
 import { useContentStore } from '../../store/content';
 
 import VisibleActionButton from '../shared/VisibleActionButton';  
@@ -41,10 +42,12 @@ const StyledInput = styled.input`
 export default function AddContent() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { authStatus } = useAuthStore();
   const { addContent } = useContentStore();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
+    owner: authStatus.user ? authStatus.user.id : "66f97a0ef1de0db4e4c254eb",
   });
 
   const [errors, setErrors] = useState({});
