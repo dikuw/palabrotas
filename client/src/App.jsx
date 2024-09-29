@@ -44,7 +44,7 @@ function App() {
       <Header /> 
       <Navigation isLoggedIn={authStatus.isLoggedIn} isAdmin={authStatus.user ? authStatus.user.isAdmin : false} logoutUser={logoutUser} />
       <Routes>
-        <Route exact path="/" 
+        <Route path="/" 
           element={
             <>
               <SearchBar />
