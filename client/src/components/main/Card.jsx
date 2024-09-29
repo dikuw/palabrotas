@@ -24,10 +24,9 @@ const StyledEditIcon = styled(FaEdit)`
   cursor: pointer;
 `;
 
-export default function Card(props) {
+export default function Card({ item, showEditIcon }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { item } = props;
   
   const handleClick = (item) => {
     navigate(`/editContent/${item._id}`);
@@ -35,7 +34,9 @@ export default function Card(props) {
 
   return (
   <StyledGridFigure>
-    <StyledEditIcon onClick={() => handleClick(item)}>{t('Edit')}</StyledEditIcon>
+    {showEditIcon && (
+      <StyledEditIcon onClick={() => handleClick(item)}>{t('Edit')}</StyledEditIcon>
+    )}
     <figcaption>
       <p>{item.title}</p>
       <p>{item.description}</p>
