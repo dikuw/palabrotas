@@ -73,6 +73,7 @@ export default function NavMenu(props) {
   return (
     <Ul $menuOpen={menuOpen}>
       <Li><Link onClick={() => handleClick('/', menuOpen) } >{t("Home")}</Link></Li>
+      <Li><Link onClick={() => handleClick('/addContent', menuOpen) } >{t("Add")}</Link></Li>
       {props.isLoggedIn ? (
           <>
             <Li><Link onClick={() => handleClick('/account', menuOpen) } >{t("Account")}</Link></Li>
@@ -81,7 +82,6 @@ export default function NavMenu(props) {
         ) : (
           <>
             <Li><Link onClick={() => handleClick('/login', menuOpen) } >{t("Log In")}</Link></Li>
-            <Li><Link onClick={() => handleClick('/addContent', menuOpen) } >{t("Add")}</Link></Li>
           </>
         )
       }
