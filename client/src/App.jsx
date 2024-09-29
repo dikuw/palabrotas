@@ -45,11 +45,11 @@ function App() {
       <TopBanner isLoggedIn={authStatus.isLoggedIn} name={authStatus.user ? authStatus.user.name : t("guest")}/>
       <Header /> 
       <Navigation isLoggedIn={authStatus.isLoggedIn} isAdmin={authStatus.user ? authStatus.user.isAdmin : false} logoutUser={logoutUser} />
-      <SearchBar />
       <Routes>
         <Route exact path="/" 
           element={
             <>
+              <SearchBar />
               {isLoading ? <Popup popupText={"Finding latest content..."}/> : null}
               <Grid />
             </>
