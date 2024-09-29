@@ -10,7 +10,6 @@ import path from 'path';
 const app = express();
 const port = process.env.PORT || 5000;
 
-// const __dirname = path.resolve();
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
@@ -19,8 +18,6 @@ const __dirname = dirname(__filename);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// app.use(cors({credentials: true, origin: process.env.ORIGIN}));
 
 if (process.env.ENV !== 'production') {
   app.use(cors({credentials: true, origin: process.env.ORIGIN}));
