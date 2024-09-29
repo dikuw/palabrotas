@@ -1,10 +1,6 @@
 import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
 
 export const useAuthStore = create(
-  // TODO: remove devtools prior to production (start)
-  devtools(
-  // TODO: remove devtools prior to production (end)
     (set, get) => ({
       authStatus: { isLoggedIn: false, user: null, isLoading: true },
       registerUser: async (newUser) => {
@@ -112,8 +108,4 @@ export const useAuthStore = create(
         return data;
       },
     }),
-    // TODO: remove devtools prior to production (start)
-    { name: "auth-store" }
-  )
-  // TODO: remove devtools prior to production (end)
 );
