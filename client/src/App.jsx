@@ -16,6 +16,7 @@ import LocalLogin from './components/login/LocalLogin';
 import Account from './components/account/Account';
 import Grid from './components/main/Grid';
 import AddContent from './components/content/AddContent';
+import EditContent from './components/content/EditContent';
 import Admin from './components/admin/Admin';
 import Footer from './components/Footer';
 
@@ -109,6 +110,17 @@ function App() {
               <Navigation isLoggedIn={authStatus.isLoggedIn} isAdmin={authStatus.user ? authStatus.user.isAdmin : false} logoutUser={logoutUser} />
               <Banner bannerString={t("Add Content")} />
               <AddContent
+                isLoggedIn={authStatus.isLoggedIn} 
+              />
+            </>
+          }
+        />
+        <Route path="/editContent/:id" 
+          element={
+            <>
+              <Navigation isLoggedIn={authStatus.isLoggedIn} isAdmin={authStatus.user ? authStatus.user.isAdmin : false} logoutUser={logoutUser} />
+              <Banner bannerString={t("Edit Content")} />
+              <EditContent
                 isLoggedIn={authStatus.isLoggedIn} 
               />
             </>
