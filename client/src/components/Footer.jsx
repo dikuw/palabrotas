@@ -41,8 +41,8 @@ export default function Footer(props) {
   return (
     <StyledFooter >
       <StyledLegal>
-        <p>&copy; 2024 dikuw</p>
-        <p>{"Created by"}<a rel="noopener noreferrer" href="http://www.dikuw.com/" target="_blank"> dikuw</a></p>
+        <p>&copy; 2024</p>
+        <p>{"Created with"}<a rel="noopener noreferrer" href="http://www.dikuw.com/" target="_blank"> 🖤</a></p>
       </StyledLegal>
     </StyledFooter>
   );
