@@ -6,9 +6,7 @@ import './styles/styles.css';
 import { useAuthStore } from './store/auth';
 import { useContentStore } from './store/content';
 
-import TopBanner from './components/header/TopBanner';
-import Header from './components/header/Header';
-import Banner from './components/header/Banner';
+import { TopBanner, Header, Banner, SearchBar } from './components/header';
 import Navigation from './components/navigation/Navigation';
 import Popup from './components/shared/Popup';
 import Register from './components/login/Register';
@@ -47,12 +45,13 @@ function App() {
       <TopBanner isLoggedIn={authStatus.isLoggedIn} name={authStatus.user ? authStatus.user.name : t("guest")}/>
       <Header /> 
       <Navigation isLoggedIn={authStatus.isLoggedIn} isAdmin={authStatus.user ? authStatus.user.isAdmin : false} logoutUser={logoutUser} />
+      <SearchBar />
       <Routes>
         <Route exact path="/" 
           element={
             <>
               {isLoading ? <Popup popupText={"Finding latest content..."}/> : null}
-              <Grid contents={contents} />
+              <Grid />
             </>
           }
         />

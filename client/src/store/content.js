@@ -1,7 +1,8 @@
 import { create } from 'zustand';
 
-export const useContentStore = create((set) => ({
+export const useContentStore = create((set, get) => ({
   contents: [],
+  searchResults: [],
   setContents: (contents) => set({ contents }),
   addContent: async (newContent) => {
     const res = await fetch("/api/content/addContent", {
@@ -50,4 +51,14 @@ export const useContentStore = create((set) => ({
     const visibleContents = data.data.filter(content => content.show === true);
     set({ contents: visibleContents });
   }, 
+  searchContents: (searchTerm) => {
+    const { contents } = get();
+    const filtered = contents.filter(content => 
+      content.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      content.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    set({ searchResults: filtered });
+  },
+
+  clearSearch: () => set({ searchResults: [] }),
 }));
