@@ -28,7 +28,6 @@ export const addContent = async (req, res) => {
 };
 
 export const updateContent = async (req, res) => {
-
   if (!req.body.id) {
     return res.status(400).json({
       success: false,
@@ -52,4 +51,37 @@ export const updateContent = async (req, res) => {
     id: content._id,
     content: 'Content updated!',
   });
+};
+
+export const deleteContent = async (req, res) => {
+  if (!req.body.id) {
+    return res.status(400).json({
+      success: false,
+      error: 'You must provide an id',
+    });
+  }
+
+  try {
+    const content = await Content.findOneAndUpdate(
+      { _id: req.body.id },
+      { show: false },
+      {
+        new: true,
+        runValidators: true
+      }
+    ).exec();
+
+    if (!content) {
+      return res.status(404).json({ success: false, error: "Content not found" });
+    }
+    
+    return res.status(200).json({
+      success: true,
+      id: content._id,
+      message: 'Content soft deleted!',
+    });
+  } catch (error) {
+    console.error("Error in delete content:", error.message);
+    return res.status(500).json({ success: false, error: error.message });
+  }
 };

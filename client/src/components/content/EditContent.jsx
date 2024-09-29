@@ -4,7 +4,8 @@ import { useTranslation } from "react-i18next";
 import { useContentStore } from '../../store/content';
 import styled from 'styled-components';
 
-import VisibleActionButton from '../shared/VisibleActionButton';  
+import VisibleActionButton from '../shared/VisibleActionButton';
+import InvisibleActionButton from '../shared/InvisibleActionButton';  
 
 const StyledWrapperDiv = styled.div`
   width: 90%;
@@ -41,7 +42,7 @@ export default function EditItemForm(props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams();
-  const { contents, getContents, updateContent } = useContentStore();
+  const { contents, getContents, updateContent, deleteContent } = useContentStore();
   const [formData, setFormData] = useState({
     id: "",
     title: "",
@@ -94,6 +95,18 @@ export default function EditItemForm(props) {
     }
   };
 
+  const handleDelete = async () => {  
+    try {
+      const result = await deleteContent(formData);
+      if (result) {
+        await getContents();
+        navigate('/');
+      }
+    } catch (error) {
+      setErrors({ general: error.message || t('Deleting content failed. Please try again.') });
+    }
+  };
+
   return (
     <StyledWrapperDiv>
       <form onSubmit={formSubmit}>
@@ -115,6 +128,7 @@ export default function EditItemForm(props) {
         />
         <VisibleActionButton type="submit" disabled={!isDirty} buttonLabel={t("Update Content")} />
       </form>
+      <InvisibleActionButton clickHandler={() => handleDelete()} buttonLabel={t("Delete Content")} />
       {errors.general && <div style={{ color: 'red' }}>{errors.general}</div>}
     </StyledWrapperDiv>
   );

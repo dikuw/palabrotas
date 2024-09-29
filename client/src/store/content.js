@@ -27,6 +27,18 @@ export const useContentStore = create((set) => ({
     set((state) => ({ contents: state.contents.map(content => content._id === data._id ? data : content) }));
     return data;
   },
+  deleteContent: async (updatedContent) => {
+    const res = await fetch(`/api/content/deleteContent`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedContent),
+    });
+    const data = await res.json();
+    set((state) => ({ contents: state.contents.filter(content => content._id !== updatedContent.id) }));
+    return data;
+  },
   getContents: async () => {
     const res = await fetch("/api/content/getContents", {
       method: "GET",
@@ -35,6 +47,7 @@ export const useContentStore = create((set) => ({
       },
     })
     const data = await res.json();
-    set({ contents: data.data });
+    const visibleContents = data.data.filter(content => content.show === true);
+    set({ contents: visibleContents });
   }, 
 }));
