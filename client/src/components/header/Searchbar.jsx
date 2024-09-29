@@ -54,6 +54,7 @@ export default function SearchBar() {
   const handleSearch = () => {
     if (searchTerm.trim()) {
       searchContents(searchTerm);
+      setSearchTerm('');
     } else {
       clearSearch();
     }
