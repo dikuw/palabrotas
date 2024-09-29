@@ -77,6 +77,7 @@ export default function NavMenu(props) {
       {props.isLoggedIn ? (
           <>
             <Li><Link onClick={() => handleClick('/account', menuOpen) } >{t("Account")}</Link></Li>
+            {props.isAdmin && <Li><Link onClick={() => handleClick('/admin', menuOpen) } >{t("Administer")}</Link></Li>}
             <Li><Link onClick={() => props.logoutUser() } >{t("Log Out")}</Link></Li>
           </>
         ) : (
@@ -85,7 +86,6 @@ export default function NavMenu(props) {
           </>
         )
       }
-      {props.isAdmin && <Li><Link onClick={() => handleClick('/admin', menuOpen) } >{t("Administer")}</Link></Li>}
     </Ul>
   );
 }
