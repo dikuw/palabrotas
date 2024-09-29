@@ -60,6 +60,9 @@ i18n
           "title" : "Title",
           "description" : "Description",
           "Add Content" : "Add Content",
+          "Edit Content" : "Edit Content",
+          "Edit" : "Edit",
+          "Update Content" : "Update Content",
         }
       },
       es: {
@@ -121,6 +124,9 @@ i18n
           "Add Content" : "Agregar Contenido",
           "title" : "Título",
           "description" : "Descripción",
+          "Edit Content" : "Editar Contenido",
+          "Edit" : "Editar",
+          "Update Content" : "Actualizar Contenido",
         }
       }
     },
