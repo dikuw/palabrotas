@@ -1,4 +1,5 @@
 import React from 'react';
+import { FaEdit } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from "react-i18next";
 import styled from 'styled-components';
@@ -13,27 +14,13 @@ const StyledGridFigure = styled.figure`
   position: relative;
 `;
 
-const StyledEditButton = styled.button`
+const StyledEditIcon = styled(FaEdit)`
   position: absolute;
   top: 10px;
   right: 10px;
-  font-size: 0.6rem;
+  font-size: 1rem;
   text-transform: uppercase;
   font-weight: 400;
-  font-style: normal;
-  background: var(--primary);
-  border-color: var(--primary);
-  border-radius: 2px;
-  border: 0;
-  color: var(--almostWhite);
-  display: inline-block;
-  height: 35px;
-  letter-spacing: 1px;
-  line-height: 35px;
-  margin: 0;
-  padding: 0 15px;
-  transition: background-color 300ms ease-out;
-  width: auto;
   cursor: pointer;
 `;
 
@@ -48,7 +35,7 @@ export default function Card(props) {
 
   return (
   <StyledGridFigure>
-    <StyledEditButton onClick={() => handleClick(item)}>{t('Edit')}</StyledEditButton>
+    <StyledEditIcon onClick={() => handleClick(item)}>{t('Edit')}</StyledEditIcon>
     <figcaption>
       <p>{item.title}</p>
       <p>{item.description}</p>
