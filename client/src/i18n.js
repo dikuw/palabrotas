@@ -65,7 +65,10 @@ i18n
           "Update Content" : "Update Content",
           "Delete Content" : "Delete Content",
           "Deleting content failed. Please try again." : "Deleting content failed. Please try again.",
+          "Finding latest content..." : "Finding latest content...",
           "Search..." : "Search...",
+          "Register a New Account" : "Register a New Account",
+          "Edit" : "Edit",
         }
       },
       es: {
@@ -132,7 +135,10 @@ i18n
           "Update Content" : "Actualizar Contenido",
           "Delete Content" : "Eliminar Contenido",
           "Deleting content failed. Please try again." : "Eliminación de contenido fallida. Inténtalo de nuevo.",
+          "Finding latest content..." : "Buscando contenido reciente...",
           "Search..." : "Buscar...",
+          "Register a New Account" : "Registrar una nueva cuenta",
+          "Edit" : "Editar",
         }
       }
     },

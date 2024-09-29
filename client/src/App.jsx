@@ -50,7 +50,7 @@ function App() {
           element={
             <>
               <SearchBar />
-              {isLoading ? <Popup popupText={"Finding latest content..."}/> : null}
+              {isLoading ? <Popup popupText={t("Finding latest content...")}/> : null}
               <Grid />
             </>
           }
@@ -58,7 +58,7 @@ function App() {
         <Route path="/admin" 
           element={
             <>
-              <Banner bannerString={"Site Administration"} />
+              <Banner bannerString={t("Site Administration")} />
               <Admin />
             </>
           }
@@ -66,7 +66,7 @@ function App() {
         <Route path="/register" 
           element={
             <>
-              <Banner bannerString={"Register a New Account"} />
+              <Banner bannerString={t("Register a New Account")} />
               <Register 
                 isLoggedIn={authStatus.isLoggedIn} 
               />
@@ -76,7 +76,7 @@ function App() {
         <Route path="/login" 
           element={
             <>
-              <Banner bannerString={"Log In"} />
+              <Banner bannerString={t("Log In")} />
               <LocalLogin
                 isLoggedIn={authStatus.isLoggedIn} 
                 // isPasswordIncorrect={isPasswordIncorrect}
