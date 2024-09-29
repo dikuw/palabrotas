@@ -46,11 +46,11 @@ function App() {
     <div className="app-container">
       <TopBanner isLoggedIn={authStatus.isLoggedIn} name={authStatus.user ? authStatus.user.name : t("guest")}/>
       <Header /> 
+      <Navigation isLoggedIn={authStatus.isLoggedIn} isAdmin={authStatus.user ? authStatus.user.isAdmin : false} logoutUser={logoutUser} />
       <Routes>
         <Route exact path="/" 
           element={
             <>
-              <Navigation isLoggedIn={authStatus.isLoggedIn} isAdmin={authStatus.user ? authStatus.user.isAdmin : false} logoutUser={logoutUser} />
               {isLoading ? <Popup popupText={"Finding latest content..."}/> : null}
               <Grid contents={contents} />
             </>
@@ -60,7 +60,6 @@ function App() {
           element={
             <>
               <Banner bannerString={"Site Administration"} />
-              <Navigation isLoggedIn={authStatus.isLoggedIn} isAdmin={authStatus.user ? authStatus.user.isAdmin : false} logoutUser={logoutUser} />
               <Admin />
             </>
           }
@@ -68,7 +67,6 @@ function App() {
         <Route path="/register" 
           element={
             <>
-              <Navigation isLoggedIn={authStatus.isLoggedIn} isAdmin={authStatus.user ? authStatus.user.isAdmin : false} logoutUser={logoutUser} />
               <Banner bannerString={"Register a New Account"} />
               <Register 
                 isLoggedIn={authStatus.isLoggedIn} 
@@ -79,7 +77,6 @@ function App() {
         <Route path="/login" 
           element={
             <>
-              <Navigation isLoggedIn={authStatus.isLoggedIn} isAdmin={authStatus.user ? authStatus.user.isAdmin : false} logoutUser={logoutUser} />
               <Banner bannerString={"Log In"} />
               <LocalLogin
                 isLoggedIn={authStatus.isLoggedIn} 
@@ -94,12 +91,9 @@ function App() {
         <Route path="/account" 
           element={
             <>
-              <Navigation isLoggedIn={authStatus.isLoggedIn} isAdmin={authStatus.user ? authStatus.user.isAdmin : false} logoutUser={logoutUser} />
               <Banner bannerString={t("Your Account")} />
               <Account 
                 isLoggedIn={authStatus.isLoggedIn} 
-                // user={user}
-                // userOrders={userOrders}
               />
             </>
           }
@@ -107,7 +101,6 @@ function App() {
         <Route path="/addContent" 
           element={
             <>
-              <Navigation isLoggedIn={authStatus.isLoggedIn} isAdmin={authStatus.user ? authStatus.user.isAdmin : false} logoutUser={logoutUser} />
               <Banner bannerString={t("Add Content")} />
               <AddContent
                 isLoggedIn={authStatus.isLoggedIn} 
@@ -118,7 +111,6 @@ function App() {
         <Route path="/editContent/:id" 
           element={
             <>
-              <Navigation isLoggedIn={authStatus.isLoggedIn} isAdmin={authStatus.user ? authStatus.user.isAdmin : false} logoutUser={logoutUser} />
               <Banner bannerString={t("Edit Content")} />
               <EditContent
                 isLoggedIn={authStatus.isLoggedIn} 
