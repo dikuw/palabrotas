@@ -10,7 +10,7 @@ import path from 'path';
 const app = express();
 const port = process.env.PORT || 5000;
 
-const __dirname = path.resolve();
+// const __dirname = path.resolve();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -43,11 +43,18 @@ if (process.env.ENV === 'development') {
 }
 
 if (process.env.ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../client/dist')));
+  app.use(express.static(path.join(__dirname, 'client/dist')));
   app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/dist', 'index.html'));
+    res.sendFile(path.join(__dirname, 'client/dist', 'index.html'));
   });
 }
+
+// if (process.env.ENV === 'production') {
+//   app.use(express.static(path.join(__dirname, '../client/dist')));
+//   app.get('*', (req, res) => {
+//     res.sendFile(path.join(__dirname, '../client/dist', 'index.html'));
+//   });
+// }
 
 app.listen(port, () => {
   connectDB();
