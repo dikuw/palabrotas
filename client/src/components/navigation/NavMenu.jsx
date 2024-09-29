@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { useTranslation } from "react-i18next";
 
 import { useAppStore } from '../../store/app';
+import { useContentStore } from '../../store/content';
 
 const Ul = styled.ul`
   list-style: none;
@@ -59,9 +60,13 @@ export default function NavMenu(props) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { menuOpen, setMenuOpen } = useAppStore();
+  const { clearSearch } = useContentStore();
 
   const handleClick = (link, menuOpen) => {
     setMenuOpen(!menuOpen);
+    if (link === '/') {
+      clearSearch();
+    }
     navigate(link);
   };
  
