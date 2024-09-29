@@ -38,8 +38,6 @@ function App() {
     initialize();
   }, [getContents]);
 
-  console.log('authStatus', authStatus);
-
   return (
     <div className="app-container">
       <TopBanner isLoggedIn={authStatus.isLoggedIn} name={authStatus.user ? authStatus.user.name : t("guest")}/>
