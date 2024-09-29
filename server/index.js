@@ -5,9 +5,12 @@ import cors from 'cors';
 import { connectDB } from './database/index.js';
 import configureRoutes from './routes/index.js';
 import passport from './handlers/passport.js';
+import path from 'path';
 
 const app = express();
 const port = process.env.PORT || 5000;
+
+const __dirname = path.resolve();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -36,6 +39,13 @@ app.get("/", (req, res) => {
 });
 
 configureRoutes(app);
+
+if (process.env.ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../client/dist')));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/dist', 'index.html'));
+  });
+}
 
 app.listen(port, () => {
   connectDB();
