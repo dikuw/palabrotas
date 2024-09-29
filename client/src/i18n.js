@@ -63,6 +63,8 @@ i18n
           "Edit Content" : "Edit Content",
           "Edit" : "Edit",
           "Update Content" : "Update Content",
+          "Delete Content" : "Delete Content",
+          "Deleting content failed. Please try again." : "Deleting content failed. Please try again.",
         }
       },
       es: {
@@ -127,6 +129,8 @@ i18n
           "Edit Content" : "Editar Contenido",
           "Edit" : "Editar",
           "Update Content" : "Actualizar Contenido",
+          "Delete Content" : "Eliminar Contenido",
+          "Deleting content failed. Please try again." : "Eliminación de contenido fallida. Inténtalo de nuevo.",
         }
       }
     },
