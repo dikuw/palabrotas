@@ -1,1 +1,8 @@
-Built with React.js frontend with Vite, node.js with Express backend, MongoDB database, and passport.js for authentication.
+Urban Dictionary for Spanish Slang
+
+Frontend: React.js with Vite
+Backend: Node.js with Express
+State Management: Zustand
+Database: MongoDB
+Authentication: Passport.js with Local login
+
