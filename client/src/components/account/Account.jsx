@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { VisibleActionButton } from '../shared/index';
+import { useContentStore } from '../../store/content';
 import { useAuthStore } from '../../store/auth';
 import { NoPermissionDiv } from '../shared/index';
 import { useTranslation } from 'react-i18next';
+
+import Banner from '../header/Banner';
+import AccountGrid from './AccountGrid';
 
 const StyledWrapperDiv = styled.div`
   width: 90%;
@@ -56,7 +60,12 @@ const StyledInput = styled.input`
 
 export default function Account() {
   const { t } = useTranslation();
+  const { contents } = useContentStore();
   const { authStatus, updateUser } = useAuthStore();
+
+  const userContents = authStatus.user && authStatus.user.id
+  ? contents.filter(content => content.owner._id === authStatus.user.id)
+  : [];
 
   const [formData, setFormData] = useState({
     name: "",
@@ -101,7 +110,7 @@ export default function Account() {
     }
   };
   
-  if (!authStatus.isLoggedIn) {
+  if (!authStatus.isLoggedIn || !authStatus.user) {
     return <NoPermissionDiv divLabel={t("Please log in to view this page")}></NoPermissionDiv>
   }
   return (
@@ -131,8 +140,8 @@ export default function Account() {
         </StyledFormRowDiv>
         <VisibleActionButton type="submit" buttonLabel={t("Update")} />
       </StyledForm>
-      <div>{t("Your Content")}</div>
-      {/* <Orders userOrders={props.userOrders} /> */}
+      <Banner bannerString={t("Your Content")} />
+      <AccountGrid contents={userContents} />
     </StyledWrapperDiv>
   )
 };
