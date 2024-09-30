@@ -77,6 +77,7 @@ export default function NavMenu(props) {
       {props.isLoggedIn ? (
           <>
             <Li><Link onClick={() => handleClick('/account', menuOpen) } >{t("Account")}</Link></Li>
+            <Li><Link onClick={() => handleClick('/flashcards', menuOpen) } >{t("Flashcards")}</Link></Li>
             {props.isAdmin && <Li><Link onClick={() => handleClick('/admin', menuOpen) } >{t("Administer")}</Link></Li>}
             <Li><Link onClick={() => props.logoutUser() } >{t("Log Out")}</Link></Li>
           </>

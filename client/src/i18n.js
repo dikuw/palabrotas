@@ -95,6 +95,8 @@ i18n
           "Second hint" : "Second hint",
           "Third hint" : "Third hint",
           "Example sentence" : "Example sentence",
+          "Your Flashcards" : "Your Flashcards",
+          "Flashcards" : "Flashcards",
         }
       },
       es: {
@@ -192,6 +194,8 @@ i18n
           "Second hint" : "Segunda pista",
           "Third hint" : "Tercera pista",
           "Example sentence" : "Ejemplo de frase",
+          "Your Flashcards" : "Tus Tarjetas de Flashcard",
+          "Flashcards" : "Tarjetas de Flashcard",
         }
       }
     },
