@@ -1,6 +1,7 @@
 import React from 'react';
-import { FaEdit } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { FaEdit } from 'react-icons/fa';
+import ReactCountryFlag from "react-country-flag";
 import { useTranslation } from "react-i18next";
 import styled from 'styled-components';
 
@@ -24,6 +25,13 @@ const StyledEditIcon = styled(FaEdit)`
   cursor: pointer;
 `;
 
+const StyledFlagIcon = styled(ReactCountryFlag)`
+  position: absolute;
+  top: 10px;
+  right: 40px;
+  font-size: 1rem !important;
+`;
+
 export default function Card({ item, showEditIcon }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -34,6 +42,9 @@ export default function Card({ item, showEditIcon }) {
 
   return (
   <StyledGridFigure>
+    {item.country && (
+      <StyledFlagIcon countryCode={item.country} svg />
+    )}
     {showEditIcon && (
       <StyledEditIcon onClick={() => handleClick(item)}>{t('Edit')}</StyledEditIcon>
     )}
