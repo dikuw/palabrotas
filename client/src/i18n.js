@@ -97,6 +97,9 @@ i18n
           "Example sentence" : "Example sentence",
           "Your Flashcards" : "Your Flashcards",
           "Flashcards" : "Flashcards",
+          "Added to flashcards successfully!" : "Added to flashcards successfully!",
+          "Failed to add to flashcards. Please try again." : "Failed to add to flashcards. Please try again.",
+          "Add to Flashcards" : "Add to Flashcards",
         }
       },
       es: {
@@ -196,6 +199,9 @@ i18n
           "Example sentence" : "Ejemplo de frase",
           "Your Flashcards" : "Tus Tarjetas de Flashcard",
           "Flashcards" : "Tarjetas de Flashcard",
+          "Added to flashcards successfully!" : "¡Agregado a tarjetas de flashcard con éxito!",
+          "Failed to add to flashcards. Please try again." : "¡Fallo al agregar a tarjetas de flashcard. Inténtalo de nuevo.",
+          "Add to Flashcards" : "Agregar a Flashcards",
         }
       }
     },
