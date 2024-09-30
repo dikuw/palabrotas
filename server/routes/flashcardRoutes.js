@@ -3,9 +3,7 @@ import { getFlashcards, addFlashcard }  from '../controllers/flashcardController
 
 const router = express.Router();
 
-router.get("/getFlashcards", getFlashcards);
-// TODO
-//router.get('/getContentById/:id', contentController.getContentById);
+router.get("/getFlashcards/:userId", getFlashcards);
 router.post("/addFlashcard", addFlashcard);
 // TODO 
 // router.put("/updateFlashcard", updateFlashcard);
