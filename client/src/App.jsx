@@ -12,6 +12,7 @@ import Popup from './components/shared/Popup';
 import Register from './components/login/Register';
 import LocalLogin from './components/login/LocalLogin';
 import Account from './components/account/Account';
+import Flashcards from './components/flashcards/Flashcards';
 import Grid from './components/main/Grid';
 import AddContent from './components/content/AddContent';
 import EditContent from './components/content/EditContent';
@@ -90,6 +91,16 @@ function App() {
             <>
               <Banner bannerString={t("Your Account")} />
               <Account 
+                isLoggedIn={authStatus.isLoggedIn} 
+              />
+            </>
+          }
+        />
+        <Route path="/flashcards" 
+          element={
+            <>
+              <Banner bannerString={t("Flashcards")} />
+              <Flashcards 
                 isLoggedIn={authStatus.isLoggedIn} 
               />
             </>
