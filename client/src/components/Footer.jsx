@@ -5,7 +5,7 @@ const StyledFooter = styled.footer`
   width: 100%;
   display: flex;
   flex-flow: row wrap;
-  padding: 30px 30px 0px 30px;
+  padding: 10px 10px 0px 10px;
   color: var(--almostWhite);
   background-color: var(--primary);
   border-top: 1px solid var(--primary);
