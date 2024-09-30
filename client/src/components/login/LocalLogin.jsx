@@ -122,11 +122,11 @@ export default function LocalLogin(props) {
         />
         <VisibleActionButton type="submit" buttonLabel="Log in" />
       </form>
-      <div>{"Forgot your password"}?</div>
+      {/* <div>{"Forgot your password"}?</div>
       <form onSubmit={forgotClick}>
         <input name="forgotEmail" type="text" placeholder={"Email"}  />
         <VisibleActionButton type="submit" buttonLabel={"Send a Reset"} />
-      </form>
+      </form> */}
       <InvisibleActionButton clickHandler={() => handleClick('/register')} buttonLabel={"No account? Register here!"} />
     </StyledWrapperDiv>
   );
