@@ -22,9 +22,8 @@ import Footer from './components/Footer';
 function App() {
   const { t } = useTranslation();
 
-  const { getContents, contents } = useContentStore();
+  const { getContents } = useContentStore();
   const { authStatus, loginUser, logoutUser, getCurrentUser } = useAuthStore();
-
   const [isLoading, setIsLoading] = useState(false);
   const [isPasswordIncorrect, setIsPasswordIncorrect] = useState(false);
 
