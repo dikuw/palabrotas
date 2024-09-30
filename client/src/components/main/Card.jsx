@@ -1,9 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaEdit } from 'react-icons/fa';
+import { FaEdit, FaPlus } from 'react-icons/fa';
 import ReactCountryFlag from "react-country-flag";
 import { useTranslation } from "react-i18next";
 import styled from 'styled-components';
+
+import { useAuthStore } from '../../store/auth';
+import { useFlashcardStore } from '../../store/flashcard';
 
 const StyledGridFigure = styled.figure`
   width: 100%;
@@ -17,7 +20,7 @@ const StyledGridFigure = styled.figure`
 
 const StyledEditIcon = styled(FaEdit)`
   position: absolute;
-  top: 10px;
+  top: 40px; // Adjusted to be below the flag
   right: 10px;
   font-size: 1rem;
   text-transform: uppercase;
@@ -28,16 +31,41 @@ const StyledEditIcon = styled(FaEdit)`
 const StyledFlagIcon = styled(ReactCountryFlag)`
   position: absolute;
   top: 10px;
-  right: 40px;
+  right: 10px;
   font-size: 1rem !important;
+`;
+
+const StyledAddToFlashcardIcon = styled(FaPlus)`
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  color: var(--primary);
+  &:hover {
+    color: var(--secondary);
+  }
 `;
 
 export default function Card({ item, showEditIcon }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { addFlashcard } = useFlashcardStore(); 
+  const { authStatus } = useAuthStore(); 
   
   const handleClick = (item) => {
     navigate(`/editContent/${item._id}`);
+  };
+
+  const handleAddToFlashcard = async (e) => {
+    e.stopPropagation();
+    try {
+      await addFlashcard({ userId: authStatus.user._id, contentId: item._id });
+      alert(t('Added to flashcards successfully!'));
+    } catch (error) {
+      console.error('Error adding to flashcards:', error);
+      alert(t('Failed to add to flashcards. Please try again.'));
+    }
   };
 
   return (
@@ -46,12 +74,16 @@ export default function Card({ item, showEditIcon }) {
       <StyledFlagIcon countryCode={item.country} svg />
     )}
     {showEditIcon && (
-      <StyledEditIcon onClick={() => handleClick(item)}>{t('Edit')}</StyledEditIcon>
+      <StyledEditIcon onClick={() => handleClick(item)} title={t('Edit')} />
     )}
     <figcaption>
       <p>{item.title}</p>
       <p>{item.description}</p>
     </figcaption>
+    <StyledAddToFlashcardIcon 
+      onClick={handleAddToFlashcard} 
+      title={t('Add to Flashcards')}
+    />
   </StyledGridFigure>
   );
 };
