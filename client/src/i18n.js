@@ -100,6 +100,10 @@ i18n
           "Added to flashcards successfully!" : "Added to flashcards successfully!",
           "Failed to add to flashcards. Please try again." : "Failed to add to flashcards. Please try again.",
           "Add to Flashcards" : "Add to Flashcards",
+          "Next" : "Next",
+          "of" : "of",
+          "Flashcard" : "Flashcard",
+          "You don't have any flashcards yet." : "You don't have any flashcards yet.",
         }
       },
       es: {
@@ -201,7 +205,11 @@ i18n
           "Flashcards" : "Tarjetas de Flashcard",
           "Added to flashcards successfully!" : "¡Agregado a tarjetas de flashcard con éxito!",
           "Failed to add to flashcards. Please try again." : "¡Fallo al agregar a tarjetas de flashcard. Inténtalo de nuevo.",
-          "Add to Flashcards" : "Agregar a Flashcards",
+          "Add to Flashcards" : "Agregar a Flashcards", 
+          "Next" : "Siguiente",
+          "of" : "de",
+          "Flashcard" : "Tarjeta de Flashcard",
+          "You don't have any flashcards yet." : "No tienes ninguna tarjeta de flashcard todavía.",
         }
       }
     },
