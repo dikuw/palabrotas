@@ -47,7 +47,7 @@ export default function AddContent() {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    owner: authStatus.user ? authStatus.user.id : "66f97a0ef1de0db4e4c254eb",
+    owner: authStatus.user ? authStatus.user._id : "66f97a0ef1de0db4e4c254eb",
   });
 
   const [errors, setErrors] = useState({});
