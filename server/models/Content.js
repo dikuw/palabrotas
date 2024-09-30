@@ -11,6 +11,26 @@ const contentSchema = new mongoose.Schema({
     trim: true,
     required: 'Please enter content description'
   },
+  hint1: {
+    type: String,
+    trim: true,
+    required: false
+  },
+  hint2: {
+    type: String,
+    trim: true,
+    required: false
+  },
+  hint3: {
+    type: String,
+    trim: true,
+    required: false
+  },
+  exampleSentence: {
+    type: String,
+    trim: true,
+    required: false
+  },
   version: { 
     type: Number, 
     default: 0 
