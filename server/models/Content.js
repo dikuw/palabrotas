@@ -24,6 +24,12 @@ const contentSchema = new mongoose.Schema({
     ref: 'User',
     required: 'You must supply an owner'
   },
+  country: {
+    type: String,
+    enum: ['Colombia', 'Mexico', 'Chile'],
+    required: 'You must supply a country',
+    default: 'Colombia'
+  },
 }, { timestamps: true });
 
 function autopopulate(next) {
