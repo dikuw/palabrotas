@@ -13,17 +13,17 @@ const contentSchema = new mongoose.Schema({
   },
   hint1: {
     type: String,
-    trim: true,
+    trim: false,
     required: false
   },
   hint2: {
     type: String,
-    trim: true,
+    trim: false,
     required: false
   },
   hint3: {
     type: String,
-    trim: true,
+    trim: false,
     required: false
   },
   exampleSentence: {
