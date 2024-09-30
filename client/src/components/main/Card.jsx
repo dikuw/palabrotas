@@ -80,10 +80,12 @@ export default function Card({ item, showEditIcon }) {
       <p>{item.title}</p>
       <p>{item.description}</p>
     </figcaption>
-    <StyledAddToFlashcardIcon 
-      onClick={handleAddToFlashcard} 
-      title={t('Add to Flashcards')}
-    />
+    {authStatus.isLoggedIn && (
+      <StyledAddToFlashcardIcon 
+        onClick={handleAddToFlashcard} 
+        title={t('Add to Flashcards')}
+      />
+    )}
   </StyledGridFigure>
   );
 };
