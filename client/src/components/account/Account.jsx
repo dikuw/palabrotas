@@ -63,8 +63,8 @@ export default function Account() {
   const { contents } = useContentStore();
   const { authStatus, updateUser } = useAuthStore();
 
-  const userContents = authStatus.user && authStatus.user.id
-  ? contents.filter(content => content.owner._id === authStatus.user.id)
+  const userContents = authStatus.user && authStatus.user._id
+  ? contents.filter(content => content.owner._id === authStatus.user._id)
   : [];
 
   const [formData, setFormData] = useState({
@@ -115,7 +115,7 @@ export default function Account() {
   }
   return (
     <StyledWrapperDiv>
-      <StyledForm onSubmit={updateClick}>
+      {/* <StyledForm onSubmit={updateClick}>
       <StyledFormRowDiv>
           <StyledLabel htmlFor="name">{t("Name")}: </StyledLabel>
           <StyledInput
@@ -139,7 +139,7 @@ export default function Account() {
           />
         </StyledFormRowDiv>
         <VisibleActionButton type="submit" buttonLabel={t("Update")} />
-      </StyledForm>
+      </StyledForm> */}
       <Banner bannerString={t("Your Content")} />
       <AccountGrid contents={userContents} />
     </StyledWrapperDiv>
