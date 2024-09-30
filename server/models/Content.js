@@ -46,9 +46,9 @@ const contentSchema = new mongoose.Schema({
   },
   country: {
     type: String,
-    enum: ['Colombia', 'Mexico', 'Chile'],
+    trim: true,
     required: 'You must supply a country',
-    default: 'Colombia'
+    default: 'CO'
   },
 }, { timestamps: true });
 
