@@ -1,5 +1,6 @@
 import React, { useState }  from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { InvisibleActionButton, VisibleActionButton } from '../shared/index.js';
 import { useAuthStore } from '../../store/auth';
@@ -46,9 +47,11 @@ const StyledInput = styled.input`
 `;
 
 export default function LocalLogin(props) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
-  const { loginUser } = useAuthStore();
 
+  const { loginUser } = useAuthStore();
+  
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -66,8 +69,8 @@ export default function LocalLogin(props) {
 
   const validateForm = () => {
     let newErrors = {};
-    if (!formData.email) newErrors.email = "Please provide your email.";
-    if (!formData.password) newErrors.password = "Password cannot be blank.";
+    if (!formData.email) newErrors.email = t("Please provide your email.");
+    if (!formData.password) newErrors.password = t("Password cannot be blank.");
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -81,7 +84,7 @@ export default function LocalLogin(props) {
           navigate("/");
         }
       } catch (error) {
-        setErrors({ general: error.message || 'Login failed. Please try again.' });
+        setErrors({ general: error.message || t('Login failed. Please try again.') });
       }
     }
   };
@@ -102,12 +105,12 @@ export default function LocalLogin(props) {
 
   return (
     <StyledWrapperDiv>
-      <div>{"Log in"}</div>
+      <div>{t("Log in")}</div>
       <form onSubmit={loginClick}>
         <StyledInput
           name="email"
           type="email"
-          placeholder={errors.email || "Email"}
+          placeholder={errors.email || t("Email")}
           value={errors.email ? "" : formData.email}
           onChange={handleChange}
           $hasError={!!errors.email}
@@ -115,19 +118,19 @@ export default function LocalLogin(props) {
         <StyledInput
           name="password"
           type="password"
-          placeholder={errors.password || "Password"}
+          placeholder={errors.password || t("Password")}
           value={errors.password ? "" : formData.password}
           onChange={handleChange}
           $hasError={!!errors.password}
         />
-        <VisibleActionButton type="submit" buttonLabel="Log in" />
+        <VisibleActionButton type="submit" buttonLabel={t("Log in")} />
       </form>
       {/* <div>{"Forgot your password"}?</div>
       <form onSubmit={forgotClick}>
         <input name="forgotEmail" type="text" placeholder={"Email"}  />
         <VisibleActionButton type="submit" buttonLabel={"Send a Reset"} />
       </form> */}
-      <InvisibleActionButton clickHandler={() => handleClick('/register')} buttonLabel={"No account? Register here!"} />
+      <InvisibleActionButton clickHandler={() => handleClick('/register')} buttonLabel={t("No account? Register here!") } />
     </StyledWrapperDiv>
   );
 };
