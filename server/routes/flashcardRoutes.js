@@ -6,7 +6,6 @@ const router = express.Router();
 router.get("/getFlashcards/:userId", getFlashcards);
 router.post("/addFlashcard", addFlashcard);
 // TODO 
-// router.put("/updateFlashcard", updateFlashcard);
 // router.put("/deleteFlashcard", deleteFlashcard);
 
 export default router;
