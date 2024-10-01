@@ -110,6 +110,7 @@ i18n
           "Email" : "Email",
           "Password" : "Password",
           "Log in" : "Log in",
+          "Please select a country" : "Please select a country",
         }
       },
       es: {
@@ -221,6 +222,7 @@ i18n
           "Login failed. Please try again." : "¡Inicio de sesión fallado. Inténtalo de nuevo.",
           "Email" : "Correo electrónico",
           "Password" : "Contraseña",
+          "Please select a country" : "Por favor selecciona un país",
         }
       }
     },
