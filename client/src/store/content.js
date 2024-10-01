@@ -51,6 +51,16 @@ export const useContentStore = create((set, get) => ({
     const visibleContents = data.data.filter(content => content.show === true);
     set({ contents: visibleContents });
   }, 
+  getContentsByUserId: async (userId) => {
+    const res = await fetch(`/api/content/getContents/${userId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    const data = await res.json();
+    return data.data;
+  },
   searchContents: (searchTerm) => {
     const { contents } = get();
     const filtered = contents.filter(content => 
