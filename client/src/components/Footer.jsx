@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
 const StyledFooter = styled.footer`
@@ -37,12 +38,12 @@ const StyledLegal = styled.div`
 `;
 
 export default function Footer(props) {
-
+  const { t } = useTranslation();
   return (
     <StyledFooter >
       <StyledLegal>
         <p>&copy; 2024</p>
-        <p>{"Created with"}<a rel="noopener noreferrer" href="http://www.dikuw.com/" target="_blank"> 🖤</a></p>
+        <p>{t("Created with")}<a rel="noopener noreferrer" href="http://www.dikuw.com/" target="_blank"> 🖤</a></p>
       </StyledLegal>
     </StyledFooter>
   );
