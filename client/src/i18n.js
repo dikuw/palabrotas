@@ -104,6 +104,7 @@ i18n
           "of" : "of",
           "Flashcard" : "Flashcard",
           "You don't have any flashcards yet." : "You don't have any flashcards yet.",
+          "Created with" : "Created with",
         }
       },
       es: {
@@ -210,6 +211,7 @@ i18n
           "of" : "de",
           "Flashcard" : "Tarjeta de Flashcard",
           "You don't have any flashcards yet." : "No tienes ninguna tarjeta de flashcard todavía.",
+          "Created with" : "Creado con",
         }
       }
     },
