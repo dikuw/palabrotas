@@ -28,7 +28,7 @@ export const authStatus = (req, res) => {
     res.json({
       authenticated: true,
       user: {
-        id: req.user._id,
+        _id: req.user._id,
         name: req.user.name,
         email: req.user.email,
         isAdmin: req.user.isAdmin || false
@@ -74,7 +74,7 @@ export const login = async (req, res) => {
   res.json({
     authenticated: true,
     user: {
-      id: req.user._id,
+      _id: req.user._id,
       name: req.user.name,
       email: req.user.email,
       isAdmin: req.user.isAdmin || false
