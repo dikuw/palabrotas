@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { InvisibleActionButton, VisibleActionButton } from '../shared/index.js';
 import { useAuthStore } from '../../store/auth';
-
+import { useNotificationStore } from '../../store/notification';
 const StyledWrapperDiv = styled.div`
   width: 90%;
   max-width: 1000px;
@@ -49,9 +49,8 @@ const StyledInput = styled.input`
 export default function LocalLogin(props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-
   const { loginUser } = useAuthStore();
-  
+  const addNotification = useNotificationStore(state => state.addNotification);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -82,9 +81,11 @@ export default function LocalLogin(props) {
         const result = await loginUser(formData);
         if (result.user.email) {
           navigate("/");
+          addNotification(t('Logged in successfully!'), 'success');
         }
       } catch (error) {
         setErrors({ general: error.message || t('Login failed. Please try again.') });
+        addNotification(t('Login failed. Please try again.'), 'error');
       }
     }
   };

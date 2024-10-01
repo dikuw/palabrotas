@@ -7,6 +7,7 @@ import styled from 'styled-components';
 
 import { useAuthStore } from '../../store/auth';
 import { useFlashcardStore } from '../../store/flashcard';
+import { useNotificationStore } from '../../store/notification';
 
 const StyledGridFigure = styled.figure`
   width: 100%;
@@ -52,7 +53,7 @@ export default function Card({ item, showEditIcon }) {
   const { t } = useTranslation();
   const { addFlashcard } = useFlashcardStore(); 
   const { authStatus } = useAuthStore(); 
-  
+  const addNotification = useNotificationStore(state => state.addNotification);
   const handleClick = (item) => {
     navigate(`/editContent/${item._id}`);
   };
@@ -61,10 +62,10 @@ export default function Card({ item, showEditIcon }) {
     e.stopPropagation();
     try {
       await addFlashcard({ userId: authStatus.user._id, contentId: item._id });
-      alert(t('Added to flashcards successfully!'));
+      addNotification(t('Added to flashcards successfully!'), 'success');
     } catch (error) {
       console.error('Error adding to flashcards:', error);
-      alert(t('Failed to add to flashcards. Please try again.'));
+      addNotification(t('Failed to add to flashcards. Please try again.'), 'error');
     }
   };
 

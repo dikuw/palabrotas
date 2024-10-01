@@ -5,6 +5,7 @@ import styled from 'styled-components';
 
 import { useAuthStore } from '../../store/auth';
 import { useContentStore } from '../../store/content';
+import { useNotificationStore } from '../../store/notification';
 
 import { countries } from '../shared/countries';
 
@@ -75,6 +76,7 @@ export default function AddContent() {
   const { t } = useTranslation();
   const { authStatus } = useAuthStore();
   const { addContent } = useContentStore();
+  const addNotification = useNotificationStore(state => state.addNotification);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -110,6 +112,7 @@ export default function AddContent() {
         const result = await addContent(formData);
         if (result) {
           navigate("/");
+          addNotification('Added successfully', 'success');
         }
       } catch (error) {
         setErrors({ general: error.message || t('Adding content failed. Please try again.') });

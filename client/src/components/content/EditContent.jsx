@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import styled from 'styled-components';
+
 import { useTranslation } from "react-i18next";
 import { useContentStore } from '../../store/content';
-import styled from 'styled-components';
+import { useNotificationStore } from '../../store/notification';
 
 import VisibleActionButton from '../shared/VisibleActionButton';
 import InvisibleActionButton from '../shared/InvisibleActionButton';  
@@ -43,6 +45,7 @@ export default function EditItemForm(props) {
   const navigate = useNavigate();
   const { id } = useParams();
   const { contents, getContents, updateContent, deleteContent } = useContentStore();
+  const addNotification = useNotificationStore(state => state.addNotification);
   const [formData, setFormData] = useState({
     id: "",
     title: "",
@@ -87,6 +90,7 @@ export default function EditItemForm(props) {
           await getContents();
           setIsDirty(false);
           navigate('/');
+          addNotification('Updated successfully', 'success');
         }
       } catch (error) {
         setErrors({ general: error.message || t('Updating content failed. Please try again.') });

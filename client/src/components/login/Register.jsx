@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import styled from 'styled-components';
 import { InvisibleActionButton, VisibleActionButton } from '../shared/index';
 import { useAuthStore } from '../../store/auth';
-
+import { useNotificationStore } from '../../store/notification';
 const StyledWrapperDiv = styled.div`
   width: 90%;
   max-width: 1000px;
@@ -40,7 +40,7 @@ export default function Register() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { registerUser } = useAuthStore();
-  
+  const addNotification = useNotificationStore(state => state.addNotification);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -77,9 +77,11 @@ export default function Register() {
         const result = await registerUser(formData);
         if (result.user.email) {
           navigate("/");
+          addNotification(t('Registration successful!'), 'success');
         }
       } catch (error) {
         setErrors({ general: error.message || t('Registration failed. Please try again.') });
+        addNotification(t('Registration failed. Please try again.'), 'error');
       }
     }
   };

@@ -17,6 +17,7 @@ import Grid from './components/main/Grid';
 import AddContent from './components/content/AddContent';
 import EditContent from './components/content/EditContent';
 import Admin from './components/admin/Admin';
+import NotificationContainer from './components/notifications/NotificationContainer';
 import Footer from './components/Footer';
 
 function App() {
@@ -126,6 +127,7 @@ function App() {
           }
         />
       </Routes>
+      <NotificationContainer />
       <Footer />
     </div>
   );
