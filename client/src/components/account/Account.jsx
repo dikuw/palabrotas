@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { VisibleActionButton } from '../shared/index';
 import { useContentStore } from '../../store/content';
@@ -60,12 +60,20 @@ const StyledInput = styled.input`
 
 export default function Account() {
   const { t } = useTranslation();
-  const { contents } = useContentStore();
+  const { getContentsByUserId } = useContentStore();
   const { authStatus, updateUser } = useAuthStore();
+  const [userContents, setUserContents] = useState([]);
 
-  const userContents = authStatus.user && authStatus.user._id
-  ? contents.filter(content => content.owner._id === authStatus.user._id)
-  : [];
+  useEffect(() => {
+    async function fetchUserContents() {
+      if (authStatus.isLoggedIn && authStatus.user) {
+        const contents = await getContentsByUserId(authStatus.user._id);
+        setUserContents(contents);
+      }
+    }
+  
+    fetchUserContents();
+  }, [authStatus.isLoggedIn, authStatus.user, getContentsByUserId]);
 
   const [formData, setFormData] = useState({
     name: "",
