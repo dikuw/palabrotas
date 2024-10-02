@@ -50,12 +50,12 @@ export const useAuthStore = create(
       },
       logoutUser: async () => {
         try {
-          const response = await fetch('/api/auth/logout', {
+          const data = await fetch('/api/auth/logout', {
             method: 'POST',
             credentials: 'include',
           });
-          if (!response.ok) throw new Error('Failed to logout');
           set({ authStatus: { isLoggedIn: false, user: null, isLoading: false } });
+          return data;
         } catch (error) {
           console.error('Error during logout:', error);
         }

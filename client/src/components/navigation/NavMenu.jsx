@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useTranslation } from "react-i18next";
 
+import { useAuthStore } from '../../store/auth';
 import { useAppStore } from '../../store/app';
 import { useContentStore } from '../../store/content';
+import { useNotificationStore } from '../../store/notification';
 
 const Ul = styled.ul`
   list-style: none;
@@ -59,8 +61,10 @@ const Link = styled.a`
 export default function NavMenu(props) {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { logoutUser } = useAuthStore();
   const { menuOpen, setMenuOpen } = useAppStore();
   const { clearSearch } = useContentStore();
+  const addNotification = useNotificationStore(state => state.addNotification);
 
   const handleClick = (link, menuOpen) => {
     setMenuOpen(!menuOpen);
@@ -70,6 +74,20 @@ export default function NavMenu(props) {
     navigate(link);
   };
  
+  const logoutClick = async () => {
+    try {
+      const result = await logoutUser();
+      if (result) {
+        navigate("/");
+        addNotification(t('Logged out successfully!'), 'success');
+      }
+    } catch (error) {
+      console.log('error', error);
+      addNotification(t('Logout failed. Please try again.'), 'error');
+    }
+
+  };
+
   return (
     <Ul $menuOpen={menuOpen}>
       <Li><Link onClick={() => handleClick('/', menuOpen) } >{t("Home")}</Link></Li>
@@ -79,7 +97,7 @@ export default function NavMenu(props) {
             <Li><Link onClick={() => handleClick('/account', menuOpen) } >{t("Account")}</Link></Li>
             <Li><Link onClick={() => handleClick('/flashcards', menuOpen) } >{t("Flashcards")}</Link></Li>
             {props.isAdmin && <Li><Link onClick={() => handleClick('/admin', menuOpen) } >{t("Administer")}</Link></Li>}
-            <Li><Link onClick={() => props.logoutUser() } >{t("Log Out")}</Link></Li>
+            <Li><Link onClick={() => logoutClick() } >{t("Log Out")}</Link></Li>
           </>
         ) : (
           <>
