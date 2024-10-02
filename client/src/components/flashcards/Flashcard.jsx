@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { FaQuestionCircle, FaArrowRight } from 'react-icons/fa';
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
+
+import Tooltip from '../shared/Tooltip';
 
 const FlashcardContainer = styled.div`
   width: 100%;
@@ -35,7 +38,11 @@ const FlashcardFace = styled.div`
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 `;
 
-const FlashcardFront = styled(FlashcardFace)``;
+const FlashcardFront = styled(FlashcardFace)`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+`;
 
 const FlashcardBack = styled(FlashcardFace)`
   transform: rotateY(180deg);
@@ -50,12 +57,14 @@ const Hint = styled.p`
   font-style: italic;
 `;
 
-const QuestionIcon = styled(FaQuestionCircle)`
-  position: absolute;
-  bottom: 10px;
+const QuestionIconWrapper = styled.div`
+  position: relative;
+  display: inline-block;
+`;
+
+const StyledQuestionIcon = styled(FaQuestionCircle)`
   cursor: pointer;
-  font-size: 24px;
-  color: #007bff;
+  margin-left: 10px;
 `;
 
 const NextButton = styled(FaArrowRight)`
@@ -68,6 +77,8 @@ const NextButton = styled(FaArrowRight)`
 `;
 
 export default function Flashcard({ item, onNext }) {
+  const { t } = useTranslation();
+
   const [isFlipped, setIsFlipped] = useState(false);
   const [hintLevel, setHintLevel] = useState(0);
 
@@ -96,7 +107,11 @@ export default function Flashcard({ item, onNext }) {
           {hintLevel >= 1 && <Hint>{item.hint1}</Hint>}
           {hintLevel >= 2 && <Hint>{item.hint2}</Hint>}
           {hintLevel >= 3 && <Hint>{item.hint3}</Hint>}
-          <QuestionIcon onClick={handleHint} />
+          <QuestionIconWrapper>          
+            <Tooltip text={t("Show hint")}>
+              <StyledQuestionIcon onClick={handleHint} />
+            </Tooltip>
+          </QuestionIconWrapper>
           <NextButton onClick={handleNext} />
         </FlashcardFront>
         <FlashcardBack>

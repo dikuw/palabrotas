@@ -111,6 +111,8 @@ i18n
           "Password" : "Password",
           "Log in" : "Log in",
           "Please select a country" : "Please select a country",
+          "Logged in successfully!" : "Logged in successfully!",
+          "Show hint" : "Show hint",
         }
       },
       es: {
@@ -223,6 +225,8 @@ i18n
           "Email" : "Correo electrónico",
           "Password" : "Contraseña",
           "Please select a country" : "Por favor selecciona un país",
+          "Logged in successfully!" : "¡Inicié sesión exitosamente!",
+          "Show hint" : "Mostrar pista",
         }
       }
     },
