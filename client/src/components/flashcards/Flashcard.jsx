@@ -80,23 +80,23 @@ export default function Flashcard({ item, onNext }) {
   const { t } = useTranslation();
 
   const [isFlipped, setIsFlipped] = useState(false);
-  const [hintLevel, setHintLevel] = useState(0);
+  const [showHint, setShowHint] = useState(false);
 
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
-    setHintLevel(0);
+    setShowHint(false);
   };
 
   const handleHint = (e) => {
     e.stopPropagation();
-    setHintLevel(prev => (prev < 3 ? prev + 1 : prev));
+    setShowHint(true);
   };
 
   const handleNext = (e) => {
     e.stopPropagation();
     onNext();
     setIsFlipped(false);
-    setHintLevel(0);
+    setShowHint(false);
   };
 
   return (
@@ -104,9 +104,7 @@ export default function Flashcard({ item, onNext }) {
       <FlashcardInner $isFlipped={isFlipped}>
         <FlashcardFront>
           <Title>{item.title}</Title>
-          {hintLevel >= 1 && <Hint>{item.hint1}</Hint>}
-          {hintLevel >= 2 && <Hint>{item.hint2}</Hint>}
-          {hintLevel >= 3 && <Hint>{item.hint3}</Hint>}
+          {showHint && <Hint>{item.hint}</Hint>}
           <QuestionIconWrapper>          
             <Tooltip text={t("Show hint")}>
               <StyledQuestionIcon onClick={handleHint} />

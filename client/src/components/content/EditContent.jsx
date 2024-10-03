@@ -6,6 +6,8 @@ import { useTranslation } from "react-i18next";
 import { useContentStore } from '../../store/content';
 import { useNotificationStore } from '../../store/notification';
 
+import { countries } from '../shared/countries';
+
 import VisibleActionButton from '../shared/VisibleActionButton';
 import InvisibleActionButton from '../shared/InvisibleActionButton';  
 
@@ -38,6 +40,33 @@ const StyledWrapperDiv = styled.div`
 const StyledInput = styled.input`
   background-color: ${props => props.$hasError ? 'var(--warning)' : 'var(--almostWhite)'};
   color: ${props => props.$hasError ? 'red' : 'inherit'};
+`;
+
+const StyledSelect = styled.select`
+  margin: 0.25rem;
+  padding: 10px;
+  font-size: 1rem;
+  background-color: ${props => props.$hasError ? 'var(--warning)' : 'var(--almostWhite)'};
+  color: ${props => props.$hasError ? 'red' : 'inherit'};
+  border: 2px solid ;
+  border-radius: 0; 
+  appearance: none;
+  // Add a custom dropdown arrow
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cpath fill='%23000000' d='M0 0l4 4 4-4z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 30px;
+  &:invalid {
+    color: #757575; // This color should match your input placeholder color
+  }
+
+  option {
+    color: inherit;
+  }
+
+  option:first-of-type {
+    color: #757575; // This color should match your input placeholder color
+  }
 `;
 
 export default function EditItemForm(props) {
@@ -77,6 +106,7 @@ export default function EditItemForm(props) {
     let newErrors = {};
     if (!formData.title) newErrors.title = t("Please enter a title.");
     if (!formData.description) newErrors.description = t("Please enter a description.");
+    if (!formData.country) newErrors.country = t("Please select a country.");
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -129,6 +159,35 @@ export default function EditItemForm(props) {
           value={errors.description ? "" : formData.description}
           onChange={handleChange}
           $hasError={!!errors.description}
+        />
+        <StyledSelect
+          name="country"
+          value={errors.country ? "" : formData.country}
+          onChange={handleChange}
+          $hasError={!!errors.country}
+        >
+          <option value="" disabled hidden>{t("Select a country")}</option>
+          {countries.map((country) => (
+            <option key={country.code} value={country.code}>
+              {t(country.name)}
+            </option>
+          ))}
+        </StyledSelect>
+        <StyledInput
+          name="hint"
+          type="text"
+          placeholder={errors.hint || t("Hint")}
+          value={errors.hint ? "" : formData.hint}
+          onChange={handleChange}
+          $hasError={!!errors.hint}
+        />
+        <StyledInput
+          name="exampleSentence"
+          type="text"
+          placeholder={errors.exampleSentence || t("Example sentence")}
+          value={errors.exampleSentence ? "" : formData.exampleSentence}
+          onChange={handleChange}
+          $hasError={!!errors.exampleSentence}
         />
         <VisibleActionButton type="submit" disabled={!isDirty} buttonLabel={t("Update Content")} />
       </form>

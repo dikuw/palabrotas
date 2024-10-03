@@ -81,9 +81,7 @@ export default function AddContent() {
     title: "",
     description: "",
     country: "",
-    hint1: "",
-    hint2: "",
-    hint3: "",
+    hint: "",
     exampleSentence: "",
     owner: authStatus.user ? authStatus.user._id : "66f97a0ef1de0db4e4c254eb",
   });
@@ -153,28 +151,12 @@ export default function AddContent() {
           ))}
         </StyledSelect>
         <StyledInput
-          name="hint1"
+          name="hint"
           type="text"
-          placeholder={errors.hint1 || t("First hint")}
-          value={errors.hint1 ? "" : formData.hint1}
+          placeholder={errors.hint || t("Hint")}
+          value={errors.hint ? "" : formData.hint}
           onChange={handleChange}
-          $hasError={!!errors.hint1}
-        />
-        <StyledInput
-          name="hint2"
-          type="text"
-          placeholder={errors.hint2 || t("Second hint")}
-          value={errors.hint2 ? "" : formData.hint2}
-          onChange={handleChange}
-          $hasError={!!errors.hint2}
-        />
-        <StyledInput
-          name="hint3"
-          type="text"
-          placeholder={errors.hint3 || t("Third hint")}
-          value={errors.hint3 ? "" : formData.hint3}
-          onChange={handleChange}
-          $hasError={!!errors.hint3}
+          $hasError={!!errors.hint}
         />
         <StyledInput
           name="exampleSentence"
