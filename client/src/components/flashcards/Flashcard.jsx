@@ -3,6 +3,7 @@ import { FaQuestionCircle, FaArrowRight } from 'react-icons/fa';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 
+import FormattedHint from './FlashcardHint';
 import Tooltip from '../shared/Tooltip';
 
 const FlashcardContainer = styled.div`
@@ -52,7 +53,7 @@ const Title = styled.h2`
   margin-bottom: 10px;
 `;
 
-const Hint = styled.p`
+const Hint = styled.div`
   margin: 5px 0;
   font-style: italic;
 `;
@@ -104,7 +105,11 @@ export default function Flashcard({ item, onNext }) {
       <FlashcardInner $isFlipped={isFlipped}>
         <FlashcardFront>
           <Title>{item.title}</Title>
-          {showHint && <Hint>{item.hint}</Hint>}
+          {showHint && (
+            <Hint>
+              <FormattedHint hint={item.hint} />
+            </Hint>
+          )}
           <QuestionIconWrapper>          
             <Tooltip text={t("Show hint")}>
               <StyledQuestionIcon onClick={handleHint} />
