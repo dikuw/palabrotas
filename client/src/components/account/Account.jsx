@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useContentStore } from '../../store/content';
+import { useAuthStore } from '../../store/auth';
 import { NoPermissionDiv } from '../shared/index';
 import { useTranslation } from 'react-i18next';
 
@@ -18,7 +19,8 @@ const StyledWrapperDiv = styled.div`
 
 export default function Account() {
   const { t } = useTranslation();
-  const { getContentsByUserId } = useContentStore();
+  const { getContentsByUserId } = useContentStore(); 
+  const { authStatus } = useAuthStore();
   const [userContents, setUserContents] = useState([]);
 
   useEffect(() => {
