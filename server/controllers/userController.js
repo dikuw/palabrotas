@@ -1,4 +1,5 @@
 import User from '../models/User.js';
+import Streak from '../models/Streak.js';
 
 export const validateRegister = async (req, res, next) => {
   req.sanitizeBody('name');
@@ -94,4 +95,66 @@ export const updateAccount = async (req, res) => {
 
   req.flash('success', 'Profile updated');
   res.redirect('back');
+};
+
+export const updateStreak = async (req, res) => {
+  const { userId } = req.params;
+  const { streakLength } = req.body;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.currentStreak = streakLength;
+    await user.save();
+
+    res.status(200).json({ message: 'Streak updated successfully' });
+  } catch (error) {
+    console.error('Error updating streak:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+export const getCurrentStreak = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const streak = await Streak.findOne({ user: userId });
+    if (!streak) {
+      return res.status(200).json({ message: 'No current streak. Start your streak today!' });
+    }
+
+    res.status(200).json({ streak: streak.length });
+  } catch (error) {
+    console.error('Error fetching current streak:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+export const getLongestStreak = async (req, res) => { 
+  const { userId } = req.params;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const streak = await Streak.findOne({ user: userId });  
+    if (!streak) {
+      return res.status(200).json({ message: 'No longest streak. Start your streak today!' });
+    }
+
+    res.status(200).json({ streak: streak.length });
+  } catch (error) {
+    console.error('Error fetching longest streak:', error);
+    res.status(500).json({ message: 'Internal server error' }); 
+  }
 };
