@@ -111,6 +111,13 @@ i18n
           "Please select a country" : "Please select a country",
           "Logged in successfully!" : "Logged in successfully!",
           "Show hint" : "Show hint",
+          "Please enter a title." : "Please enter a title.",
+          "Please enter a description." : "Please enter a description.",
+          "Please select a country." : "Please select a country.",
+          "Title" : "Title",
+          "Description" : "Description",
+          "Hint" : "Hint",
+          "Example sentence" : "Example sentence",
         }
       },
       es: {
@@ -223,6 +230,11 @@ i18n
           "Please select a country" : "Por favor selecciona un país",
           "Logged in successfully!" : "¡Inicié sesión exitosamente!",
           "Show hint" : "Mostrar pista",
+          "Please enter a title." : "Por favor ingresa un título.",
+          "Please enter a description." : "Por favor ingresa una descripción.",
+          "Please select a country." : "Por favor selecciona un país.",
+          "Please enter a hint." : "Por favor ingresa una pista.",
+          "Please enter an example sentence." : "Por favor ingresa una frase de ejemplo.",
         }
       }
     },
