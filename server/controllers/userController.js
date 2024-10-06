@@ -99,7 +99,6 @@ export const updateAccount = async (req, res) => {
 
 export const updateStreak = async (req, res) => {
   const { userId } = req.params;
-  const { streakLength } = req.body;
 
   try {
     const user = await User.findById(userId);
@@ -107,10 +106,41 @@ export const updateStreak = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    user.currentStreak = streakLength;
-    await user.save();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-    res.status(200).json({ message: 'Streak updated successfully' });
+    let streak = await Streak.findOne({ user: userId });
+
+    if (!streak) {
+      // If no streak exists, create a new one
+      streak = new Streak({
+        user: userId,
+        startDate: today,
+        lastActivityDate: today,
+        length: 1
+      });
+    } else {
+      const lastActivityDate = new Date(streak.updatedAt);
+      lastActivityDate.setHours(0, 0, 0, 0);
+
+      const diffDays = (today - lastActivityDate) / (1000 * 60 * 60 * 24);
+
+      if (diffDays === 0) {
+        // Streak already updated today, no action needed
+        return res.status(200).json({ message: 'Streak already updated today', streak: streak.length });
+      } else if (diffDays === 1) {
+        // Streak continues
+        streak.length += 1;
+      } else {
+        // Streak broken, start a new one
+        streak.startDate = today;
+        streak.length = 1;
+      }
+    }
+
+    await streak.save();
+
+    res.status(200).json({ message: 'Streak updated successfully', streak: streak.length });
   } catch (error) {
     console.error('Error updating streak:', error);
     res.status(500).json({ message: 'Internal server error' });
