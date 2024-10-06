@@ -79,6 +79,9 @@ export default function EditItemForm(props) {
     id: "",
     title: "",
     description: "",
+    country: "",
+    hint: "",
+    exampleSentence: "",
   });
 
   const [isDirty, setIsDirty] = useState(false);
@@ -91,13 +94,16 @@ export default function EditItemForm(props) {
         id: contentItem._id,
         title: contentItem.title,
         description: contentItem.description,
+        country: contentItem.country,
+        hint: contentItem.hint || "",
+        exampleSentence: contentItem.exampleSentence || "",
       });
     }
   }, [id, contents]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value || "" }));
     setErrors(prev => ({ ...prev, [name]: '' }));
     setIsDirty(true);
   };
@@ -107,7 +113,7 @@ export default function EditItemForm(props) {
     if (!formData.title) newErrors.title = t("Please enter a title.");
     if (!formData.description) newErrors.description = t("Please enter a description.");
     if (!formData.country) newErrors.country = t("Please select a country.");
-    setErrors(newErrors);
+  setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
@@ -147,22 +153,22 @@ export default function EditItemForm(props) {
         <StyledInput
           name="title"
           type="text"
-          placeholder={errors.title || t("title")}
-          value={errors.title ? "" : formData.title}
+          placeholder={t("Title")}
+          value={formData.title}
           onChange={handleChange}
           $hasError={!!errors.title}
         />
         <StyledInput
           name="description"
           type="text"
-          placeholder={errors.description || t("description")}
-          value={errors.description ? "" : formData.description}
+          placeholder={t("Description")}
+          value={formData.description}
           onChange={handleChange}
           $hasError={!!errors.description}
         />
         <StyledSelect
           name="country"
-          value={errors.country ? "" : formData.country}
+          value={formData.country}
           onChange={handleChange}
           $hasError={!!errors.country}
         >
@@ -176,16 +182,16 @@ export default function EditItemForm(props) {
         <StyledInput
           name="hint"
           type="text"
-          placeholder={errors.hint || t("Hint")}
-          value={errors.hint ? "" : formData.hint}
+          placeholder={t("Hint")}
+          value={formData.hint}
           onChange={handleChange}
           $hasError={!!errors.hint}
         />
         <StyledInput
           name="exampleSentence"
           type="text"
-          placeholder={errors.exampleSentence || t("Example sentence")}
-          value={errors.exampleSentence ? "" : formData.exampleSentence}
+          placeholder={t("Example sentence")}
+          value={formData.exampleSentence}
           onChange={handleChange}
           $hasError={!!errors.exampleSentence}
         />
