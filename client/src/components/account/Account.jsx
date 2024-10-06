@@ -34,10 +34,10 @@ export default function Account() {
         setUserContents(contents);
 
         const currentStreakData = await getCurrentStreak(authStatus.user._id);
-        setCurrentStreak(currentStreakData.length || 0);
+        setCurrentStreak(currentStreakData.streak || 0);
         
         const longestStreakData = await getLongestStreak(authStatus.user._id);
-        setLongestStreak(longestStreakData.length || 0);
+        setLongestStreak(longestStreakData.streak || 0);
       }
     }
   
