@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { FaQuestionCircle, FaArrowRight } from 'react-icons/fa';
+import { FaQuestionCircle, FaCheck, FaTimes } from 'react-icons/fa';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
+
+import { useUserStore } from '../../store/user';
+import { useAuthStore } from '../../store/auth';
 
 import FormattedHint from './FlashcardHint';
 import Tooltip from '../shared/Tooltip';
@@ -68,18 +71,34 @@ const StyledQuestionIcon = styled(FaQuestionCircle)`
   margin-left: 10px;
 `;
 
-const NextButton = styled(FaArrowRight)`
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
+const AnswerButtonsContainer = styled.div`
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+  margin-top: 20px;
+`;
+
+const AnswerButton = styled.button`
+  background-color: ${props => props.$correct ? '#4CAF50' : '#f44336'};
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
   cursor: pointer;
-  font-size: 24px;
-  color: #007bff;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: ${props => props.$correct ? '#45a049' : '#da190b'};
+  }
 `;
 
 export default function Flashcard({ item, onNext }) {
   const { t } = useTranslation();
-
+  const { updateStreak } = useUserStore();
+  const { authStatus } = useAuthStore();
   const [isFlipped, setIsFlipped] = useState(false);
   const [showHint, setShowHint] = useState(false);
 
@@ -93,11 +112,22 @@ export default function Flashcard({ item, onNext }) {
     setShowHint(true);
   };
 
-  const handleNext = (e) => {
-    e.stopPropagation();
-    onNext();
-    setIsFlipped(false);
-    setShowHint(false);
+  const handleAnswer = async (correct) => {
+    if (!authStatus.isLoggedIn || !authStatus.user) {
+      console.error('User is not logged in');
+      return;
+    }
+
+    try {
+      await updateStreak(authStatus.user._id);
+      // You might want to do something with the result, like showing a notification
+      onNext();
+      setIsFlipped(false);
+      setShowHint(false);
+    } catch (error) {
+      console.error('Error updating streak:', error);
+      // Handle error (e.g., show an error notification)
+    }
   };
 
   return (
@@ -115,12 +145,18 @@ export default function Flashcard({ item, onNext }) {
               <StyledQuestionIcon onClick={handleHint} />
             </Tooltip>
           </QuestionIconWrapper>
-          <NextButton onClick={handleNext} />
         </FlashcardFront>
         <FlashcardBack>
           <p>{item.description}</p>
           <p>{item.exampleSentence}</p>
-          <NextButton onClick={handleNext} />
+          <AnswerButtonsContainer>
+            <AnswerButton $correct onClick={() => handleAnswer(true)}>
+              <FaCheck />
+            </AnswerButton>
+            <AnswerButton onClick={() => handleAnswer(false)}>
+              <FaTimes />
+            </AnswerButton>
+          </AnswerButtonsContainer>
         </FlashcardBack>
       </FlashcardInner>
     </FlashcardContainer>
