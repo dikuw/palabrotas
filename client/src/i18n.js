@@ -118,6 +118,10 @@ i18n
           "Description" : "Description",
           "Hint" : "Hint",
           "Example sentence" : "Example sentence",
+          "Current Streak" : "Current Streak",
+          "Longest Streak" : "Longest Streak",  
+          "No streak recorded. Start a streak today!" : "No streak recorded. Start a streak today!",
+          "No current streak. Start a streak today!" : "No current streak. Start a streak today!",
         }
       },
       es: {
@@ -235,6 +239,10 @@ i18n
           "Please select a country." : "Por favor selecciona un país.",
           "Please enter a hint." : "Por favor ingresa una pista.",
           "Please enter an example sentence." : "Por favor ingresa una frase de ejemplo.",
+          "Current Streak" : "Racha Actual",
+          "Longest Streak" : "Racha Más Larga",
+          "No streak recorded. Start a streak today!" : "No se ha registrado ninguna racha. ¡Comienza tu racha hoy!",
+          "No current streak. Start a streak today!" : "No se ha registrado ninguna racha actual. ¡Comienza tu racha hoy!",
         }
       }
     },
