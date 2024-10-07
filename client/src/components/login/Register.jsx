@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { InvisibleActionButton, VisibleActionButton } from '../shared/index';
 import { useAuthStore } from '../../store/auth';
 import { useNotificationStore } from '../../store/notification';
+
 const StyledWrapperDiv = styled.div`
   width: 90%;
   max-width: 1000px;

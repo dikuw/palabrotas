@@ -245,6 +245,7 @@ i18n
           "No streak recorded. Start a streak today!" : "No se ha registrado ninguna racha. ¡Comienza tu racha hoy!",
           "No current streak. Start a streak today!" : "No se ha registrado ninguna racha actual. ¡Comienza tu racha hoy!",
           "{{count}} day(s)" : "{{count}} día(s)",
+        }
       }
     },
     fallbackLng: "en",
