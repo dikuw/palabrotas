@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useUserStore } from '../../store/user';
 import { useAuthStore } from '../../store/auth';
+import { useNotificationStore } from '../../store/notification';
 
 import FormattedHint from './FlashcardHint';
 import Tooltip from '../shared/Tooltip';
@@ -97,8 +98,9 @@ const AnswerButton = styled.button`
 
 export default function Flashcard({ item, onNext }) {
   const { t } = useTranslation();
-  const { updateStreak } = useUserStore();
+  const { getCurrentStreak, updateStreak } = useUserStore();
   const { authStatus } = useAuthStore();
+  const addNotification = useNotificationStore(state => state.addNotification);
   const [isFlipped, setIsFlipped] = useState(false);
   const [showHint, setShowHint] = useState(false);
 
@@ -119,14 +121,17 @@ export default function Flashcard({ item, onNext }) {
     }
 
     try {
-      await updateStreak(authStatus.user._id);
-      // You might want to do something with the result, like showing a notification
+      const currentStreak = await getCurrentStreak(authStatus.user._id);
+      const result = await updateStreak(authStatus.user._id);
+      if (result.streak > currentStreak.streak) {  
+        console.log("Streak updated:", result.streak);
+        addNotification(t(`Streak updated!`), 'success');
+      }
       onNext();
       setIsFlipped(false);
       setShowHint(false);
     } catch (error) {
       console.error('Error updating streak:', error);
-      // Handle error (e.g., show an error notification)
     }
   };
 
