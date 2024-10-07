@@ -33,7 +33,7 @@ const StreakInfo = ({ currentStreak, longestStreak }) => {
         <StreakLabel>{t("Current Streak")}:</StreakLabel>
         <StreakValue>
           {currentStreak > 0 
-            ? t("{{count}} day", { count: currentStreak }) 
+            ? t("{{count}} day(s)", { count: currentStreak }) 
             : t("No current streak. Start a streak today!")}
         </StreakValue>
       </StreakItem>
@@ -41,7 +41,7 @@ const StreakInfo = ({ currentStreak, longestStreak }) => {
         <StreakLabel>{t("Longest Streak")}:</StreakLabel>
         <StreakValue>
           {longestStreak > 0 
-            ? t("{{count}} day", { count: longestStreak }) 
+            ? t("{{count}} day(s)", { count: longestStreak }) 
             : t("No streak recorded. Start a streak today!")}
         </StreakValue>
       </StreakItem>

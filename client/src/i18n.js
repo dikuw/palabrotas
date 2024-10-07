@@ -122,6 +122,7 @@ i18n
           "Longest Streak" : "Longest Streak",  
           "No streak recorded. Start a streak today!" : "No streak recorded. Start a streak today!",
           "No current streak. Start a streak today!" : "No current streak. Start a streak today!",
+          "{{count}} day(s)" : "{{count}} day(s)",
         }
       },
       es: {
@@ -243,7 +244,7 @@ i18n
           "Longest Streak" : "Racha Más Larga",
           "No streak recorded. Start a streak today!" : "No se ha registrado ninguna racha. ¡Comienza tu racha hoy!",
           "No current streak. Start a streak today!" : "No se ha registrado ninguna racha actual. ¡Comienza tu racha hoy!",
-        }
+          "{{count}} day(s)" : "{{count}} día(s)",
       }
     },
     fallbackLng: "en",
