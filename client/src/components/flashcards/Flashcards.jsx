@@ -43,16 +43,11 @@ export default function Flashcards() {
   }, [authStatus.isLoggedIn, authStatus.user, getFlashcards, getDueFlashcards]);
 
   const handleReviewAndNext = async (flashcardId, quality) => {
-    console.log(`[Flashcards] handleReviewAndNext called. ID: ${flashcardId}, Quality: ${quality}`);
     try {
-      console.log('here');
       await updateFlashcardReview(flashcardId, quality);
-      console.log(`[Flashcards] updateFlashcardReview completed`);
       // Remove the reviewed flashcard from dueFlashcards
       const updatedDueFlashcards = dueFlashcards.filter(card => card._id !== flashcardId);
-      console.log(`[Flashcards] Filtered dueFlashcards. New length: ${updatedDueFlashcards.length}`);
       useFlashcardStore.setState({ dueFlashcards: updatedDueFlashcards });
-      console.log(`[Flashcards] Updated dueFlashcards in store`);
       if (updatedDueFlashcards.length > 0) {
         // If there are still flashcards, move to the next one
         setCurrentIndex(prevIndex => prevIndex % updatedDueFlashcards.length);
