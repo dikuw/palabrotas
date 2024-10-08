@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useUserStore } from '../../store/user';
 import { useAuthStore } from '../../store/auth';
 import { useNotificationStore } from '../../store/notification';
+import { useFlashcardStore } from '../../store/flashcard';
 
 import FormattedHint from './FlashcardHint';
 import Tooltip from '../shared/Tooltip';
@@ -51,6 +52,9 @@ const FlashcardFront = styled(FlashcardFace)`
 
 const FlashcardBack = styled(FlashcardFace)`
   transform: rotateY(180deg);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 `;
 
 const Title = styled.h2`
@@ -72,29 +76,51 @@ const StyledQuestionIcon = styled(FaQuestionCircle)`
   margin-left: 10px;
 `;
 
-const AnswerButtonsContainer = styled.div`
+const QualityButtonsContainer = styled.div`
   display: flex;
-  justify-content: space-evenly;
+  justify-content: center;
+  align-items: center;
   width: 100%;
   margin-top: 20px;
 `;
 
-const AnswerButton = styled.button`
-  background-color: ${props => props.$correct ? '#4CAF50' : '#f44336'};
-  color: white;
+const QualityButton = styled.button`
+  background-color: ${props => {
+    if (props.$quality === 1) return '#f44336';
+    if (props.$quality === 2) return '#ff9800';
+    if (props.$quality === 3) return '#ffeb3b';
+    if (props.$quality === 4) return '#8bc34a';
+    if (props.$quality === 5) return '#4caf50';
+  }};
+  color: ${props => props.$quality === 3 ? '#000' : '#fff'};
   border: none;
-  padding: 10px;
+  padding: 10px 0;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  transition: background-color 0.3s;
+  font-size: 0.75rem;
+  transition: opacity 0.3s;
+  width: 12%; // Set a consistent width
+  margin: 0 1%; // Add some horizontal spacing
 
   &:hover {
-    background-color: ${props => props.$correct ? '#45a049' : '#da190b'};
+    opacity: 0.8;
   }
 `;
+
+const ContentContainer = styled.div`
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`;
+
+const qualityLabels = {
+  1: 'Hardest',
+  2: 'Hard',
+  3: 'Medium',
+  4: 'Easy',
+  5: 'Easiest'
+};
 
 export default function Flashcard({ item, onNext }) {
   const { t } = useTranslation();
@@ -114,24 +140,24 @@ export default function Flashcard({ item, onNext }) {
     setShowHint(true);
   };
 
-  const handleAnswer = async (correct) => {
+  const handleAnswer = async (quality) => {
     if (!authStatus.isLoggedIn || !authStatus.user) {
       console.error('User is not logged in');
       return;
     }
 
     try {
-      const currentStreak = await getCurrentStreak(authStatus.user._id);
+      await onNext(item._id, quality);
       const result = await updateStreak(authStatus.user._id);
-      if (result.streak > currentStreak.streak) {  
+      if (result.streak) {
         console.log("Streak updated:", result.streak);
-        addNotification(t(`Streak updated!`), 'success');
+        addNotification(t(`Streak updated to {{streak}}!`, { streak: result.streak }), 'success');
       }
-      onNext();
       setIsFlipped(false);
       setShowHint(false);
     } catch (error) {
-      console.error('Error updating streak:', error);
+      console.error('Error updating flashcard review:', error);
+      addNotification(t('Error updating flashcard review'), 'error');
     }
   };
 
@@ -139,10 +165,10 @@ export default function Flashcard({ item, onNext }) {
     <FlashcardContainer onClick={handleFlip}>
       <FlashcardInner $isFlipped={isFlipped}>
         <FlashcardFront>
-          <Title>{item.title}</Title>
+          <Title>{item.content.title}</Title>
           {showHint && (
             <Hint>
-              <FormattedHint hint={item.hint} />
+              <FormattedHint hint={item.content.hint} />
             </Hint>
           )}
           <QuestionIconWrapper>          
@@ -152,16 +178,24 @@ export default function Flashcard({ item, onNext }) {
           </QuestionIconWrapper>
         </FlashcardFront>
         <FlashcardBack>
-          <p>{item.description}</p>
-          <p>{item.exampleSentence}</p>
-          <AnswerButtonsContainer>
-            <AnswerButton $correct onClick={() => handleAnswer(true)}>
-              <FaCheck />
-            </AnswerButton>
-            <AnswerButton onClick={() => handleAnswer(false)}>
-              <FaTimes />
-            </AnswerButton>
-          </AnswerButtonsContainer>
+          <ContentContainer>
+            <p>{item.content.description}</p>
+            <p>{item.content.exampleSentence}</p>
+          </ContentContainer>
+          <QualityButtonsContainer>
+            {[1, 2, 3, 4, 5].map(quality => (
+              <QualityButton 
+                key={quality} 
+                $quality={quality} 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleAnswer(quality);
+                }}
+              >
+                {t(qualityLabels[quality])}
+              </QualityButton>
+            ))}
+          </QualityButtonsContainer>
         </FlashcardBack>
       </FlashcardInner>
     </FlashcardContainer>

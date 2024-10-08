@@ -19,6 +19,14 @@ const flashcardSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
+  interval: {
+    type: Number,
+    default: 0
+  },
+  ease: {
+    type: Number,
+    default: 2.5
+  },
   reviewCount: {
     type: Number,
     default: 0
@@ -27,6 +35,52 @@ const flashcardSchema = new mongoose.Schema({
 
 // Compound index to ensure a user can't have duplicate content in their flashcards
 flashcardSchema.index({ user: 1, content: 1 }, { unique: true });
+
+// Constants for the algorithm
+const MINIMUM_INTERVAL = 1;
+const MAXIMUM_INTERVAL = 3650; // 10 years
+const MINIMUM_EASE = 1.3;
+
+flashcardSchema.methods.updateReview = function(quality) {
+  const now = new Date();
+  
+  // Update review count and last reviewed date
+  this.reviewCount += 1;
+  this.lastReviewed = now;
+
+  // Calculate new ease
+  this.ease = Math.max(MINIMUM_EASE, this.ease + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02)));
+
+  // Calculate new interval
+  if (this.reviewCount === 1) {
+    this.interval = 1;
+  } else if (this.reviewCount === 2) {
+    this.interval = 6;
+  } else {
+    this.interval = Math.min(MAXIMUM_INTERVAL, Math.round(this.interval * this.ease));
+  }
+
+  // If the quality is less than 3 (i.e., the user found it difficult), reset the interval
+  if (quality < 3) {
+    this.interval = MINIMUM_INTERVAL;
+  }
+
+  // Set next review date
+  this.nextReview = new Date(now.getTime() + this.interval * 24 * 60 * 60 * 1000);
+
+  return this.save();
+};
+
+flashcardSchema.statics.getDueFlashcards = function(userId, limit = 20) {
+  const now = new Date();
+  return this.find({
+    user: userId,
+    nextReview: { $lte: now }
+  })
+  .sort({ nextReview: 1 })
+  .limit(limit)
+  .populate('content');
+};
 
 const Flashcard = mongoose.model('Flashcard', flashcardSchema);
 

@@ -123,6 +123,13 @@ i18n
           "No streak recorded. Start a streak today!" : "No streak recorded. Start a streak today!",
           "No current streak. Start a streak today!" : "No current streak. Start a streak today!",
           "{{count}} day(s)" : "{{count}} day(s)",
+          "Hardest": "Hardest",
+          "Hard": "Hard",
+          "Medium": "Medium",
+          "Easy": "Easy",
+          "Easiest": "Easiest",
+          "Streak updated to {{streak}}!" : "Streak updated to {{streak}}!",
+          "You've completed all your flashcards for today. Please come back tomorrow.": "You've completed all your flashcards for today. Please come back tomorrow."
         }
       },
       es: {
@@ -245,6 +252,13 @@ i18n
           "No streak recorded. Start a streak today!" : "No se ha registrado ninguna racha. ¡Comienza tu racha hoy!",
           "No current streak. Start a streak today!" : "No se ha registrado ninguna racha actual. ¡Comienza tu racha hoy!",
           "{{count}} day(s)" : "{{count}} día(s)",
+          "Hardest": "Más difícil",
+          "Hard": "Difícil",
+          "Medium": "Medio",
+          "Easy": "Fácil",
+          "Easiest": "Más fácil",
+          "Streak updated to {{streak}}!" : "Racha actualizada a {{streak}}!",
+          "You've completed all your flashcards for today. Please come back tomorrow.": "You've completed all your flashcards for today. Please come back tomorrow."
         }
       }
     },
