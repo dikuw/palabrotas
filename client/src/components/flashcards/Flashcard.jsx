@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FaQuestionCircle, FaCheck, FaTimes } from 'react-icons/fa';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
@@ -129,6 +129,20 @@ export default function Flashcard({ item, onNext }) {
   const addNotification = useNotificationStore(state => state.addNotification);
   const [isFlipped, setIsFlipped] = useState(false);
   const [showHint, setShowHint] = useState(false);
+  const previousStreakRef = useRef(0);
+  const streakUpdatedTodayRef = useRef(false);
+
+  useEffect(() => {
+    const checkInitialStreak = async () => {
+      if (authStatus.isLoggedIn && authStatus.user) {
+        const currentStreak = await getCurrentStreak(authStatus.user._id);
+        previousStreakRef.current = currentStreak;
+        streakUpdatedTodayRef.current = false;
+      }
+    };
+    checkInitialStreak();
+  }, [authStatus.isLoggedIn, authStatus.user, getCurrentStreak]);
+
 
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
@@ -156,10 +170,18 @@ export default function Flashcard({ item, onNext }) {
     try {
       await onNext(item._id, quality);
       const result = await updateStreak(authStatus.user._id);
-      if (result.streak) {
-        console.log("Streak updated:", result.streak);
-        addNotification(t(`Streak updated to {{streak}}!`, { streak: result.streak }), 'success');
+
+      if (result.streak && !streakUpdatedTodayRef.current) {
+        if (previousStreakRef.current === 0) {
+          addNotification(t(`Streak started! Current streak: {{streak}}`, { streak: result.streak }), 'success');
+        } else if (result.streak > previousStreakRef.current) {
+          addNotification(t(`Streak extended! Current streak: {{streak}}`, { streak: result.streak }), 'success');
+        }
+        streakUpdatedTodayRef.current = true;
       }
+
+      previousStreakRef.current = result.streak || 0;
+
       setIsFlipped(false);
       setShowHint(false);
     } catch (error) {

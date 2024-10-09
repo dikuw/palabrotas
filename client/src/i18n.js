@@ -131,6 +131,8 @@ i18n
           "Streak updated to {{streak}}!" : "Streak updated to {{streak}}!",
           "You've completed all your flashcards for today. Please come back tomorrow.": "You've completed all your flashcards for today. Please come back tomorrow.",
           "No hint provided": "No hint provided",
+          "Streak started! Current streak: {{streak}}": "Streak started! Current streak: {{streak}}",
+          "Streak extended! Current streak: {{streak}}": "Streak extended! Current streak: {{streak}}",
         }
       },
       es: {
@@ -261,6 +263,8 @@ i18n
           "Streak updated to {{streak}}!" : "Racha actualizada a {{streak}}!",
           "You've completed all your flashcards for today. Please come back tomorrow.": "You've completed all your flashcards for today. Please come back tomorrow.",
           "No hint provided": "No hint provided",
+          "Streak started! Current streak: {{streak}}": "¡Racha iniciada! Racha actual: {{streak}}",
+          "Streak extended! Current streak: {{streak}}": "¡Racha extendida! Racha actual: {{streak}}",
         }
       }
     },
