@@ -129,7 +129,8 @@ i18n
           "Easy": "Easy",
           "Easiest": "Easiest",
           "Streak updated to {{streak}}!" : "Streak updated to {{streak}}!",
-          "You've completed all your flashcards for today. Please come back tomorrow.": "You've completed all your flashcards for today. Please come back tomorrow."
+          "You've completed all your flashcards for today. Please come back tomorrow.": "You've completed all your flashcards for today. Please come back tomorrow.",
+          "No hint provided": "No hint provided",
         }
       },
       es: {
@@ -258,7 +259,8 @@ i18n
           "Easy": "Fácil",
           "Easiest": "Más fácil",
           "Streak updated to {{streak}}!" : "Racha actualizada a {{streak}}!",
-          "You've completed all your flashcards for today. Please come back tomorrow.": "You've completed all your flashcards for today. Please come back tomorrow."
+          "You've completed all your flashcards for today. Please come back tomorrow.": "You've completed all your flashcards for today. Please come back tomorrow.",
+          "No hint provided": "No hint provided",
         }
       }
     },

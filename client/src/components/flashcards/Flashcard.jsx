@@ -140,6 +140,13 @@ export default function Flashcard({ item, onNext }) {
     setShowHint(true);
   };
 
+  const renderHint = () => {
+    if (!item.content.hint || item.content.hint.trim() === '') {
+      return <Hint>{t("No hint provided")}</Hint>;
+    }
+    return <FormattedHint hint={item.content.hint} />;
+  };
+
   const handleAnswer = async (quality) => {
     if (!authStatus.isLoggedIn || !authStatus.user) {
       console.error('User is not logged in');
@@ -168,7 +175,7 @@ export default function Flashcard({ item, onNext }) {
           <Title>{item.content.title}</Title>
           {showHint && (
             <Hint>
-              <FormattedHint hint={item.content.hint} />
+              {renderHint()}
             </Hint>
           )}
           <QuestionIconWrapper>          
