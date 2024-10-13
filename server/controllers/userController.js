@@ -67,13 +67,6 @@ export const findOrCreate = async (req, res, next) => {
   }
 };
 
-// // start from Hely, maybe want to add this in the future, but docs instead of orders
-// exports.account = async (req, res) => {
-//   const orders = await Order.find({ user: req.user._id });
-//   res.render('account', { title: 'Edit Your Account', orders });
-// };
-// // end from Hely
-
 export const updateAccount = async (req, res) => {
   let updates = {
     name: req.body.name,
@@ -132,9 +125,17 @@ export const updateStreak = async (req, res) => {
         // Streak continues
         streak.length += 1;
       } else {
-        // Streak broken, start a new one
-        streak.startDate = today;
-        streak.length = 1;
+        // Streak broken, close the current streak and start a new one
+        streak.endDate = lastActivityDate;
+        await streak.save();
+
+        // Create a new streak
+        streak = new Streak({
+          user: userId,
+          startDate: today,
+          lastActivityDate: today,
+          length: 1
+        });
       }
     }
 

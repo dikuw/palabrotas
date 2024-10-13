@@ -136,6 +136,7 @@ export default function Flashcard({ item, onNext }) {
     const checkInitialStreak = async () => {
       if (authStatus.isLoggedIn && authStatus.user) {
         const currentStreak = await getCurrentStreak(authStatus.user._id);
+        console.log("Current streak:", currentStreak);
         previousStreakRef.current = currentStreak;
         streakUpdatedTodayRef.current = false;
       }
