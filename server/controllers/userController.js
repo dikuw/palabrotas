@@ -157,9 +157,23 @@ export const getCurrentStreak = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    const streak = await Streak.findOne({ user: userId });
+    const streak = await Streak.findOne({ user: userId, endDate: null });
     if (!streak) {
-      return res.status(200).json({ message: 'No current streak. Start your streak today!' });
+      return res.status(200).json({ streak: 0, message: 'No current streak. Start your streak today!' });
+    }
+
+    // Check if the streak is still active (last activity was yesterday or today)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const lastActivityDate = new Date(streak.lastActivityDate);
+    lastActivityDate.setHours(0, 0, 0, 0);
+    const diffDays = (today - lastActivityDate) / (1000 * 60 * 60 * 24);
+
+    if (diffDays > 1) {
+      // If the last activity was more than a day ago, the streak is broken
+      streak.endDate = lastActivityDate;
+      await streak.save();
+      return res.status(200).json({ streak: 0, message: 'Your previous streak has ended. Start a new streak today!' });
     }
 
     res.status(200).json({ streak: streak.length });
@@ -178,12 +192,12 @@ export const getLongestStreak = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    const streak = await Streak.findOne({ user: userId });  
-    if (!streak) {
-      return res.status(200).json({ message: 'No longest streak. Start your streak today!' });
+    const longestStreak = await Streak.findOne({ user: userId }).sort('-length').limit(1);
+    if (!longestStreak) {
+      return res.status(200).json({ streak: 0, message: 'No streaks yet. Start your first streak today!' });
     }
 
-    res.status(200).json({ streak: streak.length });
+    res.status(200).json({ streak: longestStreak.length });
   } catch (error) {
     console.error('Error fetching longest streak:', error);
     res.status(500).json({ message: 'Internal server error' }); 
