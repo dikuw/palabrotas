@@ -1,12 +1,11 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { FaQuestionCircle, FaCheck, FaTimes } from 'react-icons/fa';
+import React, { useState } from 'react';
+import { FaQuestionCircle } from 'react-icons/fa';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 
 import { useUserStore } from '../../store/user';
 import { useAuthStore } from '../../store/auth';
 import { useNotificationStore } from '../../store/notification';
-import { useFlashcardStore } from '../../store/flashcard';
 
 import FormattedHint from './FlashcardHint';
 import Tooltip from '../shared/Tooltip';
@@ -124,26 +123,11 @@ const qualityLabels = {
 
 export default function Flashcard({ item, onNext }) {
   const { t } = useTranslation();
-  const { getCurrentStreak, updateStreak } = useUserStore();
+  const { updateStreak } = useUserStore();
   const { authStatus } = useAuthStore();
   const addNotification = useNotificationStore(state => state.addNotification);
   const [isFlipped, setIsFlipped] = useState(false);
   const [showHint, setShowHint] = useState(false);
-  const previousStreakRef = useRef(0);
-  const streakUpdatedTodayRef = useRef(false);
-
-  useEffect(() => {
-    const checkInitialStreak = async () => {
-      if (authStatus.isLoggedIn && authStatus.user) {
-        const currentStreak = await getCurrentStreak(authStatus.user._id);
-        console.log("Current streak:", currentStreak);
-        previousStreakRef.current = currentStreak;
-        streakUpdatedTodayRef.current = false;
-      }
-    };
-    checkInitialStreak();
-  }, [authStatus.isLoggedIn, authStatus.user, getCurrentStreak]);
-
 
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
@@ -172,16 +156,9 @@ export default function Flashcard({ item, onNext }) {
       await onNext(item._id, quality);
       const result = await updateStreak(authStatus.user._id);
 
-      if (result.streak && !streakUpdatedTodayRef.current) {
-        if (previousStreakRef.current === 0) {
-          addNotification(t(`Streak started! Current streak: {{streak}}`, { streak: result.streak }), 'success');
-        } else if (result.streak > previousStreakRef.current) {
-          addNotification(t(`Streak extended! Current streak: {{streak}}`, { streak: result.streak }), 'success');
-        }
-        streakUpdatedTodayRef.current = true;
+      if (result.updated) {
+        addNotification(t(`Streak updated! Current streak: {{streak}}`, { streak: result.streak }), 'success');
       }
-
-      previousStreakRef.current = result.streak || 0;
 
       setIsFlipped(false);
       setShowHint(false);

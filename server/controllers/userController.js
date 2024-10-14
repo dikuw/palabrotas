@@ -120,7 +120,7 @@ export const updateStreak = async (req, res) => {
 
       if (diffDays === 0) {
         // Streak already updated today, no action needed
-        return res.status(200).json({ message: 'Streak already updated today', streak: streak.length });
+        return res.status(200).json({ streak: streak.length, updated: false });
       } else if (diffDays === 1) {
         // Streak continues
         streak.length += 1;
@@ -141,7 +141,7 @@ export const updateStreak = async (req, res) => {
 
     await streak.save();
 
-    res.status(200).json({ message: 'Streak updated successfully', streak: streak.length });
+    res.status(200).json({ streak: streak.length, updated: true });
   } catch (error) {
     console.error('Error updating streak:', error);
     res.status(500).json({ message: 'Internal server error' });
