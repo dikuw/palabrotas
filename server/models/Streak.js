@@ -14,6 +14,10 @@ const streakSchema = new mongoose.Schema({
     type: Date,
     required: false
   },
+  lastActivityDate: {
+    type: Date,
+    required: 'You must supply a last activity date'
+  },
   length: {
     type: Number,
     required: true,

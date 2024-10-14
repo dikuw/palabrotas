@@ -102,7 +102,7 @@ export const updateStreak = async (req, res) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    let streak = await Streak.findOne({ user: userId });
+    let streak = await Streak.findOne({ user: userId, endDate: null });
 
     if (!streak) {
       // If no streak exists, create a new one
