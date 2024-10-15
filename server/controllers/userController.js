@@ -113,7 +113,7 @@ export const updateStreak = async (req, res) => {
         length: 1
       });
     } else {
-      const lastActivityDate = new Date(streak.updatedAt);
+      const lastActivityDate = new Date(streak.lastActivityDate);
       lastActivityDate.setHours(0, 0, 0, 0);
 
       const diffDays = (today - lastActivityDate) / (1000 * 60 * 60 * 24);
@@ -124,6 +124,7 @@ export const updateStreak = async (req, res) => {
       } else if (diffDays === 1) {
         // Streak continues
         streak.length += 1;
+        streak.lastActivityDate = today;
       } else {
         // Streak broken, close the current streak and start a new one
         streak.endDate = lastActivityDate;
@@ -138,7 +139,7 @@ export const updateStreak = async (req, res) => {
         });
       }
     }
-
+    
     await streak.save();
 
     res.status(200).json({ streak: streak.length, updated: true });
