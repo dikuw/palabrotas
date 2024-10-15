@@ -37,7 +37,7 @@ const StyledLegal = styled.div`
   }
 `;
 
-export default function Footer(props) {
+export default function Footer() {
   const { t } = useTranslation();
   return (
     <StyledFooter >
