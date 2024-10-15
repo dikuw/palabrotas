@@ -19,7 +19,7 @@ import EditContent from './components/content/EditContent';
 import Admin from './components/admin/Admin';
 import NotificationContainer from './components/notifications/NotificationContainer';
 import Footer from './components/Footer';
-
+import Feedback from './components/feedback/Feedback';
 function App() {
   const { t } = useTranslation();
 
@@ -123,6 +123,14 @@ function App() {
               <EditContent
                 isLoggedIn={authStatus.isLoggedIn} 
               />
+            </>
+          }
+        />
+        <Route path="/feedback" 
+          element={
+            <>
+              <Banner bannerString={t("Feedback")} />
+              <Feedback />
             </>
           }
         />
