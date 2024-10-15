@@ -133,6 +133,12 @@ i18n
           "No hint provided": "No hint provided",
           "Streak started! Current streak: {{streak}}": "Streak started! Current streak: {{streak}}",
           "Streak extended! Current streak: {{streak}}": "Streak extended! Current streak: {{streak}}",
+          "Feedback" : "Feedback",
+          "Submit" : "Submit",
+          "Message" : "Message",
+          "Logged out successfully!" : "Logged out successfully!",  
+          "Feedback submitted successfully!" : "Feedback submitted successfully!",
+          "Feedback submission failed. Please try again." : "Feedback submission failed. Please try again.",
         }
       },
       es: {
@@ -265,6 +271,12 @@ i18n
           "No hint provided": "No hint provided",
           "Streak started! Current streak: {{streak}}": "¡Racha iniciada! Racha actual: {{streak}}",
           "Streak extended! Current streak: {{streak}}": "¡Racha extendida! Racha actual: {{streak}}",
+          "Feedback" : "Feedback",
+          "Submit" : "Enviar",
+          "Message" : "Mensaje",
+          "Logged out successfully!" : "¡Cerró sesión exitosamente!",  
+          "Feedback submitted successfully!" : "¡Feedback enviado exitosamente!",
+          "Feedback submission failed. Please try again." : "¡Envío de feedback fallado. Inténtalo de nuevo.",
         }
       }
     },
