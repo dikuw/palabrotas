@@ -139,6 +139,7 @@ i18n
           "Logged out successfully!" : "Logged out successfully!",  
           "Feedback submitted successfully!" : "Feedback submitted successfully!",
           "Feedback submission failed. Please try again." : "Feedback submission failed. Please try again.",
+          "Streak updated! Current streak: {{streak}}": "Streak updated! Current streak: {{streak}}",
         }
       },
       es: {
@@ -277,6 +278,7 @@ i18n
           "Logged out successfully!" : "¡Cerró sesión exitosamente!",  
           "Feedback submitted successfully!" : "¡Feedback enviado exitosamente!",
           "Feedback submission failed. Please try again." : "¡Envío de feedback fallado. Inténtalo de nuevo.",
+          "Streak updated to {{streak}}!" : "¡Racha actualizada a {{streak}}!",
         }
       }
     },
