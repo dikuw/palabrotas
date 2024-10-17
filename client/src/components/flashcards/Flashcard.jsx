@@ -85,21 +85,20 @@ const QualityButtonsContainer = styled.div`
 
 const QualityButton = styled.button`
   background-color: ${props => {
-    if (props.$quality === 1) return '#f44336';
-    if (props.$quality === 2) return '#ff9800';
-    if (props.$quality === 3) return '#ffeb3b';
-    if (props.$quality === 4) return '#8bc34a';
-    if (props.$quality === 5) return '#4caf50';
+    if (props.$quality === 'Again') return '#f44336';
+    if (props.$quality === 'Hard') return '#ff9800';
+    if (props.$quality === 'Good') return '#8bc34a';
+    if (props.$quality === 'Easy') return '#4caf50';
   }};
-  color: ${props => props.$quality === 3 ? '#000' : '#fff'};
+  color: #fff;
   border: none;
   padding: 10px 0;
   border-radius: 5px;
   cursor: pointer;
   font-size: 0.75rem;
   transition: opacity 0.3s;
-  width: 12%; // Set a consistent width
-  margin: 0 1%; // Add some horizontal spacing
+  width: 22%; // Adjusted for 4 buttons
+  margin: 0 1%;
 
   &:hover {
     opacity: 0.8;
@@ -113,13 +112,7 @@ const ContentContainer = styled.div`
   justify-content: center;
 `;
 
-const qualityLabels = {
-  1: 'Hardest',
-  2: 'Hard',
-  3: 'Medium',
-  4: 'Easy',
-  5: 'Easiest'
-};
+const qualityLabels = ['Again', 'Hard', 'Good', 'Easy'];
 
 export default function Flashcard({ item, onNext }) {
   const { t } = useTranslation();
@@ -153,7 +146,13 @@ export default function Flashcard({ item, onNext }) {
     }
 
     try {
-      await onNext(item._id, quality);
+      if (quality === 'Again') {
+        // Keep the flashcard in the queue
+        await onNext(item._id, quality, true);
+      } else {
+        await onNext(item._id, quality, false);
+      }
+
       const result = await updateStreak(authStatus.user._id);
 
       if (result.updated) {
@@ -190,7 +189,7 @@ export default function Flashcard({ item, onNext }) {
             <p>{item.content.exampleSentence}</p>
           </ContentContainer>
           <QualityButtonsContainer>
-            {[1, 2, 3, 4, 5].map(quality => (
+            {qualityLabels.map(quality => (
               <QualityButton 
                 key={quality} 
                 $quality={quality} 
@@ -199,7 +198,7 @@ export default function Flashcard({ item, onNext }) {
                   handleAnswer(quality);
                 }}
               >
-                {t(qualityLabels[quality])}
+                {t(quality)}
               </QualityButton>
             ))}
           </QualityButtonsContainer>

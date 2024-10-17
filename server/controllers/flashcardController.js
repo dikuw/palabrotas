@@ -28,14 +28,22 @@ export const addFlashcard = async (req, res) => {
 export const updateFlashcardReview = async (req, res) => {
   try {
     const { flashcardId } = req.params;
-    const { quality } = req.body;
+    const { quality, keepInQueue } = req.body;
 
     const flashcard = await Flashcard.findById(flashcardId);
     if (!flashcard) {
       return res.status(404).json({ message: 'Flashcard not found' });
     }
 
-    await flashcard.updateReview(quality);
+    if (keepInQueue) {
+      // If "Again" was selected, reset the nextReview to now
+      flashcard.nextReview = new Date();
+    } else {
+      // Otherwise, update the review as normal
+      await flashcard.updateReview(quality);
+    }
+
+    await flashcard.save();
     res.json(flashcard);
   } catch (error) {
     res.status(500).json({ message: error.message });

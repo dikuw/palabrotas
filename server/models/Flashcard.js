@@ -48,8 +48,18 @@ flashcardSchema.methods.updateReview = function(quality) {
   this.reviewCount += 1;
   this.lastReviewed = now;
 
+  // Map the new quality ratings to numerical values
+  const qualityMap = {
+    'Again': 0,
+    'Hard': 2,
+    'Good': 3,
+    'Easy': 5
+  };
+
+  const numericQuality = qualityMap[quality] || 3; // Default to 'Good' if unknown quality
+
   // Calculate new ease
-  this.ease = Math.max(MINIMUM_EASE, this.ease + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02)));
+  this.ease = Math.max(MINIMUM_EASE, this.ease + (0.1 - (5 - numericQuality) * (0.08 + (5 - numericQuality) * 0.02)));
 
   // Calculate new interval
   if (this.reviewCount === 1) {
@@ -60,8 +70,8 @@ flashcardSchema.methods.updateReview = function(quality) {
     this.interval = Math.min(MAXIMUM_INTERVAL, Math.round(this.interval * this.ease));
   }
 
-  // If the quality is less than 3 (i.e., the user found it difficult), reset the interval
-  if (quality < 3) {
+  // If the quality is 'Again' or 'Hard', reset the interval
+  if (numericQuality <= 2) {
     this.interval = MINIMUM_INTERVAL;
   }
 
