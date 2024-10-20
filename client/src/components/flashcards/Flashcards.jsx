@@ -47,20 +47,12 @@ export default function Flashcards() {
       await updateFlashcardReview(flashcardId, quality, keepInQueue);
       
       if (!keepInQueue) {
-        // Remove the reviewed flashcard from dueFlashcards only if not keeping in queue
         const updatedDueFlashcards = dueFlashcards.filter(card => card._id !== flashcardId);
         useFlashcardStore.setState({ dueFlashcards: updatedDueFlashcards });
-        
-        if (updatedDueFlashcards.length > 0) {
-          // If there are still flashcards, move to the next one
-          setCurrentIndex(prevIndex => prevIndex % updatedDueFlashcards.length);
-        } else {
-          // If no more flashcards, reset the index
-          setCurrentIndex(0);
-        }
+
+        setCurrentIndex(prevIndex => prevIndex % updatedDueFlashcards.length);
       } else {
-        // If keeping in queue, move to the next flashcard without removing the current one
-        setCurrentIndex(prevIndex => (prevIndex + 1) % dueFlashcards.length);
+        setCurrentIndex(0);
       }
     } catch (error) {
       console.error('Error updating flashcard review:', error);

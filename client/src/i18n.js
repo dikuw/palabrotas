@@ -139,6 +139,7 @@ i18n
           "Feedback submitted successfully!" : "Feedback submitted successfully!",
           "Feedback submission failed. Please try again." : "Feedback submission failed. Please try again.",
           "Streak updated! Current streak: {{streak}}": "Streak updated! Current streak: {{streak}}",
+          "You've completed all your flashcards for today. Please come back tomorrow.": "You've completed all your flashcards for today. Please come back tomorrow.",
         }
       },
       es: {
@@ -277,6 +278,7 @@ i18n
           "Feedback submitted successfully!" : "¡Feedback enviado exitosamente!",
           "Feedback submission failed. Please try again." : "¡Envío de feedback fallado. Inténtalo de nuevo.",
           "Streak updated to {{streak}}!" : "¡Racha actualizada a {{streak}}!",
+          "You've completed all your flashcards for today. Please come back tomorrow.": "¡Completaste todas tus tarjetas de flashcard para hoy. Por favor regresa mañana!",
         }
       }
     },

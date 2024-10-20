@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaQuestionCircle } from 'react-icons/fa';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
@@ -121,6 +121,13 @@ export default function Flashcard({ item, onNext }) {
   const addNotification = useNotificationStore(state => state.addNotification);
   const [isFlipped, setIsFlipped] = useState(false);
   const [showHint, setShowHint] = useState(false);
+  const [currentItem, setCurrentItem] = useState(item);
+
+  useEffect(() => {
+    setCurrentItem(item);
+    setIsFlipped(false);
+    setShowHint(false);
+  }, [item]);
 
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
@@ -146,11 +153,14 @@ export default function Flashcard({ item, onNext }) {
     }
 
     try {
+      setIsFlipped(false);
+      setShowHint(false);
+
       if (quality === 'Again') {
         // Keep the flashcard in the queue
-        await onNext(item._id, quality, true);
+        await onNext(currentItem._id, quality, true);
       } else {
-        await onNext(item._id, quality, false);
+        await onNext(currentItem._id, quality, false);
       }
 
       const result = await updateStreak(authStatus.user._id);
@@ -171,7 +181,7 @@ export default function Flashcard({ item, onNext }) {
     <FlashcardContainer onClick={handleFlip}>
       <FlashcardInner $isFlipped={isFlipped}>
         <FlashcardFront>
-          <Title>{item.content.title}</Title>
+          <Title>{currentItem.content.title}</Title>
           {showHint && (
             <Hint>
               {renderHint()}
@@ -185,8 +195,8 @@ export default function Flashcard({ item, onNext }) {
         </FlashcardFront>
         <FlashcardBack>
           <ContentContainer>
-            <p>{item.content.description}</p>
-            <p>{item.content.exampleSentence}</p>
+            <p>{currentItem.content.description}</p>
+            <p>{currentItem.content.exampleSentence}</p>
           </ContentContainer>
           <QualityButtonsContainer>
             {qualityLabels.map(quality => (
