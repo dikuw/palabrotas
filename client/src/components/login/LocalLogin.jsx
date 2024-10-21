@@ -106,7 +106,6 @@ export default function LocalLogin(props) {
 
   return (
     <StyledWrapperDiv>
-      <div>{t("Log in")}</div>
       <form onSubmit={loginClick}>
         <StyledInput
           name="email"
