@@ -81,7 +81,7 @@ flashcardSchema.methods.updateReview = function(quality) {
   return this.save();
 };
 
-flashcardSchema.statics.getDueFlashcards = function(userId, limit = 20) {
+flashcardSchema.statics.getDueFlashcards = function(userId, limit = 100) {
   const now = new Date();
   return this.find({
     user: userId,
