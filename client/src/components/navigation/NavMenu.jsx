@@ -82,7 +82,6 @@ export default function NavMenu(props) {
         addNotification(t('Logged out successfully!'), 'success');
       }
     } catch (error) {
-      console.log('error', error);
       addNotification(t('Logout failed. Please try again.'), 'error');
     }
 
