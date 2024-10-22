@@ -61,8 +61,12 @@ export default function Card({ item, showEditIcon }) {
   const handleAddToFlashcard = async (e) => {
     e.stopPropagation();
     try {
-      await addFlashcard({ userId: authStatus.user._id, contentId: item._id });
-      addNotification(t('Added to flashcards successfully!'), 'success');
+      const result = await addFlashcard({ userId: authStatus.user._id, contentId: item._id });
+      if (result.success) {
+        addNotification(t('Added to flashcards successfully!'), 'success');
+      } else {
+        addNotification(result.message, 'info');
+      }
     } catch (error) {
       console.error('Error adding to flashcards:', error);
       addNotification(t('Failed to add to flashcards. Please try again.'), 'error');

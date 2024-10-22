@@ -14,12 +14,28 @@ export const getFlashcards = async (req, res) => {
 export const addFlashcard = async (req, res) => {
   try {
     const { userId, contentId } = req.body;
+
+    // Check if the flashcard already exists for this user and content
+    const existingFlashcard = await Flashcard.findOne({ user: userId, content: contentId });
+
+    if (existingFlashcard) {
+      // If the flashcard already exists, send a 409 Conflict status
+      return res.status(409).json({ 
+        message: 'This flashcard already exists in your collection.',
+        flashcard: existingFlashcard
+      });
+    }
+
+    // If the flashcard doesn't exist, create a new one
     const flashcard = new Flashcard({
       user: userId,
       content: contentId
     });
     await flashcard.save();
-    res.status(201).json(flashcard);
+    res.status(201).json({ 
+      message: 'Flashcard added successfully',
+      flashcard: flashcard
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
