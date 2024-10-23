@@ -34,6 +34,11 @@ const contentSchema = new mongoose.Schema({
     ref: 'User',
     required: 'You must supply an owner'
   },
+  author: {
+    type: String,
+    trim: true,
+    required: 'You must supply an author'
+  },
   country: {
     type: String,
     trim: true,

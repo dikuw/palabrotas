@@ -69,8 +69,6 @@ const StyledSelect = styled.select`
   }
 `;
 
-
-
 export default function AddContent() {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -84,6 +82,7 @@ export default function AddContent() {
     hint: "",
     exampleSentence: "",
     owner: authStatus.user ? authStatus.user._id : "66f97a0ef1de0db4e4c254eb",
+    author: authStatus.user ? authStatus.user.name : "Anonymous",
   });
 
   const [errors, setErrors] = useState({});
@@ -99,6 +98,7 @@ export default function AddContent() {
     if (!formData.title) newErrors.title = t("Please enter a title.");
     if (!formData.description) newErrors.description = t("Please enter a description.");
     if (!formData.country) newErrors.country = t("Please select a country.");
+    if (!formData.author) newErrors.author = t("Please enter an author.");
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -150,6 +150,14 @@ export default function AddContent() {
             </option>
           ))}
         </StyledSelect>
+        <StyledInput
+          name="author"
+          type="text"
+          placeholder={errors.author || t("Author")}
+          value={errors.author ? "" : formData.author}
+          onChange={handleChange}
+          $hasError={!!errors.author}
+        />
         <StyledInput
           name="hint"
           type="text"

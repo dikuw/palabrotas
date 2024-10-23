@@ -82,6 +82,7 @@ export default function EditItemForm(props) {
     country: "",
     hint: "",
     exampleSentence: "",
+    author: "",
   });
 
   const [isDirty, setIsDirty] = useState(false);
@@ -97,6 +98,7 @@ export default function EditItemForm(props) {
         country: contentItem.country,
         hint: contentItem.hint || "",
         exampleSentence: contentItem.exampleSentence || "",
+        author: contentItem.author || "",
       });
     }
   }, [id, contents]);
@@ -113,7 +115,8 @@ export default function EditItemForm(props) {
     if (!formData.title) newErrors.title = t("Please enter a title.");
     if (!formData.description) newErrors.description = t("Please enter a description.");
     if (!formData.country) newErrors.country = t("Please select a country.");
-  setErrors(newErrors);
+    if (!formData.author) newErrors.author = t("Please enter an author.");
+    setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
@@ -179,6 +182,14 @@ export default function EditItemForm(props) {
             </option>
           ))}
         </StyledSelect>
+        <StyledInput
+          name="author"
+          type="text"
+          placeholder={errors.author || t("Author")}
+          value={errors.author ? "" : formData.author}
+          onChange={handleChange}
+          $hasError={!!errors.author}
+        />
         <StyledInput
           name="hint"
           type="text"
