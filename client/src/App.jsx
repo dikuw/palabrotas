@@ -89,7 +89,10 @@ function App() {
         />
         <Route path="/content/:id" 
           element={
-            <Content />
+            <>
+              <Banner bannerString={t("Entry Details")} />
+              <Content />
+            </>
           }
         />
         <Route path="/account" 
