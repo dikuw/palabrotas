@@ -48,6 +48,15 @@ const StyledAddToFlashcardIcon = styled(FaPlus)`
   }
 `;
 
+const StyledAuthorText = styled.span`
+  position: absolute;
+  bottom: 10px;
+  right: 40px; // Positioned to the left of the add icon
+  font-size: 0.6rem;
+  color: var(--gray);
+  font-style: italic; 
+`;
+
 export default function Card({ item, showEditIcon }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -85,6 +94,7 @@ export default function Card({ item, showEditIcon }) {
       <p>{item.title}</p>
       <p>{item.description}</p>
     </figcaption>
+    <StyledAuthorText>{t('created by')}: {item.author}</StyledAuthorText> 
     {authStatus.isLoggedIn && (
       <StyledAddToFlashcardIcon 
         onClick={handleAddToFlashcard} 

@@ -142,6 +142,7 @@ i18n
           "You've completed all your flashcards for today. Please come back tomorrow.": "You've completed all your flashcards for today. Please come back tomorrow.",
           "Author" : "Author",
           "Please enter an author." : "Please enter an author.",
+          "created by": "created by",
         }
       },
       es: {
@@ -283,6 +284,7 @@ i18n
           "You've completed all your flashcards for today. Please come back tomorrow.": "¡Completaste todas tus tarjetas de flashcard para hoy. Por favor regresa mañana!",
           "Author" : "Autor",
           "Please enter an author." : "Por favor ingresa un autor.",
+          "created by": "creado por",
         }
       }
     },
