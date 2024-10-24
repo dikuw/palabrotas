@@ -4,11 +4,11 @@ import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import ReactCountryFlag from "react-country-flag";
 
-import { useAuthStore } from '../../store/auth';
 import { useContentStore } from '../../store/content';
 import { useNotificationStore } from '../../store/notification';
 
 const ContentWrapper = styled.div`
+  width: 90%;
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
@@ -46,14 +46,12 @@ const Content = () => {
   const { id } = useParams();
   const [content, setContent] = useState(null);
   const { getContentById } = useContentStore();
-  const { authStatus } = useAuthStore();
   const addNotification = useNotificationStore(state => state.addNotification);
 
   useEffect(() => {
     const fetchContent = async () => {
       try {
         const content = await getContentById(id);
-        console.log("content", content);
         setContent(content);
       } catch (error) {
         console.error('Error fetching content:', error);
