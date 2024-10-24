@@ -14,6 +14,7 @@ import LocalLogin from './components/login/LocalLogin';
 import Account from './components/account/Account';
 import Flashcards from './components/flashcards/Flashcards';
 import Grid from './components/main/Grid';
+import Content from './components/content/Content';
 import AddContent from './components/content/AddContent';
 import EditContent from './components/content/EditContent';
 import Admin from './components/admin/Admin';
@@ -84,6 +85,11 @@ function App() {
                 // forgotUser={forgotUser} 
               />
             </>
+          }
+        />
+        <Route path="/content/:id" 
+          element={
+            <Content />
           }
         />
         <Route path="/account" 

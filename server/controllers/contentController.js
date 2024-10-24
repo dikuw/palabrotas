@@ -15,6 +15,18 @@ export const getContents = async (req, res) => {
   }
 };
 
+export const getContentById = async (req, res) => {
+  try {
+    const content = await Content.findById(req.params.id);
+    if (!content) {
+      return res.status(404).json({ message: 'Content not found' });
+    }
+    res.json(content);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export const getContentsByUserId = async (req, res) => {
   try {
     const contents = await Content.find({ owner: req.params.userId });

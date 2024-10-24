@@ -143,6 +143,7 @@ i18n
           "Author" : "Author",
           "Please enter an author." : "Please enter an author.",
           "created by": "created by",
+          "Loading..." : "Loading...",
         }
       },
       es: {
@@ -285,6 +286,7 @@ i18n
           "Author" : "Autor",
           "Please enter an author." : "Por favor ingresa un autor.",
           "created by": "creado por",
+          "Loading..." : "Cargando...",
         }
       }
     },

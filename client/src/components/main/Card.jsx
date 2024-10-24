@@ -63,7 +63,13 @@ export default function Card({ item, showEditIcon }) {
   const { addFlashcard } = useFlashcardStore(); 
   const { authStatus } = useAuthStore(); 
   const addNotification = useNotificationStore(state => state.addNotification);
-  const handleClick = (item) => {
+
+  const handleClick = () => {
+    navigate(`/content/${item._id}`);
+  };
+
+  const handleEdit = (e) => {
+    e.stopPropagation(); // Prevent triggering the card click
     navigate(`/editContent/${item._id}`);
   };
 
@@ -83,12 +89,12 @@ export default function Card({ item, showEditIcon }) {
   };
 
   return (
-  <StyledGridFigure>
+  <StyledGridFigure  onClick={() => handleClick(item)}>
     {item.country && (
       <StyledFlagIcon countryCode={item.country} svg />
     )}
     {showEditIcon && (
-      <StyledEditIcon onClick={() => handleClick(item)} title={t('Edit')} />
+      <StyledEditIcon onClick={() => handleEdit(item)} title={t('Edit')} />
     )}
     <figcaption>
       <p>{item.title}</p>
