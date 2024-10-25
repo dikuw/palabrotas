@@ -16,13 +16,10 @@ export const useCommentStore = create((set, get) => ({
     return data;
   },
   getCommentsByContentId: async (contentId) => {
-    // const res = await fetch(`/api/comment/getCommentsByContentId/${contentId}`);
-    // const data = await res.json();
-    // set({ comments: data.data });
     try {
       const res = await fetch(`/api/comment/getCommentsByContentId/${contentId}`);
       const data = await res.json();
-      set({ comments: Array.isArray(data.data) ? data.data : [] });
+      set({ comments: Array.isArray(data) ? data : [] });
     } catch (error) {
       console.error('Error fetching comments:', error);
       set({ comments: [] });

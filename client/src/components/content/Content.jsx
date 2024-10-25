@@ -60,29 +60,49 @@ const ToggleButton = styled.button`
   font-size: 1rem;
 `;
 
+const CommentList = styled.ul`
+  list-style-type: none;
+  padding: 0;
+  margin-top: 20px;
+`;
+
+const CommentItem = styled.li`
+  border-bottom: 1px solid #eee;
+  padding: 10px 0;
+`;
+
+const CommentText = styled.p`
+  margin-bottom: 5px;
+`;
+
+const CommentMeta = styled.div`
+  font-size: 0.8rem;
+  color: var(--gray);
+`;
+
 const Content = () => {
   const { t } = useTranslation();
   const { id } = useParams();
   const { authStatus } = useAuthStore();
   const { getContentById } = useContentStore();
-  const { getCommentsByContentId, addComment } = useCommentStore();
+  const { comments, getCommentsByContentId, addComment } = useCommentStore();
   const addNotification = useNotificationStore(state => state.addNotification);
   const [content, setContent] = useState(null);
-  const [showCommentForm, setShowCommentForm] = useState(false);
+  const [showComments, setShowComments] = useState(false);
 
   useEffect(() => {
-    const fetchContent = async () => {
+    const fetchContentAndComments = async () => {
       try {
-        const content = await getContentById(id);
-        setContent(content);
-        getCommentsByContentId(id);
+        const contentData = await getContentById(id);
+        setContent(contentData);
+        await getCommentsByContentId(id);
       } catch (error) {
-        console.error('Error fetching content:', error);
-        addNotification(t('Failed to load content'), 'error');
+        console.error('Error fetching content or comments:', error);
+        addNotification(t('Failed to load content or comments'), 'error');
       }
     };
 
-    fetchContent();
+    fetchContentAndComments();
   }, [id, addNotification, t]);
 
   const handleAddComment = async (commentText) => {
@@ -111,12 +131,26 @@ const Content = () => {
       )}
       <AuthorInfo>{t('Created by')}: {content.author}</AuthorInfo>
       <CommentSection>
-        <ToggleButton onClick={() => setShowCommentForm(!showCommentForm)}>
-          {showCommentForm ? <FaChevronUp /> : <FaChevronDown />}
-          {t('Add a comment')}
+        <ToggleButton onClick={() => setShowComments(!showComments)}>
+          {showComments ? <FaChevronUp /> : <FaChevronDown />}
+          {t('Show Comments')} ({comments.length})
         </ToggleButton>
-        {showCommentForm && authStatus.isLoggedIn && (
-          <CommentForm onSubmit={handleAddComment} />
+        {showComments && (
+          <>
+            <CommentList>
+              {comments.map((comment) => (
+                <CommentItem key={comment._id}>
+                  <CommentText>{comment.text}</CommentText>
+                  <CommentMeta>
+                    {t('Created by')}: {comment.owner.name} | {new Date(comment.createdAt).toLocaleString()}
+                  </CommentMeta>
+                </CommentItem>
+              ))}
+            </CommentList>
+            {authStatus.isLoggedIn && (
+              <CommentForm onSubmit={handleAddComment} />
+            )}
+          </>
         )}
       </CommentSection>
     </ContentWrapper>
