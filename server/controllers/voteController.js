@@ -2,6 +2,7 @@ import Vote from '../models/Vote.js';
 
 export const addVote = async (req, res) => {
   const { contentId, userId, voteType } = req.body;
+  console.log(contentId, userId, voteType);
   const newVote = new Vote({ content: contentId, user: userId, voteType });
   try {
     await newVote.save();

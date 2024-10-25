@@ -1,12 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaEdit, FaPlus } from 'react-icons/fa';
+import { FaEdit, FaPlus, FaChevronUp, FaChevronDown  } from 'react-icons/fa';
 import ReactCountryFlag from "react-country-flag";
 import { useTranslation } from "react-i18next";
 import styled from 'styled-components';
 
 import { useAuthStore } from '../../store/auth';
 import { useFlashcardStore } from '../../store/flashcard';
+import { useVoteStore } from '../../store/vote';
 import { useNotificationStore } from '../../store/notification';
 
 const StyledGridFigure = styled.figure`
@@ -17,6 +18,15 @@ const StyledGridFigure = styled.figure`
   background: var(--almostWhite);
   box-shadow: 0 0 0 5px rgba(0,0,0,0.03);
   position: relative;
+  display: flex;
+  align-items: center;
+`;
+
+const StyledFlagIcon = styled(ReactCountryFlag)`
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 1rem !important;
 `;
 
 const StyledEditIcon = styled(FaEdit)`
@@ -27,13 +37,6 @@ const StyledEditIcon = styled(FaEdit)`
   text-transform: uppercase;
   font-weight: 400;
   cursor: pointer;
-`;
-
-const StyledFlagIcon = styled(ReactCountryFlag)`
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 1rem !important;
 `;
 
 const StyledAddToFlashcardIcon = styled(FaPlus)`
@@ -57,11 +60,29 @@ const StyledAuthorText = styled.span`
   font-style: italic; 
 `;
 
+const VoteIcons = styled.div`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const VoteIcon = styled.div`
+  cursor: pointer;
+  color: var(--primary);
+  &:hover {
+    color: var(--secondary);
+  }
+`;
+
 export default function Card({ item, showEditIcon }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { addFlashcard } = useFlashcardStore(); 
   const { authStatus } = useAuthStore(); 
+  const { addVote } = useVoteStore(); 
   const addNotification = useNotificationStore(state => state.addNotification);
 
   const handleClick = () => {
@@ -88,25 +109,47 @@ export default function Card({ item, showEditIcon }) {
     }
   };
 
+  const handleVote = async (voteType) => {
+    try {
+      const result = await addVote(item._id, authStatus.user._id, voteType);
+      if (result.success) {
+        addNotification(t('Vote recorded successfully!'), 'success');
+      } else {
+        addNotification(result.message, 'info');
+      }
+    } catch (error) {
+      console.error('Error voting:', error);
+      addNotification(t('Failed to record vote. Please try again.'), 'error');
+    }
+  };
+
   return (
-  <StyledGridFigure  onClick={() => handleClick(item)}>
-    {item.country && (
-      <StyledFlagIcon countryCode={item.country} svg />
-    )}
-    {showEditIcon && (
-      <StyledEditIcon onClick={() => handleEdit(item)} title={t('Edit')} />
-    )}
-    <figcaption>
-      <p>{item.title}</p>
-      <p>{item.description}</p>
-    </figcaption>
-    <StyledAuthorText>{t('created by')}: {item.author}</StyledAuthorText> 
-    {authStatus.isLoggedIn && (
-      <StyledAddToFlashcardIcon 
-        onClick={handleAddToFlashcard} 
-        title={t('Add to Flashcards')}
-      />
-    )}
-  </StyledGridFigure>
+    <StyledGridFigure onClick={handleClick}>
+      {item.country && (
+        <StyledFlagIcon countryCode={item.country} svg />
+      )}
+      {showEditIcon && (
+        <StyledEditIcon onClick={handleEdit} title={t('Edit')} />
+      )}
+      <figcaption>
+        <p>{item.title}</p>
+        <p>{item.description}</p>
+      </figcaption>
+      <StyledAuthorText>{t('created by')}: {item.author}</StyledAuthorText> 
+      {authStatus.isLoggedIn && (
+        <StyledAddToFlashcardIcon 
+          onClick={handleAddToFlashcard} 
+          title={t('Add to Flashcards')}
+        />
+      )}
+      <VoteIcons>
+        <VoteIcon onClick={(e) => { e.stopPropagation(); handleVote('upvote'); }}>
+          <FaChevronUp />
+        </VoteIcon>
+        <VoteIcon onClick={(e) => { e.stopPropagation(); handleVote('downvote'); }}>
+          <FaChevronDown />
+        </VoteIcon>
+      </VoteIcons>
+    </StyledGridFigure>
   );
 };

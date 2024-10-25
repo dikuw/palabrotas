@@ -151,6 +151,8 @@ i18n
           "Comment added successfully!" : "Comment added successfully!",
           "Comments" : "Comments",
           "Show Comments" : "Show Comments",
+          "Vote recorded successfully!" : "Vote recorded successfully!",
+          "Failed to record vote. Please try again." : "Failed to record vote. Please try again.",
         }
       },
       es: {
@@ -301,6 +303,8 @@ i18n
           "Comment added successfully!" : "¡Comentario agregado exitosamente!",
           "Comments" : "Comentarios",
           "Show Comments" : "Mostrar Comentarios",
+          "Vote recorded successfully!" : "¡Voto registrado exitosamente!",
+          "Failed to record vote. Please try again." : "¡Fallo al registrar voto. Inténtalo de nuevo.",
         }
       }
     },
