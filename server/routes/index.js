@@ -4,6 +4,7 @@ import contentRouter from './contentRoutes.js';
 import flashcardRouter from './flashcardRoutes.js';
 import feedbackRouter from './feedbackRoutes.js';
 import commentRouter from './commentRoutes.js';
+import voteRouter from './voteRoutes.js';
 
 export default (app) => {
   app.use("/api/auth", authRouter);
@@ -12,4 +13,5 @@ export default (app) => {
   app.use("/api/flashcard", flashcardRouter);
   app.use("/api/feedback", feedbackRouter);
   app.use("/api/comment", commentRouter);
+  app.use("/api/vote", voteRouter);
 };
