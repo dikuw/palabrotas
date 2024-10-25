@@ -3,6 +3,7 @@ import userRouter from './userRoutes.js';
 import contentRouter from './contentRoutes.js'; 
 import flashcardRouter from './flashcardRoutes.js';
 import feedbackRouter from './feedbackRoutes.js';
+import commentRouter from './commentRoutes.js';
 
 export default (app) => {
   app.use("/api/auth", authRouter);
@@ -10,4 +11,5 @@ export default (app) => {
   app.use("/api/content", contentRouter);
   app.use("/api/flashcard", flashcardRouter);
   app.use("/api/feedback", feedbackRouter);
+  app.use("/api/comment", commentRouter);
 };

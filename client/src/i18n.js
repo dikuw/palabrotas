@@ -145,6 +145,10 @@ i18n
           "created by": "created by",
           "Loading..." : "Loading...",
           "Entry Details" : "Entry Details",
+          "Add a comment" : "Add a comment",
+          "Add a comment..." : "Add a comment...",
+          "Failed to add comment" : "Failed to add comment",
+          "Comment added successfully!" : "Comment added successfully!",
         }
       },
       es: {
@@ -289,6 +293,10 @@ i18n
           "created by": "creado por",
           "Loading..." : "Cargando...",
           "Entry Details" : "Detalles del contenido",
+          "Add a comment" : "Agregar un comentario",
+          "Add a comment..." : "Agregar un comentario...",
+          "Failed to add comment" : "¡Fallo al agregar comentario",
+          "Comment added successfully!" : "¡Comentario agregado exitosamente!",
         }
       }
     },
