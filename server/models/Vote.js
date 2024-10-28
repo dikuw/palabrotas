@@ -21,23 +21,24 @@ const voteSchema = new mongoose.Schema({
 // Compound index to ensure a user can only have one upvote and one downvote per content
 voteSchema.index({ content: 1, user: 1, voteType: 1 }, { unique: true });
 
-// Static method to get vote counts for a piece of content
-voteSchema.statics.getVoteCounts = async function(contentId) {
-  const result = await this.aggregate([
-    { $match: { content: mongoose.Types.ObjectId(contentId) } },
-    { $group: {
-        _id: '$voteType',
-        count: { $sum: 1 }
+// Static method to get vote counts for all content
+voteSchema.statics.getVoteCounts = async function() {
+  return this.aggregate([
+    {
+      $group: {
+        _id: '$content',
+        count: {
+          $sum: {
+            $cond: [
+              { $eq: ['$voteType', 'upvote'] },
+              1,
+              -1
+            ]
+          }
+        }
       }
     }
   ]);
-
-  const counts = { upvotes: 0, downvotes: 0 };
-  result.forEach(item => {
-    counts[item._id + 's'] = item.count;
-  });
-
-  return counts;
 };
 
 const Vote = mongoose.model('Vote', voteSchema);

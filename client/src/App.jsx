@@ -24,7 +24,7 @@ import Feedback from './components/feedback/Feedback';
 function App() {
   const { t } = useTranslation();
 
-  const { getContents } = useContentStore();
+  const { getContents, getContentsSortedByVoteDesc } = useContentStore();
   const { authStatus, loginUser, logoutUser, getCurrentUser } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
   const [isPasswordIncorrect, setIsPasswordIncorrect] = useState(false);
@@ -33,7 +33,7 @@ function App() {
     setIsLoading(true);
 
     async function initialize() {
-      await getContents();
+      await getContentsSortedByVoteDesc();
       await getCurrentUser();
       setIsLoading(false);
     }

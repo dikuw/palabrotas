@@ -1,4 +1,5 @@
 import Content from '../models/Content.js';
+import Vote from '../models/Vote.js';
 
 export const getContents = async (req, res) => {
   try {
@@ -12,6 +13,36 @@ export const getContents = async (req, res) => {
   } catch(error) {
     console.error("Error in get content:", error.message);
     res.status(500).json({ success: false, message: error });
+  }
+};
+
+export const getContentsSortedByVoteDesc = async (req, res) => {
+  try {
+    // Get vote counts for all content
+    const voteCounts = await Vote.getVoteCounts();
+    // Fetch all content
+    const contents = await Content.find({ show: true });
+
+    // Combine content with vote counts and sort
+    const contentWithVotes = contents.map(content => {
+      const voteCount = voteCounts.find(vc => vc._id.toString() === content._id.toString())?.count || 0;
+      return { 
+        ...content.toObject(), 
+        voteCount,
+        _id: content._id.toString()
+      };
+    }).sort((a, b) => b.voteCount - a.voteCount);
+
+    if (!contentWithVotes.length) {
+      return res
+        .status(404)
+        .json({ success: false, error: `No content found` });
+    }
+
+    res.status(200).json({ success: true, data: contentWithVotes });
+  } catch(error) {
+    console.error("Error in get contents sorted by votes:", error.message);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 

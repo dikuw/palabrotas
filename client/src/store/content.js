@@ -51,6 +51,17 @@ export const useContentStore = create((set, get) => ({
     const visibleContents = data.data.filter(content => content.show === true);
     set({ contents: visibleContents });
   }, 
+  getContentsSortedByVoteDesc: async () => {
+    const res = await fetch("/api/content/getContentsSortedByVoteDesc", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    const data = await res.json();
+    const visibleContents = data.data.filter(content => content.show === true);
+    set({ contents: visibleContents });
+  },
   getContentById: async (id) => {
     const res = await fetch(`/api/content/getContentById/${id}`, {
       method: "GET",
