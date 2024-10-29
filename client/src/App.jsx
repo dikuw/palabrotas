@@ -38,7 +38,7 @@ function App() {
       setIsLoading(false);
     }
     initialize();
-  }, [getContents]);
+  }, [getContents, getContentsSortedByVoteDesc]);
 
   return (
     <div className="app-container">

@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import styled from 'styled-components';
 
 import { useAuthStore } from '../../store/auth';
+import { useContentStore } from '../../store/content'; 
 import { useFlashcardStore } from '../../store/flashcard';
 import { useVoteStore } from '../../store/vote';
 import { useNotificationStore } from '../../store/notification';
@@ -83,6 +84,7 @@ export default function Card({ item, showEditIcon }) {
   const { addFlashcard } = useFlashcardStore(); 
   const { authStatus } = useAuthStore(); 
   const { addVote } = useVoteStore(); 
+  const { getContentsSortedByVoteDesc } = useContentStore();
   const addNotification = useNotificationStore(state => state.addNotification);
 
   const handleClick = () => {
@@ -90,7 +92,7 @@ export default function Card({ item, showEditIcon }) {
   };
 
   const handleEdit = (e) => {
-    e.stopPropagation(); // Prevent triggering the card click
+    e.stopPropagation();
     navigate(`/editContent/${item._id}`);
   };
 
@@ -114,6 +116,7 @@ export default function Card({ item, showEditIcon }) {
       const result = await addVote(item._id, authStatus.user._id, voteType);
       if (result.success) {
         addNotification(t('Vote recorded successfully!'), 'success');
+        await getContentsSortedByVoteDesc();
       } else {
         addNotification(result.message, 'info');
       }
