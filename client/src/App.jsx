@@ -20,7 +20,8 @@ import EditContent from './components/content/EditContent';
 import Admin from './components/admin/Admin';
 import NotificationContainer from './components/notifications/NotificationContainer';
 import Footer from './components/Footer';
-import Feedback from './components/feedback/Feedback';
+import AddFeedback from './components/feedback/AddFeedback';
+import AddTag from './components/tag/AddTag';
 function App() {
   const { t } = useTranslation();
 
@@ -135,11 +136,21 @@ function App() {
             </>
           }
         />
-        <Route path="/feedback" 
+        <Route path="/addfeedback" 
           element={
             <>
-              <Banner bannerString={t("Feedback")} />
-              <Feedback />
+              <Banner bannerString={t("Add Feedback")} />
+              <AddFeedback />
+            </>
+          }
+        />
+        <Route path="/addTag" 
+          element={
+            <>
+              <Banner bannerString={t("Add Tag")} />
+              <AddTag
+                isLoggedIn={authStatus.isLoggedIn} 
+              />
             </>
           }
         />

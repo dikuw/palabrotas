@@ -155,6 +155,14 @@ i18n
           "Failed to record vote. Please try again." : "Failed to record vote. Please try again.",
           "Vote already recorded for this user on this content." : "Vote already recorded for this user on this content.",
           "Please log in to vote" : "Please log in to vote",
+          "Add Tag" : "Add Tag",
+          "name" : "name",
+          "Please log in to add tags": "Please log in to add tags",
+          "Please enter a name." : "Please enter a name.",
+          "Added successfully" : "Added successfully",
+          "Add Feedback" : "Add Feedback",
+          "Please log in to add a tag" : "Please log in to add a tag",
+          "tag" : "tag",
         }
       },
       es: {
@@ -309,6 +317,14 @@ i18n
           "Failed to record vote. Please try again." : "¡Fallo al registrar voto. Inténtalo de nuevo!",
           "Vote already recorded for this user on this content." : "¡Voto ya registrado para este usuario en este contenido!",
           "Please log in to vote" : "¡Inicie sesión para votar!",
+          "Add Tag" : "Agregar Etiqueta",
+          "name": "nombre",
+          "Please enter a name." : "Por favor ingresa un nombre.",
+          "Please log in to add tags": "¡Inicie sesión para agregar etiquetas!",
+          "Added successfully" : "¡Agregado exitosamente!",
+          "Add Feedback" : "Agregar Feedback",
+          "tag" : "etiqueta",
+          "Please log in to add a tag" : "¡Inicie sesión para agregar una etiqueta!",
         }
       }
     },
