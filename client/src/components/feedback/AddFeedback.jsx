@@ -37,7 +37,7 @@ const StyledInput = styled.input`
   color: ${props => props.$hasError ? 'red' : 'inherit'};
 `;
 
-export default function Feedback() {
+export default function addFeedback() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { addFeedback } = useFeedbackStore();
