@@ -73,7 +73,7 @@ export default function EditItemForm(props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams();
-  const { contents, getContents, updateContent, deleteContent } = useContentStore();
+  const { MAX_TITLE_LENGTH, MAX_DESCRIPTION_LENGTH, contents, getContents, updateContent, deleteContent } = useContentStore();
   const addNotification = useNotificationStore(state => state.addNotification);
   const [formData, setFormData] = useState({
     id: "",
@@ -160,6 +160,7 @@ export default function EditItemForm(props) {
           value={formData.title}
           onChange={handleChange}
           $hasError={!!errors.title}
+          maxLength={MAX_TITLE_LENGTH}
         />
         <StyledInput
           name="description"
@@ -168,6 +169,7 @@ export default function EditItemForm(props) {
           value={formData.description}
           onChange={handleChange}
           $hasError={!!errors.description}
+          maxLength={MAX_DESCRIPTION_LENGTH}
         />
         <StyledSelect
           name="country"

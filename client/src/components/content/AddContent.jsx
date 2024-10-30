@@ -73,7 +73,7 @@ export default function AddContent() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { authStatus } = useAuthStore();
-  const { addContent } = useContentStore();
+  const { MAX_TITLE_LENGTH, MAX_DESCRIPTION_LENGTH, addContent } = useContentStore();
   const addNotification = useNotificationStore(state => state.addNotification);
   const [formData, setFormData] = useState({
     title: "",
@@ -128,6 +128,7 @@ export default function AddContent() {
           value={errors.title ? "" : formData.title}
           onChange={handleChange}
           $hasError={!!errors.title}
+          maxLength={MAX_TITLE_LENGTH}
         />
         <StyledInput
           name="description"
@@ -136,6 +137,7 @@ export default function AddContent() {
           value={errors.description ? "" : formData.description}
           onChange={handleChange}
           $hasError={!!errors.description}
+          maxLength={MAX_DESCRIPTION_LENGTH}
         />
         <StyledSelect
           name="country"

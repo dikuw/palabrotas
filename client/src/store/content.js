@@ -3,6 +3,8 @@ import { create } from 'zustand';
 export const useContentStore = create((set, get) => ({
   contents: [],
   searchResults: [],
+  MAX_TITLE_LENGTH: 1000,
+  MAX_DESCRIPTION_LENGTH: 1000,
   setContents: (contents) => set({ contents }),
   addContent: async (newContent) => {
     const res = await fetch("/api/content/addContent", {
