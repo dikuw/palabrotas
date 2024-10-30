@@ -6,9 +6,13 @@ export const addVote = async (req, res) => {
   try {
     await newVote.save();
     res.status(201).json({ success: true, data: newVote });
-  } catch(error) {
-    console.error("Error in add vote:", error.message);
-    res.status(500).json({ success: false, message: error });
+  } catch (error) {
+    if (error.code === 11000) { // MongoDB duplicate key error code
+      res.status(400).json({ success: false, message: "Vote already recorded for this user on this content." });
+    } else {
+      console.error("Error in add vote:", error.message);
+      res.status(500).json({ success: false, message: "Server error. Please try again later." });
+    }
   }
 };
 
