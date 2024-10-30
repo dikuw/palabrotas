@@ -112,6 +112,11 @@ export default function Card({ item, showEditIcon }) {
   };
 
   const handleVote = async (voteType) => {
+    if (!authStatus.isLoggedIn || !authStatus.user?._id) {
+      addNotification(t('Please log in to vote'), 'info');
+      return;
+    }
+
     try {
       const result = await addVote(item._id, authStatus.user._id, voteType);
       if (result.success) {
