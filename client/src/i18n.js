@@ -306,9 +306,9 @@ i18n
           "Comments" : "Comentarios",
           "Show Comments" : "Mostrar Comentarios",
           "Vote recorded successfully!" : "¡Voto registrado exitosamente!",
-          "Failed to record vote. Please try again." : "¡Fallo al registrar voto. Inténtalo de nuevo.",
-          "Vote already recorded for this user on this content." : "¡Voto ya registrado para este usuario en este contenido.",
-          "Please log in to vote" : "¡Inicie sesión para votar",
+          "Failed to record vote. Please try again." : "¡Fallo al registrar voto. Inténtalo de nuevo!",
+          "Vote already recorded for this user on this content." : "¡Voto ya registrado para este usuario en este contenido!",
+          "Please log in to vote" : "¡Inicie sesión para votar!",
         }
       }
     },
