@@ -153,6 +153,7 @@ i18n
           "Show Comments" : "Show Comments",
           "Vote recorded successfully!" : "Vote recorded successfully!",
           "Failed to record vote. Please try again." : "Failed to record vote. Please try again.",
+          "Vote already recorded for this user on this content." : "Vote already recorded for this user on this content.",
         }
       },
       es: {
@@ -305,6 +306,7 @@ i18n
           "Show Comments" : "Mostrar Comentarios",
           "Vote recorded successfully!" : "¡Voto registrado exitosamente!",
           "Failed to record vote. Please try again." : "¡Fallo al registrar voto. Inténtalo de nuevo.",
+          "Vote already recorded for this user on this content." : "¡Voto ya registrado para este usuario en este contenido.",
         }
       }
     },
