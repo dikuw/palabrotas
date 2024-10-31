@@ -21,6 +21,23 @@ const contentTagSchema = new mongoose.Schema({
 // Compound index to ensure a tag can only be added once to a content
 contentTagSchema.index({ content: 1, tag: 1 }, { unique: true });
 
+contentTagSchema.statics.getTagsForContent = async function(contentId) {
+  return this.aggregate([
+    { $match: { content: mongoose.Types.ObjectId.createFromHexString(contentId) }},
+    { $lookup: {
+      from: 'tags',
+      localField: 'tag',
+      foreignField: '_id',
+      as: 'tagDetails'
+    }},
+    { $unwind: '$tagDetails' },
+    { $project: {
+      _id: '$tagDetails._id',
+      name: '$tagDetails.name'
+    }}
+  ]);
+};
+
 const ContentTag = mongoose.model('ContentTag', contentTagSchema);
 
 export default ContentTag;
