@@ -26,3 +26,19 @@ export const addTag = async (req, res) => {
     res.status(500).json({ success: false, message: error });
   }
 };
+
+export const addTagToContent  = async (req, res) => {
+  const { contentId, tagId, userId } = req.body;
+  const newContentTag = new ContentTag({ content: contentId, tag: tagId, owner: userId });
+  try {
+    await newContentTag.save();
+    res.status(201).json({ success: true, data: newContentTag });
+  } catch (error) {
+    if (error.code === 11000) { // MongoDB duplicate key error code
+      res.status(400).json({ success: false, message: "Tag already added to this content." });
+    } else {
+      console.error("Error in add tag to content:", error.message);
+      res.status(500).json({ success: false, message: "Server error. Please try again later." });
+    }
+  }
+};
