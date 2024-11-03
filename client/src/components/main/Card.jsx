@@ -32,7 +32,7 @@ const StyledFlagIcon = styled(ReactCountryFlag)`
 
 const StyledEditIcon = styled(FaEdit)`
   position: absolute;
-  top: 40px; // Adjusted to be below the flag
+  top: 70px;
   right: 10px;
   font-size: 1rem;
   text-transform: uppercase;
