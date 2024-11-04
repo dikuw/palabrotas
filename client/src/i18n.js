@@ -163,6 +163,7 @@ i18n
           "Add Feedback" : "Add Feedback",
           "Please log in to add a tag" : "Please log in to add a tag",
           "tag" : "tag",
+          "Select countries..." : "Select countries...",
         }
       },
       es: {
@@ -325,6 +326,7 @@ i18n
           "Add Feedback" : "Agregar Feedback",
           "tag" : "etiqueta",
           "Please log in to add a tag" : "¡Inicie sesión para agregar una etiqueta!",
+          "Select countries..." : "Selecciona países...",
         }
       }
     },

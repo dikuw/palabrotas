@@ -92,6 +92,10 @@ export const useContentStore = create((set, get) => ({
     );
     set({ searchResults: filtered });
   },
-
+  filterByCountries: (countries) => {
+    const { contents } = get();
+    const filtered = contents.filter(content => countries.includes(content.country));
+    set({ searchResults: filtered });
+  },
   clearSearch: () => set({ searchResults: [] }),
 }));
