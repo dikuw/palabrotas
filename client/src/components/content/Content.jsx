@@ -12,6 +12,8 @@ import { useNotificationStore } from '../../store/notification';
 
 import CommentForm from '../comment/CommentForm';
 import TagGrid from '../tag/TagGrid';
+import AddTagToContent from '../tag/AddTagToContent';
+
 const ContentWrapper = styled.div`
   width: 90%;
   max-width: 800px;
@@ -44,6 +46,18 @@ const ExampleSentence = styled.p`
 const AuthorInfo = styled.p`
   font-size: 0.9rem;
   color: var(--gray);
+`;
+
+const AddTagButton = styled.button`
+  background: #f0f0f0;
+  border: 1px dashed #ccc;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  &:hover {
+    background: #e0e0e0;
+  }
 `;
 
 const CommentSection = styled.div`
@@ -88,6 +102,7 @@ const Content = () => {
   const { comments, getCommentsByContentId, addComment } = useCommentStore();
   const addNotification = useNotificationStore(state => state.addNotification);
   const [content, setContent] = useState(null);
+  const [showTagSelector, setShowTagSelector] = useState(false);
   const [showComments, setShowComments] = useState(false);
 
   useEffect(() => {
@@ -131,6 +146,15 @@ const Content = () => {
       )}
       <AuthorInfo>{t('Created by')}: {content.author}</AuthorInfo>
       <TagGrid contentId={content._id} />
+      <AddTagButton onClick={() => setShowTagSelector(true)}>
+        + Add Tag
+      </AddTagButton>
+      {showTagSelector && (
+        <AddTagToContent 
+          contentId={content._id} 
+          onClose={() => setShowTagSelector(false)} 
+        />
+      )}
       <CommentSection>
         <ToggleButton onClick={() => setShowComments(!showComments)}>
           {showComments ? <FaChevronUp /> : <FaChevronDown />}
