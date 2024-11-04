@@ -11,7 +11,7 @@ import { useCommentStore } from '../../store/comment';
 import { useNotificationStore } from '../../store/notification';
 
 import CommentForm from '../comment/CommentForm';
-
+import TagGrid from '../tag/TagGrid';
 const ContentWrapper = styled.div`
   width: 90%;
   max-width: 800px;
@@ -130,6 +130,7 @@ const Content = () => {
         <ExampleSentence>{content.exampleSentence}</ExampleSentence>
       )}
       <AuthorInfo>{t('Created by')}: {content.author}</AuthorInfo>
+      <TagGrid contentId={content._id} />
       <CommentSection>
         <ToggleButton onClick={() => setShowComments(!showComments)}>
           {showComments ? <FaChevronUp /> : <FaChevronDown />}
