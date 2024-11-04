@@ -1,4 +1,5 @@
 import Tag from '../models/Tag.js';
+import ContentTag from '../models/ContentTag.js';
 
 export const getTags = async (req, res) => {
   try {
@@ -13,6 +14,12 @@ export const getTags = async (req, res) => {
     console.error("Error in get tags:", error.message);
     res.status(500).json({ success: false, message: error });
   }
+};
+
+export const getTagsForContent = async (req, res) => {
+  const { contentId } = req.params;
+  const tags = await ContentTag.getTagsForContent(contentId);
+  res.status(200).json({ success: true, data: tags });
 };
 
 export const addTag = async (req, res) => {

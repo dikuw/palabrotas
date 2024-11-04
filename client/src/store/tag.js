@@ -13,6 +13,16 @@ export const useTagStore = create((set) => ({
     const data = await res.json();
     set({ tags: data.data });
   },
+  getTagsForContent: async (contentId) => {
+    const res = await fetch(`/api/tag/getTagsForContent/${contentId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    const data = await res.json();
+    set({ tags: data.data });
+  },
   addTag: async (newTag) => {
     const res = await fetch("/api/tag/addTag", {
       method: "POST",
