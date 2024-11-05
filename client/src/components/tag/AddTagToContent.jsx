@@ -56,7 +56,7 @@ const Button = styled.button`
   border-radius: 4px;
   border: none;
   cursor: pointer;
-  background: ${props => props.primary ? '#007bff' : '#6c757d'};
+  background: ${props => props.$primary ? '#007bff' : '#6c757d'};
   color: white;
   &:hover {
     opacity: 0.9;
@@ -103,7 +103,7 @@ function AddTagToContent({ contentId, onClose }) {
         </TagGrid>
         <ButtonRow>
           <Button onClick={onClose}>Cancel</Button>
-          <Button primary onClick={handleSave}>Save</Button>
+          <Button $primary onClick={handleSave}>Save</Button>
         </ButtonRow>
       </PopupContent>
     </PopupOverlay>
