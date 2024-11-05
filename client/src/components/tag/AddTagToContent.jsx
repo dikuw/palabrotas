@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
+
+import { useAuthStore } from '../../store/auth';
 import { useTagStore } from '../../store/tag';
 
 const PopupOverlay = styled.div`
@@ -65,6 +67,7 @@ const Button = styled.button`
 
 function AddTagToContent({ contentId, onClose }) {
   const { getTags, tags, addTagToContent } = useTagStore();
+  const { authStatus: { user } } = useAuthStore();
   const [selectedTags, setSelectedTags] = React.useState([]);
 
   useEffect(() => {
@@ -81,7 +84,7 @@ function AddTagToContent({ contentId, onClose }) {
 
   const handleSave = async () => {
     for (const tagId of selectedTags) {
-      await addTagToContent(contentId, tagId);
+      await addTagToContent(contentId, tagId, user._id);
     }
     onClose();
   };
