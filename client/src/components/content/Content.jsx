@@ -48,13 +48,21 @@ const AuthorInfo = styled.p`
   color: var(--gray);
 `;
 
+const TagContainer = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between; 
+  gap: 10px;
+  margin: 10px 0;
+`;
+
 const AddTagButton = styled.button`
   background: #f0f0f0;
   border: 1px dashed #ccc;
   padding: 4px 8px;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   &:hover {
     background: #e0e0e0;
   }
@@ -145,10 +153,12 @@ const Content = () => {
         <ExampleSentence>{content.exampleSentence}</ExampleSentence>
       )}
       <AuthorInfo>{t('Created by')}: {content.author}</AuthorInfo>
-      <TagGrid contentId={content._id} />
-      <AddTagButton onClick={() => setShowTagSelector(true)}>
-        + Add Tag
-      </AddTagButton>
+      <TagContainer>
+        <TagGrid contentId={content._id} />
+        <AddTagButton onClick={() => setShowTagSelector(true)}>
+          + Add Tag
+        </AddTagButton>
+      </TagContainer>
       {showTagSelector && (
         <AddTagToContent 
           contentId={content._id} 
