@@ -156,7 +156,7 @@ const Content = () => {
       <TagContainer>
         <TagGrid contentId={content._id} />
         <AddTagButton onClick={() => setShowTagSelector(true)}>
-          + Add Tag
+          {t('+ Add Tag')}
         </AddTagButton>
       </TagContainer>
       {showTagSelector && (
