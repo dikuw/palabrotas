@@ -61,23 +61,43 @@ const SearchIconWrapper = styled.div`
 
 const CountrySelect = styled(Select)`
   width: 200px;
-  .select__control {
+  .react-select__control {
     border-radius: 20px;
     min-height: 36px;
+    font-size: 14px;
   }
-  .select__multi-value {
+  .react-select__multi-value {
     border-radius: 10px;
+  }
+  .react-select__placeholder {
+    font-size: 12px;
+  }
+  .react-select__input {
+    font-size: 14px;
+  }
+  .react-select__single-value {
+    font-size: 14px;
   }
 `;
 
 const TagSelect = styled(Select)`
   width: 200px;
-  .select__control {
+  .react-select__control {
     border-radius: 20px;
     min-height: 36px;
+    font-size: 14px;
   }
-  .select__multi-value {
+  .react-select__multi-value {
     border-radius: 10px;
+  }
+  .react-select__placeholder {
+    font-size: 12px;
+  }
+  .react-select__input {
+    font-size: 142px;
+  }
+  .react-select__single-value {
+    font-size: 14px;
   }
 `;
 
@@ -148,7 +168,7 @@ export default function SearchBar() {
           value={selectedCountries}
           onChange={handleCountryChange}
           placeholder={t("Select countries...")}
-          className="country-select"
+          classNamePrefix="react-select"
         />
         <TagSelect
           isMulti
@@ -156,7 +176,7 @@ export default function SearchBar() {
           value={selectedTags}
           onChange={handleTagChange}
           placeholder={t("Select tags...")}
-          className="tag-select"
+          classNamePrefix="react-select"
         />
       </SearchInputWrapper>
     </SearchBarDiv>
