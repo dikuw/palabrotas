@@ -1,17 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import styled from 'styled-components';
 import { FaSearch } from 'react-icons/fa';
 import { useTranslation } from "react-i18next";
+
 import { useContentStore } from '../../store/content';
+import { useTagStore } from '../../store/tag';
 
 import { countries } from '../shared/countries';
+
 
 const SearchInputWrapper = styled.div`
   display: flex;
   align-items: center;
   width: 100%;
-  max-width: 700px; // Increased to accommodate both elements
+  max-width: 900px;
   gap: 10px;
 `;
 
@@ -67,15 +70,37 @@ const CountrySelect = styled(Select)`
   }
 `;
 
+const TagSelect = styled(Select)`
+  width: 200px;
+  .select__control {
+    border-radius: 20px;
+    min-height: 36px;
+  }
+  .select__multi-value {
+    border-radius: 10px;
+  }
+`;
+
 export default function SearchBar() {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCountries, setSelectedCountries] = useState([]);
-  const { searchContents, clearSearch, filterByCountries } = useContentStore();
+  const [selectedTags, setSelectedTags] = useState([]);
+  const { searchContents, clearSearch, filterByCountries, filterByTags } = useContentStore();
+  const { getTags, tags } = useTagStore();
+
+  useEffect(() => {
+    getTags();
+  }, []);
 
   const countryOptions = countries.map(country => ({
     value: country.code,
     label: country.name
+  }));
+
+  const tagOptions = tags.map(tag => ({
+    value: tag._id,
+    label: tag.name
   }));
 
   const handleSearch = () => {
@@ -90,6 +115,11 @@ export default function SearchBar() {
   const handleCountryChange = (selected) => {
     setSelectedCountries(selected);
     filterByCountries(selected?.map(option => option.value) || []);
+  };
+
+  const handleTagChange = (selected) => {
+    setSelectedTags(selected);
+    filterByTags(selected?.map(option => option.value) || []);
   };
 
   return (
@@ -119,6 +149,14 @@ export default function SearchBar() {
           onChange={handleCountryChange}
           placeholder={t("Select countries...")}
           className="country-select"
+        />
+        <TagSelect
+          isMulti
+          options={tagOptions}
+          value={selectedTags}
+          onChange={handleTagChange}
+          placeholder={t("Select tags...")}
+          className="tag-select"
         />
       </SearchInputWrapper>
     </SearchBarDiv>

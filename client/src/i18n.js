@@ -165,6 +165,7 @@ i18n
           "tag" : "tag",
           "Select countries..." : "Select countries...",
           "+ Add Tag" : "+ Add Tag",
+          "Select tags..." : "Select tags...",
         }
       },
       es: {
@@ -329,6 +330,7 @@ i18n
           "Please log in to add a tag" : "¡Inicie sesión para agregar una etiqueta!",
           "Select countries..." : "Selecciona países...",
           "+ Add Tag" : "+ Agregar Etiqueta",
+          "Select tags..." : "Selecciona etiquetas...",
         }
       }
     },
