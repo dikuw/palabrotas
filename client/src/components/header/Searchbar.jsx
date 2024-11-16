@@ -148,14 +148,14 @@ export default function SearchBar() {
         <SearchBarInner>
           <SearchInput 
             type="text" 
-          placeholder={t("Search...")} 
-          value={searchTerm}
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            if (!e.target.value.trim()) {
-              clearSearch();
-            }
-          }}
+            placeholder={t("Search...")} 
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              if (!e.target.value.trim()) {
+                clearSearch();
+              }
+            }}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
           />
         <SearchIconWrapper onClick={handleSearch}>
