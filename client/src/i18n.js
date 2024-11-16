@@ -166,6 +166,7 @@ i18n
           "Select countries..." : "Select countries...",
           "+ Add Tag" : "+ Add Tag",
           "Select tags..." : "Select tags...",
+          "No results found. Please try another search." : "No results found. Please try another search.",
         }
       },
       es: {
@@ -331,6 +332,7 @@ i18n
           "Select countries..." : "Selecciona países...",
           "+ Add Tag" : "+ Agregar Etiqueta",
           "Select tags..." : "Selecciona etiquetas...",
+          "No results found. Please try another search." : "No se encontraron resultados. Intente con otra búsqueda.",
         }
       }
     },
