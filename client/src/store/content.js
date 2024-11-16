@@ -3,6 +3,7 @@ import { create } from 'zustand';
 export const useContentStore = create((set, get) => ({
   contents: [],
   searchResults: [],
+  isSearching: false,
   MAX_TITLE_LENGTH: 1000,
   MAX_DESCRIPTION_LENGTH: 1000,
   setContents: (contents) => set({ contents }),
@@ -85,6 +86,7 @@ export const useContentStore = create((set, get) => ({
     return data.data;
   },
   searchContents: (searchTerm) => {
+    set({ isSearching: true });
     const { contents } = get();
     const filtered = contents.filter(content => 
       content.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -97,5 +99,8 @@ export const useContentStore = create((set, get) => ({
     const filtered = contents.filter(content => countries.includes(content.country));
     set({ searchResults: filtered });
   },
-  clearSearch: () => set({ searchResults: [] }),
+  clearSearch: () => set({ 
+    searchResults: [],
+    isSearching: false
+  }),
 }));
