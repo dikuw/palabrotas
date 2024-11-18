@@ -115,7 +115,7 @@ export default function SearchBar() {
 
   const countryOptions = countries.map(country => ({
     value: country.code,
-    label: country.name
+    label: t(`${country.name}`)
   }));
 
   const tagOptions = tags.map(tag => ({
