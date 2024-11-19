@@ -168,6 +168,7 @@ i18n
           "Select tags..." : "Select tags...",
           "No results found. Please try another search." : "No results found. Please try another search.",
           "Registration successful!" : "Registration successful!",
+          "Registration failed. Please try again." : "Registration failed. Please try again.",
         }
       },
       es: {
@@ -335,6 +336,7 @@ i18n
           "Select tags..." : "Selecciona etiquetas...",
           "No results found. Please try another search." : "No se encontraron resultados. Intente con otra búsqueda.",
           "Registration successful!" : "¡Registro exitoso!",
+          "Registration failed. Please try again." : "¡Registro fallado. Inténtalo de nuevo.",
         }
       }
     },
