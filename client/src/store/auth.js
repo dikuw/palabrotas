@@ -22,7 +22,7 @@ export const useAuthStore = create(
           });
           return data;
         } else {
-          throw new Error('Authentication failed');
+          throw new Error(data.message);
         }
       },
       loginUser: async (credentials) => {
