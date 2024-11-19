@@ -167,6 +167,7 @@ i18n
           "+ Add Tag" : "+ Add Tag",
           "Select tags..." : "Select tags...",
           "No results found. Please try another search." : "No results found. Please try another search.",
+          "Registration successful!" : "Registration successful!",
         }
       },
       es: {
@@ -333,6 +334,7 @@ i18n
           "+ Add Tag" : "+ Agregar Etiqueta",
           "Select tags..." : "Selecciona etiquetas...",
           "No results found. Please try another search." : "No se encontraron resultados. Intente con otra búsqueda.",
+          "Registration successful!" : "¡Registro exitoso!",
         }
       }
     },
