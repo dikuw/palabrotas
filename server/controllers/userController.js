@@ -22,25 +22,27 @@ export const validateRegister = async (req, res, next) => {
   next();
 };
 
-export const checkAlreadyRegistered = async (req, res, next) => {
-  const registered = await User.find({ email: req.body.email });
-  if (registered[0] && registered[0]._id) {
-    res.json( { error: 'That email is already registered!' });
-    return;
-  }
-  console.log('registered', registered);
-  next();
-}
-
 export const register = async (req, res, next) => {
-  const user = new User({ 
-    email: req.body.email, 
-    name: req.body.name,
-  });
-  await User.register(user, req.body.password);
-  // const register = promisify(User.register, User);
-  // await register(user, req.body.password);
-  next();
+  try {
+    const user = new User({ 
+      email: req.body.email, 
+      name: req.body.name,
+    });
+    await User.register(user, req.body.password);
+    next();
+  } catch (error) {
+    if (error.name === 'UserExistsError') {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'That email is already registered!' 
+      });
+    }
+    console.error('Error in register:', error);
+    return res.status(500).json({ 
+      success: false, 
+      message: 'An error occurred during registration' 
+    });
+  }
 };
 
 export const findOrCreate = async (req, res, next) => {
