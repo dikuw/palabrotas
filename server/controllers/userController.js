@@ -22,24 +22,13 @@ export const validateRegister = async (req, res, next) => {
   next();
 };
 
-export const addUser = async (req, res) => {
-  const user = req.body;
-  const newUser = new User(user);
-  try {
-    await newUser.save();
-    res.status(201).json({ success: true, data: newUser });
-  } catch(error) {
-    console.error("Error in add user:", error.message);
-    res.status(500).json({ success: false, message: error });
-  }
-};
-
 export const checkAlreadyRegistered = async (req, res, next) => {
   const registered = await User.find({ email: req.body.email });
   if (registered[0] && registered[0]._id) {
     res.json( { error: 'That email is already registered!' });
     return;
   }
+  console.log('registered', registered);
   next();
 }
 
