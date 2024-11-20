@@ -22,13 +22,13 @@ import NotificationContainer from './components/notifications/NotificationContai
 import Footer from './components/Footer';
 import AddFeedback from './components/feedback/AddFeedback';
 import AddTag from './components/tag/AddTag';
+
 function App() {
   const { t } = useTranslation();
 
   const { getContents, getContentsSortedByVoteDesc } = useContentStore();
   const { authStatus, loginUser, logoutUser, getCurrentUser } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
-  const [isPasswordIncorrect, setIsPasswordIncorrect] = useState(false);
 
   useEffect(() => {
     setIsLoading(true);
