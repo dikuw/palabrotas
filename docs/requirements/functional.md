@@ -5,7 +5,7 @@
 ### Registration and Login
 1. The application shall allow a user to register a new account using an email address and password.
 2. The application shall validate that the email address is in a valid format before accepting registration.
-3. The application shall require passwords to be at least 8 characters long and contain at least one number and one special character.
+3. The application shall require passwords to be at least 8 characters long.
 4. The application shall prevent registration with an email address that is already in use.
 5. The application shall allow users to log in using their registered email and password.
 6. The application shall allow users to log out from any page in the application.
