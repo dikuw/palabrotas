@@ -13,15 +13,32 @@ export const getCurrentUser = async (req, res) => {
 };
 
 export const passportLocal = (req, res, next) => {
-  passport.authenticate('local', function(err, user) {
-    if (err) { return next(err); }
-    if (!user) { return res.json({ error: err }); }
+  passport.authenticate('local', function(err, user, info) {
+    if (err) {
+      return res.status(500).json({ 
+        success: false, 
+        message: 'Authentication error occurred' 
+      });
+    }
+    
+    if (!user) {
+      return res.status(401).json({ 
+        success: false, 
+        message: info?.message || 'Invalid email or password' 
+      });
+    }
+
     req.logIn(user, function(err) {
-      if (err) { return res.json({ error: err }); }
+      if (err) {
+        return res.status(500).json({ 
+          success: false, 
+          message: 'Login error occurred' 
+        });
+      }
       return next();
     });
   })(req, res, next);
-}
+};
 
 export const authStatus = (req, res) => {
   if (req.isAuthenticated()) {
@@ -67,10 +84,12 @@ export const passportTW = (req, res, next) => {
 }
 
 export const login = async (req, res) => {
-  // req.login(req.user, function(err) {
-  //   if (err) { res.json({ error: err }); }
-  //   return res.send(req.user);
-  // });
+  if (!req.user) {
+    return res.status(401).json({
+      success: false,
+      message: 'Incorrect email or password'
+    });
+  }
   res.json({
     authenticated: true,
     user: {

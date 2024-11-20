@@ -130,6 +130,7 @@ export default function LocalLogin(props) {
         <input name="forgotEmail" type="text" placeholder={"Email"}  />
         <VisibleActionButton type="submit" buttonLabel={"Send a Reset"} />
       </form> */}
+      {errors.general && <div style={{ color: 'red' }}>{errors.general}</div>}
       <InvisibleActionButton clickHandler={() => handleClick('/register')} buttonLabel={t("No account? Register here!") } />
     </StyledWrapperDiv>
   );

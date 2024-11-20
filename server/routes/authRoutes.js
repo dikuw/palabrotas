@@ -1,12 +1,11 @@
 import express from 'express';
-import passport from 'passport';
-import { login, logout, getCurrentUser, authStatus} from '../controllers/authController.js';
+import { passportLocal, login, logout, getCurrentUser, authStatus} from '../controllers/authController.js';
 
 const router = express.Router();
 
 router.get('/getUser', getCurrentUser);
 router.get('/authStatus', authStatus);
-router.post('/login', passport.authenticate('local'), login);
+router.post('/login', passportLocal, login);
 // router.post('/auth/facebook', authController.passportFB, authController.login);
 // router.get('/auth/facebook/callback', authController.login);
 // router.post('/auth/instagram', authController.passportIG, authController.login);
