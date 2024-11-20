@@ -169,6 +169,7 @@ i18n
           "No results found. Please try another search." : "No results found. Please try another search.",
           "Registration successful!" : "Registration successful!",
           "Registration failed. Please try again." : "Registration failed. Please try again.",
+          "Password must be at least 8 characters long." : "Password must be at least 8 characters long.",
         }
       },
       es: {
@@ -337,6 +338,7 @@ i18n
           "No results found. Please try another search." : "No se encontraron resultados. Intente con otra búsqueda.",
           "Registration successful!" : "¡Registro exitoso!",
           "Registration failed. Please try again." : "¡Registro fallado. Inténtalo de nuevo.",
+          "Password must be at least 8 characters long." : "La contraseña debe tener al menos 8 caracteres.",
         }
       }
     },

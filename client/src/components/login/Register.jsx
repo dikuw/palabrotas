@@ -61,7 +61,11 @@ export default function Register() {
     let newErrors = {};
     if (!formData.name) newErrors.name = t("Please provide your name.");
     if (!formData.email) newErrors.email = t("Please provide your email.");
-    if (!formData.password) newErrors.password = t("Password cannot be blank.");
+    if (!formData.password) {
+      newErrors.password = t("Password cannot be blank.");
+    } else if (formData.password.length < 8) {
+      newErrors.password = t("Password must be at least 8 characters long.");
+    }
     if (!formData.confirmPassword) newErrors.confirmPassword = t("Confirm Password cannot be blank.");
     if (formData.password !== formData.confirmPassword) {
       newErrors.password = t("Passwords do not match.");
