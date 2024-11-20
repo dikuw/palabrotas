@@ -170,6 +170,7 @@ i18n
           "Registration successful!" : "Registration successful!",
           "Registration failed. Please try again." : "Registration failed. Please try again.",
           "Password must be at least 8 characters long." : "Password must be at least 8 characters long.",
+          "Password cannot be blank." : "Password cannot be blank.",
         }
       },
       es: {
@@ -339,6 +340,7 @@ i18n
           "Registration successful!" : "¡Registro exitoso!",
           "Registration failed. Please try again." : "¡Registro fallado. Inténtalo de nuevo.",
           "Password must be at least 8 characters long." : "La contraseña debe tener al menos 8 caracteres.",
+          "Password cannot be blank." : "La contraseña no puede estar en blanco.",
         }
       }
     },
