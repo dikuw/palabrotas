@@ -27,6 +27,12 @@ app.use(session({
   secret: process.env.SECRET,
   resave: false,
   saveUninitialized: false,
+  cookie: {
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
+  },
+  rolling: true, // Reset the maxAge on every request
+  secure: process.env.ENV === 'production',
+  httpOnly: true,
   store: MongoStore.create({ mongoUrl: process.env.MONGO_URI })
 }));
 
