@@ -24,7 +24,7 @@
 
 ### Content Creation and Editing
 13. The application shall allow authenticated users to create new content posts.
-14. The application shall allow users to edit their own content within 24 hours of posting.
+14. The application shall allow users to edit their own content.
 15. The application shall allow users to delete their own content at any time.
 16. The application shall preserve deleted content in the database but hide it from public view.
 
