@@ -5,7 +5,7 @@ import logo from '../../logo.svg';
 
 const LogoImage = styled.img`
   display: block;
-  width: 100px;
+  width: 100%;
   margin: auto;
   padding: 15px;
 `;
