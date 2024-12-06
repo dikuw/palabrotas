@@ -5,7 +5,6 @@ import { useFlashcardStore } from '../../store/flashcard';
 import { NoPermissionDiv } from '../shared/index';
 import { useTranslation } from 'react-i18next';
 
-import Banner from '../header/Banner';
 import Flashcard from './Flashcard';
 
 const StyledWrapperDiv = styled.div`
@@ -65,7 +64,6 @@ export default function Flashcards() {
 
   return (
     <StyledWrapperDiv>
-      <Banner bannerString={t("Your Flashcards")} />
       {flashcards.length > 0 ? (
         dueFlashcards.length > 0 ? (
           <>
