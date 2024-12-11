@@ -6,6 +6,7 @@ The authentication system uses Passport.js for secure user authentication. All a
 ## Endpoints
 
 ### Register New User
+```
 http
 POST /api/auth/register
 json
@@ -21,3 +22,4 @@ json
 "username": "string",
 "email": "string",
 }
+```
