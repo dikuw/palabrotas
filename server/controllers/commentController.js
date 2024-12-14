@@ -16,6 +16,13 @@ export const getCommentsByContentId = async (req, res) => {
   try {
     const { contentId } = req.params;
 
+    if (!contentId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Content ID is required" 
+      });
+    }
+
     // Find all comments for the given content ID
     const comments = await Comment.find({ content: contentId })
       .populate('owner', 'name')
