@@ -23,3 +23,12 @@ json
 "email": "string",
 }
 ```
+### Login User
+```
+POST /api/auth/login
+json
+{
+"email": "string",
+"password": "string"
+}
+```
