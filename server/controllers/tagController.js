@@ -17,9 +17,30 @@ export const getTags = async (req, res) => {
 };
 
 export const getTagsForContent = async (req, res) => {
-  const { contentId } = req.params;
-  const tags = await ContentTag.getTagsForContent(contentId);
-  res.status(200).json({ success: true, data: tags });
+  try {
+    const { contentId } = req.params;
+    
+    if (!contentId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Content ID is required" 
+      });
+    }
+
+    const tags = await ContentTag.getTagsForContent(contentId);
+    
+    res.status(200).json({ 
+      success: true, 
+      data: tags 
+    });
+    
+  } catch (error) {
+    console.error("Error in getTagsForContent:", error.message);
+    res.status(500).json({ 
+      success: false, 
+      message: "Error retrieving tags" 
+    });
+  }
 };
 
 export const addTag = async (req, res) => {
