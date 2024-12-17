@@ -25,9 +25,19 @@
 12. The application shall allow authenticated users to create new content posts.
 13. The application shall allow users to edit their own content.
 14. The application shall allow users to delete their own content.
+    <details>
+    <summary>Specification</summary>
+
+    14.1 Client-side `EditContent.jsx` component includes a button to call `content.js` store function `deleteContent()`
+    
+    14.2 Client-side `content.js` store function `deleteContent()` hits endpoint `/api/content/deleteContent`
+    
+    14.3 Server-side `contentController` function `deleteContent()` sets `show: false`
+    </details>
 15. The application shall preserve deleted content in the database but hide it from public view.
     <details>
     <summary>Specification</summary>
+
     15.1 Server-side `Content` model has a `show` field set to `true` by default
 
     15.2 Server-side `contentController` function `deleteContent()` sets `show: false`  
