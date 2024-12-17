@@ -25,6 +25,12 @@ export const useAuthStore = create(
           throw new Error(data.message);
         }
       },
+      googleLogin: async () => {
+        const res = await fetch("/api/auth/google", {
+          method: "GET",
+          credentials: 'include',
+        })
+      },
       loginUser: async (credentials) => {
         const res = await fetch("/api/auth/login", {
           method: "POST",

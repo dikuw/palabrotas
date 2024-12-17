@@ -2,9 +2,13 @@ import React, { useState }  from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
+
 import { InvisibleActionButton, VisibleActionButton } from '../shared/index.js';
+import GoogleLogin from './GoogleLogin';
+
 import { useAuthStore } from '../../store/auth';
 import { useNotificationStore } from '../../store/notification';
+
 const StyledWrapperDiv = styled.div`
   width: 90%;
   max-width: 1000px;
@@ -44,6 +48,31 @@ const StyledWarningDiv = styled.div`
 const StyledInput = styled.input`
   background-color: ${props => props.$hasError ? 'var(--warning)' : 'var(--almostWhite)'};
   color: ${props => props.$hasError ? 'red' : 'inherit'};
+`;
+
+const OrDivider = styled.div`
+  text-align: center;
+  margin: 16px 0;
+  color: var(--darkGrey);
+  font-size: 14px;
+  position: relative;
+  
+  &::before, &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 45%;
+    height: 1px;
+    background-color: var(--lightGrey);
+  }
+  
+  &::before {
+    left: 0;
+  }
+  
+  &::after {
+    right: 0;
+  }
 `;
 
 export default function LocalLogin(props) {
@@ -132,6 +161,8 @@ export default function LocalLogin(props) {
       </form> */}
       {t(errors.general) && <div style={{ color: 'red' }}>{t(errors.general)}</div>}
       <InvisibleActionButton clickHandler={() => handleClick('/register')} buttonLabel={t("No account? Register here!") } />
+      <OrDivider>{t("or")}</OrDivider>
+      <GoogleLogin />
     </StyledWrapperDiv>
   );
 };
