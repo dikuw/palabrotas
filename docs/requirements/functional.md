@@ -26,6 +26,12 @@
 13. The application shall allow users to edit their own content.
 14. The application shall allow users to delete their own content.
 15. The application shall preserve deleted content in the database but hide it from public view.
+    <details>
+    <summary>Specification</summary>
+    15.1 Server-side `contentController` function `deleteContent()` sets `show: false`
+    15.2 Client-side `content.js` store function `getContents()` filters by `show: true`
+    15.3 Server-side `contentController` function `getContentsByUserId()` filters by `show: true`
+    </details>
 
 ### Content Organization
 16. The application shall allow users to add up to 5 tags per content post.
