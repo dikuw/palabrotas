@@ -28,12 +28,9 @@
 15. The application shall preserve deleted content in the database but hide it from public view.
     <details>
     <summary>Specification</summary>
-    15.1 Server-side `Content` model has a `show` field set to `true` by default
-
-    15.2 Server-side `contentController` function `deleteContent()` sets `show: false`
-
-    15.3 Client-side `content.js` store function `getContents()` filters by `show: true`
-    
+    15.1 Server-side `Content` model has a `show` field set to `true` by default  
+    15.2 Server-side `contentController` function `deleteContent()` sets `show: false`  
+    15.3 Client-side `content.js` store function `getContents()` filters by `show: true`  
     15.4 Server-side `contentController` function `getContentsByUserId()` filters by `show: true`
     </details>
 
