@@ -60,7 +60,10 @@ export const getContentById = async (req, res) => {
 
 export const getContentsByUserId = async (req, res) => {
   try {
-    const contents = await Content.find({ owner: req.params.userId });
+    const contents = await Content.find({ 
+      owner: req.params.userId,
+      show: true
+    });
     res.status(200).json({ success: true, data: contents });
   } catch(error) {
     console.error("Error in get contents by user id:", error.message);
