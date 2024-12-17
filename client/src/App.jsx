@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { useTranslation } from "react-i18next";
+import styled from 'styled-components';
 import './styles/styles.css';
 
 import { useAuthStore } from './store/auth';
@@ -23,6 +24,22 @@ import Footer from './components/Footer';
 import AddFeedback from './components/feedback/AddFeedback';
 import AddTag from './components/tag/AddTag';
 
+const StyledAppContainer = styled.div`
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  max-width: 1200px;
+  width: 100%;
+  padding: 0 20px;
+  box-sizing: border-box;
+  align-items: center;
+`;
+
+const StyledMainContent = styled.div`
+  flex: 1 0 auto;
+  width: 100%;
+`;
+
 function App() {
   const { t } = useTranslation();
 
@@ -42,122 +59,125 @@ function App() {
   }, [getContents, getContentsSortedByVoteDesc]);
 
   return (
-    <div className="app-container">
+    <StyledAppContainer>
       <TopBanner isLoggedIn={authStatus.isLoggedIn} name={authStatus.user ? authStatus.user.name : t("guest")}/>
       <Header /> 
       <Navigation isLoggedIn={authStatus.isLoggedIn} isAdmin={authStatus.user ? authStatus.user.isAdmin : false} logoutUser={logoutUser} />
-      <Routes>
-        <Route path="/" 
-          element={
-            <>
-              <SearchBar />
-              {isLoading ? <Popup popupText={t("Finding latest content...")}/> : null}
-              <Grid />
-            </>
-          }
-        />
-        <Route path="/admin" 
-          element={
-            <>
-              <Banner bannerString={t("Site Administration")} />
-              <Admin />
-            </>
-          }
-        />
-        <Route path="/register" 
-          element={
-            <>
-              <Banner bannerString={t("Register a New Account")} />
-              <Register 
-                isLoggedIn={authStatus.isLoggedIn} 
-              />
-            </>
-          }
-        />
-        <Route path="/login" 
-          element={
-            <>
-              <Banner bannerString={t("Log In")} />
-              <LocalLogin
-                isLoggedIn={authStatus.isLoggedIn} 
-                // isPasswordIncorrect={isPasswordIncorrect}
-                // resetPasswordIncorrect={resetPasswordIncorrect}
-                loginUser={loginUser}
-                // forgotUser={forgotUser} 
-              />
-            </>
-          }
-        />
-        <Route path="/content/:id" 
-          element={
-            <>
-              <Banner bannerString={t("Entry Details")} />
-              <Content />
-            </>
-          }
-        />
-        <Route path="/account" 
-          element={
-            <>
-              <Banner bannerString={t("Your Account")} />
-              <Account 
-                isLoggedIn={authStatus.isLoggedIn} 
-              />
-            </>
-          }
-        />
-        <Route path="/flashcards" 
-          element={
-            <>
-              <Banner bannerString={t("Flashcards")} />
-              <Flashcards 
-                isLoggedIn={authStatus.isLoggedIn} 
-              />
-            </>
-          }
-        />
-        <Route path="/addContent" 
-          element={
-            <>
-              <Banner bannerString={t("Add Content")} />
-              <AddContent
-                isLoggedIn={authStatus.isLoggedIn} 
-              />
-            </>
-          }
-        />
-        <Route path="/editContent/:id" 
-          element={
-            <>
-              <Banner bannerString={t("Edit Content")} />
-              <EditContent
-                isLoggedIn={authStatus.isLoggedIn} 
-              />
-            </>
-          }
-        />
-        <Route path="/addfeedback" 
-          element={
-            <>
-              <Banner bannerString={t("Add Feedback")} />
-              <AddFeedback />
-            </>
-          }
-        />
-        <Route path="/addTag" 
-          element={
-            <>
-              <Banner bannerString={t("Add Tag")} />
-              <AddTag
-                isLoggedIn={authStatus.isLoggedIn} 
-              />
-            </>
-          }
-        />
-      </Routes>
-      <NotificationContainer />
+      
+      <StyledMainContent>
+        <Routes>
+          <Route path="/" 
+            element={
+              <>
+                <SearchBar />
+                {isLoading ? <Popup popupText={t("Finding latest content...")}/> : null}
+                <Grid />
+              </>
+            }
+          />
+          <Route path="/admin" 
+            element={
+              <>
+                <Banner bannerString={t("Site Administration")} />
+                <Admin />
+              </>
+            }
+          />
+          <Route path="/register" 
+            element={
+              <>
+                <Banner bannerString={t("Register a New Account")} />
+                <Register 
+                  isLoggedIn={authStatus.isLoggedIn} 
+                />
+              </>
+            }
+          />
+          <Route path="/login" 
+            element={
+              <>
+                <Banner bannerString={t("Log In")} />
+                <LocalLogin
+                  isLoggedIn={authStatus.isLoggedIn} 
+                  // isPasswordIncorrect={isPasswordIncorrect}
+                  // resetPasswordIncorrect={resetPasswordIncorrect}
+                  loginUser={loginUser}
+                  // forgotUser={forgotUser} 
+                />
+              </>
+            }
+          />
+          <Route path="/content/:id" 
+            element={
+              <>
+                <Banner bannerString={t("Entry Details")} />
+                <Content />
+              </>
+            }
+          />
+          <Route path="/account" 
+            element={
+              <>
+                <Banner bannerString={t("Your Account")} />
+                <Account 
+                  isLoggedIn={authStatus.isLoggedIn} 
+                />
+              </>
+            }
+          />
+          <Route path="/flashcards" 
+            element={
+              <>
+                <Banner bannerString={t("Flashcards")} />
+                <Flashcards 
+                  isLoggedIn={authStatus.isLoggedIn} 
+                />
+              </>
+            }
+          />
+          <Route path="/addContent" 
+            element={
+              <>
+                <Banner bannerString={t("Add Content")} />
+                <AddContent
+                  isLoggedIn={authStatus.isLoggedIn} 
+                />
+              </>
+            }
+          />
+          <Route path="/editContent/:id" 
+            element={
+              <>
+                <Banner bannerString={t("Edit Content")} />
+                <EditContent
+                  isLoggedIn={authStatus.isLoggedIn} 
+                />
+              </>
+            }
+          />
+          <Route path="/addfeedback" 
+            element={
+              <>
+                <Banner bannerString={t("Add Feedback")} />
+                <AddFeedback />
+              </>
+            }
+          />
+          <Route path="/addTag" 
+            element={
+              <>
+                <Banner bannerString={t("Add Tag")} />
+                <AddTag
+                  isLoggedIn={authStatus.isLoggedIn} 
+                />
+              </>
+            }
+          />
+        </Routes>
+        <NotificationContainer />
+      </StyledMainContent>
       <Footer />
-    </div>
+    </StyledAppContainer>
   );
 };
 
