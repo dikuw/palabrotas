@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { useTagStore } from '../../store/tag';
@@ -19,16 +19,26 @@ const TagItem = styled.div`
 `;
 
 function TagGrid({ contentId }) {
-  const { getTagsForContent, tags } = useTagStore();
+  const { getTagsForContent } = useTagStore();
+  const [contentTags, setContentTags] = useState([]);
 
   useEffect(() => {
-    getTagsForContent(contentId);
-  }, [contentId]);
+    const fetchTags = async () => {
+      const response = await getTagsForContent(contentId);
+      if (response.success) {
+        setContentTags(response.data);
+      }
+    };
+    
+    if (contentId) {
+      fetchTags();
+    }
+  }, [contentId, getTagsForContent]);
 
   return (
     <StyledTagGrid>
-    {tags.map(tag => (
-      <TagItem key={tag._id}>{tag.name}</TagItem>
+      {contentTags.map(tag => (
+        <TagItem key={tag._id}>{tag.name}</TagItem>
       ))}
     </StyledTagGrid>
   );
