@@ -5,8 +5,8 @@ import styled from 'styled-components';
 const BannerDiv = styled.div`
   display: block;
   width: 100%;
-  background-color: var(--secondary);
-  color:  var(--almostWhite);
+  background-color: var(--topHeader);
+  color:  var(--topHeaderText);
   padding: 7px 10px;
   text-align: center;
 `;

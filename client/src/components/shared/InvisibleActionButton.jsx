@@ -6,7 +6,7 @@ const StyledButtonInvisible = styled.button`
   text-transform: uppercase;
   font-weight: 400;
   font-style: normal;
-  color: var(--vinoTinto);
+  color: var(--buttonText);
   background: white; 
   border: 0;
   display: inline-block;

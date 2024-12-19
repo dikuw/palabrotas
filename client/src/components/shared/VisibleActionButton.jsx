@@ -10,7 +10,7 @@ const StyledButton = styled.button`
   border-color: var(--primary);
   border-radius: 2px;
   border: 0;
-  color: #ffffff;
+  color: var(--buttonText);
   display: inline-block;
   height: 45px;
   letter-spacing: 1px;
