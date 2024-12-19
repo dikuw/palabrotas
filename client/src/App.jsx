@@ -30,9 +30,9 @@ const StyledAppContainer = styled.div`
   flex-direction: column;
   max-width: 1200px;
   width: 100%;
-  padding: 0 20px;
   box-sizing: border-box;
   align-items: center;
+  background-color: var(--fondo);
 `;
 
 const StyledMainContent = styled.div`
