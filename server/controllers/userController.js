@@ -195,3 +195,18 @@ export const getLongestStreak = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' }); 
   }
 };
+
+export const getAppIntro = async (req, res) => {
+  const { userId } = req.params;
+  const user = await User.findById(userId);
+  res.status(200).json({ appIntro: user.appIntro });
+};
+
+export const setAppIntro = async (req, res) => {
+  const { userId } = req.params;
+  const user = await User.findById(userId);
+  user.appIntro = true;
+  await user.save();
+  res.status(200).json({ message: 'App intro set' });
+};
+
