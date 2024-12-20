@@ -48,7 +48,7 @@
     </details>
 
 ### Content Organization
-16. The application shall allow users to add up to 5 tags per content post.
+16. The application shall allow authenticated users to add up to 5 tags per content post.
 17. The application shall allow users to select the corresponding country from a list.
 18. The application shall automatically record the creation date and last modified date of all content.
 
