@@ -85,3 +85,8 @@
 31. The application shall allow users to mark notifications as read.
 32. The application shall allow users to configure which notifications they receive.
 33. The application shall display a notification count in the navigation bar.
+
+### Flashcards
+34. The application shall allow users to create flashcards from content posts.
+35. The application shall allow users to remove content from their flashcards.
+
