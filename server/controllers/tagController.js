@@ -70,3 +70,40 @@ export const addTagToContent  = async (req, res) => {
     }
   }
 };
+
+export const removeTagFromContent = async (req, res) => {
+  try {
+    const { contentId, tagId } = req.params;
+    
+    if (!contentId || !tagId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Content ID and Tag ID are required" 
+      });
+    }
+
+    const result = await ContentTag.findOneAndDelete({ 
+      content: contentId, 
+      tag: tagId 
+    });
+
+    if (!result) {
+      return res.status(404).json({
+        success: false,
+        message: "Tag association not found"
+      });
+    }
+
+    res.status(200).json({ 
+      success: true, 
+      message: "Tag removed from content successfully" 
+    });
+
+  } catch (error) {
+    console.error("Error in removeTagFromContent:", error.message);
+    res.status(500).json({ 
+      success: false, 
+      message: "Error removing tag from content" 
+    });
+  }
+};
