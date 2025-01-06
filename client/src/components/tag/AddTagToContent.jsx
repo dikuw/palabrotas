@@ -98,13 +98,31 @@ const Button = styled.button`
 `;
 
 function AddTagToContent({ contentId, onClose }) {
-  const { getTags, tags, addTagToContent } = useTagStore();
+  const { getTags, tags, addTagToContent, getTagsForContent } = useTagStore();
   const { authStatus: { user } } = useAuthStore();
   const [selectedTags, setSelectedTags] = React.useState([]);
+  const [existingTags, setExistingTags] = React.useState([]);
+  const [availableTags, setAvailableTags] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(true);
 
+  // First useEffect: Fetch all tags and content tags
   useEffect(() => {
-    getTags();
-  }, []);
+    const fetchTags = async () => {
+      setIsLoading(true);
+      await getTags();
+      const response = await getTagsForContent(contentId);
+      if (response.success) {
+        setExistingTags(response.data.map(tag => tag._id));
+      }
+      setIsLoading(false);
+    };
+    fetchTags();
+  }, [contentId, getTags, getTagsForContent]);
+
+  // Second useEffect: Filter available tags whenever tags or existingTags change
+  useEffect(() => {
+    setAvailableTags(tags.filter(tag => !existingTags.includes(tag._id)));
+  }, [tags, existingTags]);
 
   const handleTagClick = (tagId) => {
     setSelectedTags(prev => 
@@ -126,15 +144,21 @@ function AddTagToContent({ contentId, onClose }) {
       <PopupContent onClick={e => e.stopPropagation()}>
         <h4>Select Tags</h4>
         <TagGrid>
-          {tags.map(tag => (
-            <TagItem 
-              key={tag._id}
-              selected={selectedTags.includes(tag._id)}
-              onClick={() => handleTagClick(tag._id)}
-            >
-              {tag.name}
-            </TagItem>
-          ))}
+          {isLoading ? (
+            <img src="/images/spinner.gif" alt="Loading..." style={{ margin: 'auto' }} />
+          ) : availableTags.length > 0 ? (
+            availableTags.map(tag => (
+              <TagItem 
+                key={tag._id}
+                selected={selectedTags.includes(tag._id)}
+                onClick={() => handleTagClick(tag._id)}
+              >
+                {tag.name}
+              </TagItem>
+            ))
+          ) : (
+            <div>All available tags have been added to this content.</div>
+          )}
         </TagGrid>
         <ButtonRow>
           <Button onClick={onClose}>Cancel</Button>
