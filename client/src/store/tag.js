@@ -45,5 +45,15 @@ export const useTagStore = create((set) => ({
     });
     const data = await res.json();
     return data;
-  }
+  },
+  removeTagFromContent: async (contentId, tagId) => {
+    const res = await fetch(`/api/tag/removeTagFromContent/${contentId}/${tagId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await res.json();
+    return data;
+  },
 }));
