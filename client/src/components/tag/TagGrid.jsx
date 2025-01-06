@@ -49,15 +49,29 @@ const TagItem = styled.div`
   }
 `;
 
+const SpinnerContainer = styled.div`
+  background: var(--fondo);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+`;
+
 function TagGrid({ contentId, refreshTrigger }) {
   const { getTagsForContent } = useTagStore();
   const [contentTags, setContentTags] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchTags = async () => {
-      const response = await getTagsForContent(contentId);
-      if (response.success) {
-        setContentTags(response.data);
+      setIsLoading(true);
+      try {
+        const response = await getTagsForContent(contentId);
+        if (response.success) {
+          setContentTags(response.data);
+        }
+      } finally {
+        setIsLoading(false);
       }
     };
     
@@ -68,9 +82,18 @@ function TagGrid({ contentId, refreshTrigger }) {
 
   return (
     <StyledTagGrid>
-      {contentTags.map(tag => (
-        <TagItem key={tag._id}>{tag.name}</TagItem>
-      ))}
+      {isLoading ? (
+        <SpinnerContainer>
+          <img 
+            src="/images/spinner.gif" 
+            alt="Loading..." 
+          />
+        </SpinnerContainer>
+      ) : (
+        contentTags.map(tag => (
+          <TagItem key={tag._id}>{tag.name}</TagItem>
+        ))
+      )}
     </StyledTagGrid>
   );
 }
