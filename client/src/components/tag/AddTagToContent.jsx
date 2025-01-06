@@ -97,7 +97,7 @@ const Button = styled.button`
   }
 `;
 
-function AddTagToContent({ contentId, onClose }) {
+function AddTagToContent({ contentId, onClose, onSave }) {
   const { getTags, tags, addTagToContent, getTagsForContent } = useTagStore();
   const { authStatus: { user } } = useAuthStore();
   const [selectedTags, setSelectedTags] = React.useState([]);
@@ -133,10 +133,17 @@ function AddTagToContent({ contentId, onClose }) {
   };
 
   const handleSave = async () => {
-    for (const tagId of selectedTags) {
-      await addTagToContent(contentId, tagId, user._id);
+    try {
+      for (const tagId of selectedTags) {
+        await addTagToContent(contentId, tagId, user._id);
+      }
+      if (onSave) {
+        onSave(); // Trigger refresh in parent
+      }
+      onClose();
+    } catch (error) {
+      console.error('Error saving tags:', error);
     }
-    onClose();
   };
 
   return (

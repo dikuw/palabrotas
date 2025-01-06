@@ -111,8 +111,9 @@ const Content = () => {
   const { comments, getCommentsByContentId, addComment } = useCommentStore();
   const addNotification = useNotificationStore(state => state.addNotification);
   const [content, setContent] = useState(null);
-  const [showTagSelector, setShowTagSelector] = useState(false);
+  const [showAddTag, setShowAddTag] = useState(false);
   const [showComments, setShowComments] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
     const fetchContentAndComments = async () => {
@@ -139,6 +140,14 @@ const Content = () => {
     }
   };
 
+  const handleAddTagClose = () => {
+    setShowAddTag(false);
+  };
+
+  const handleTagsUpdated = () => {
+    setRefreshTrigger(prev => prev + 1);
+  };
+
   if (!content) {
     return <div>{t('Loading...')}</div>;
   }
@@ -155,15 +164,19 @@ const Content = () => {
       )}
       <AuthorInfo>{t('Created by')}: {content.author}</AuthorInfo>
       <TagContainer>
-        <TagGrid contentId={content._id} />
-        <AddTagButton onClick={() => setShowTagSelector(true)}>
+        <TagGrid 
+          contentId={content._id} 
+          refreshTrigger={refreshTrigger}
+        />
+        <AddTagButton onClick={() => setShowAddTag(true)}>
           {t('+ Add Tag')}
         </AddTagButton>
       </TagContainer>
-      {showTagSelector && (
+      {showAddTag && (
         <AddTagToContent 
           contentId={content._id} 
-          onClose={() => setShowTagSelector(false)} 
+          onClose={handleAddTagClose}
+          onSave={handleTagsUpdated}
         />
       )}
       <CommentSection>

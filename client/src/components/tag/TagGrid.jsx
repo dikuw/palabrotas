@@ -49,7 +49,7 @@ const TagItem = styled.div`
   }
 `;
 
-function TagGrid({ contentId }) {
+function TagGrid({ contentId, refreshTrigger }) {
   const { getTagsForContent } = useTagStore();
   const [contentTags, setContentTags] = useState([]);
 
@@ -64,7 +64,7 @@ function TagGrid({ contentId }) {
     if (contentId) {
       fetchTags();
     }
-  }, [contentId, getTagsForContent]);
+  }, [contentId, getTagsForContent, refreshTrigger]);
 
   return (
     <StyledTagGrid>
