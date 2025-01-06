@@ -3939,6 +3939,7 @@ input::-moz-focus-inner {
   --info: #17a2b8;
   --warning: #ffc2c2;
   --danger: #dc3545;
+  --error: #dc3545;
   --light: #f8f9fa;
   --dark: #343a40;
   --breakpoint-xs: 0;
