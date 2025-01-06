@@ -41,7 +41,7 @@ const TagItem = styled.div`
   color: #FFF;
   padding: 5px 10px;
   margin: 2px 2px 2px 20px;
-  font: normal 16px sans-serif;
+  font: normal ${props => props.selected ? '600' : 'normal'} 16px 'Inter', sans-serif;
   position: relative;
   cursor: pointer;
   box-shadow: 1px 1px 0 rgba(0,0,0,.2);
@@ -53,7 +53,7 @@ const TagItem = styled.div`
     width: 0;
     height: 100%;
     background: inherit;
-    border: 10px solid #fff;
+    border: 10px solid #FFF;
     border-right-color: transparent;
     border-radius: 10px 0 0 10px;
     left: -20px;
@@ -66,11 +66,11 @@ const TagItem = styled.div`
     width: 6px;
     height: 6px;
     border-radius: 3px;
-    background: #FFF;
+    background: #eff0f3;
     position: absolute;
     left: -3px;
     top: 12px;
-    box-shadow: inset 1px 1px 0 #CCC;
+    box-shadow: inset 1px 1px 0 rgba(0,0,0,.2);
   }
 
   &:hover {
