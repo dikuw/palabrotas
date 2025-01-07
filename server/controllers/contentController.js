@@ -60,8 +60,8 @@ export const getContentsSortedByVoteDesc = async (req, res) => {
               input: '$tags',
               as: 'tag',
               in: {
-                _id: { $toString: '$tag._id' },
-                name: '$tag.name'
+                _id: { $toString: '$$tag._id' },
+                name: '$$tag.name'
               }
             }
           }
