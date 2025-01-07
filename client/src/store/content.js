@@ -4,6 +4,9 @@ export const useContentStore = create((set, get) => ({
   contents: [],
   searchResults: [],
   isSearching: false,
+  selectedCountries: [],
+  selectedTags: [],
+  searchTerm: '',
   MAX_TITLE_LENGTH: 1000,
   MAX_DESCRIPTION_LENGTH: 1000,
   setContents: (contents) => set({ contents }),
@@ -55,15 +58,19 @@ export const useContentStore = create((set, get) => ({
     set({ contents: visibleContents });
   }, 
   getContentsSortedByVoteDesc: async () => {
-    const res = await fetch("/api/content/getContentsSortedByVoteDesc", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-    const data = await res.json();
-    const visibleContents = data.data.filter(content => content.show === true);
-    set({ contents: visibleContents });
+    try {
+      const res = await fetch(`/api/content/getContentsSortedByVoteDesc`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await res.json();
+      const visibleContents = data.data.filter(content => content.show === true);
+      set({ contents: visibleContents });
+    } catch (error) {
+      console.error('Fetch error:', error);
+    }
   },
   getContentById: async (id) => {
     const res = await fetch(`/api/content/getContentById/${id}`, {
@@ -86,21 +93,50 @@ export const useContentStore = create((set, get) => ({
     return data.data;
   },
   searchContents: (searchTerm) => {
-    set({ isSearching: true });
-    const { contents } = get();
-    const filtered = contents.filter(content => 
-      content.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      content.description.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    set({ isSearching: true, searchTerm });
+    const { contents, selectedCountries, selectedTags } = get();
+    
+    let filtered = contents;
+
+    if (searchTerm) {
+      filtered = filtered.filter(content => 
+        content.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        content.description.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    if (selectedCountries.length > 0) {
+      filtered = filtered.filter(content => 
+        selectedCountries.includes(content.country)
+      );
+    }
+
+    if (selectedTags.length > 0) {
+      filtered = filtered.filter(content => {
+        if (!content.tags || !Array.isArray(content.tags)) {
+          return false;
+        }
+        return content.tags.some(tag => selectedTags.includes(tag._id));
+      });
+    }
+
     set({ searchResults: filtered });
   },
   filterByCountries: (countries) => {
-    const { contents } = get();
-    const filtered = contents.filter(content => countries.includes(content.country));
-    set({ searchResults: filtered });
+    set({ selectedCountries: countries });
+    const { searchContents } = get();
+    searchContents(get().searchTerm || '');
+  },
+  filterByTags: (tagIds) => {
+    set({ selectedTags: tagIds });
+    const { searchContents } = get();
+    searchContents(get().searchTerm || '');
   },
   clearSearch: () => set({ 
     searchResults: [],
-    isSearching: false
+    isSearching: false,
+    selectedCountries: [],
+    selectedTags: [],
+    searchTerm: '',
   }),
 }));

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Select from 'react-select';
 import styled from 'styled-components';
-import { FaSearch } from 'react-icons/fa';
+import { FaSearch, FaTimes } from 'react-icons/fa';
 import { useTranslation } from "react-i18next";
 
 import { useContentStore } from '../../store/content';
@@ -111,36 +111,53 @@ export default function SearchBar() {
 
   useEffect(() => {
     getTags();
-  }, []);
+  }, [getTags]);
 
-  const countryOptions = countries.map(country => ({
-    value: country.code,
-    label: t(`${country.name}`)
-  }));
-
-  const tagOptions = tags.map(tag => ({
-    value: tag._id,
-    label: tag.name
-  }));
-
-  const handleSearch = () => {
+  const handleCountryChange = useCallback((selected) => {
+    const values = selected?.map(option => option.value) || [];
+    setSelectedCountries(selected || []);
+    filterByCountries(values);
     if (searchTerm.trim()) {
       searchContents(searchTerm);
-      setSearchTerm('');
     } else {
-      clearSearch();
+      searchContents('');
     }
-  };
+  }, [filterByCountries, searchContents, searchTerm]);
 
-  const handleCountryChange = (selected) => {
-    setSelectedCountries(selected);
-    filterByCountries(selected?.map(option => option.value) || []);
-  };
+  const handleTagChange = useCallback((selected) => {
+    const values = selected?.map(option => option.value) || [];
+    setSelectedTags(selected || []);
+    filterByTags(values);
+    if (searchTerm.trim()) {
+      searchContents(searchTerm);
+    } else {
+      searchContents('');
+    }
+  }, [filterByTags, searchContents, searchTerm]);
 
-  const handleTagChange = (selected) => {
-    setSelectedTags(selected);
-    filterByTags(selected?.map(option => option.value) || []);
-  };
+  const handleTextChange = useCallback((e) => {
+    const text = e.target.value;
+    setSearchTerm(text);
+    if (!text.trim()) {
+      clearSearch();
+    } else {
+      searchContents(text);
+    }
+  }, [clearSearch, searchContents]);
+
+  const countryOptions = React.useMemo(() => 
+    countries.map(country => ({
+      value: country.code,
+      label: t(`${country.name}`)
+    }))
+  , [t]);
+
+  const tagOptions = React.useMemo(() => 
+    tags?.map(tag => ({
+      value: tag._id,
+      label: tag.name
+    })) || []
+  , [tags]);
 
   return (
     <SearchBarDiv>
@@ -150,18 +167,22 @@ export default function SearchBar() {
             type="text" 
             placeholder={t("Search...")} 
             value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              if (!e.target.value.trim()) {
-                clearSearch();
-              }
-            }}
-            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+            onChange={handleTextChange}
           />
-        <SearchIconWrapper onClick={handleSearch}>
-          <FaSearch />
-        </SearchIconWrapper>
+          {searchTerm ? (
+            <SearchIconWrapper onClick={() => {
+              setSearchTerm('');
+              clearSearch();
+            }}>
+              <FaTimes />
+            </SearchIconWrapper>
+          ) : (
+            <SearchIconWrapper>
+              <FaSearch />
+            </SearchIconWrapper>
+          )}
         </SearchBarInner>
+        
         <CountrySelect
           isMulti
           options={countryOptions}
@@ -170,6 +191,7 @@ export default function SearchBar() {
           placeholder={t("Select countries...")}
           classNamePrefix="react-select"
         />
+        
         <TagSelect
           isMulti
           options={tagOptions}
