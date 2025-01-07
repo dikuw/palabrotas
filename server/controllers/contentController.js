@@ -16,20 +16,65 @@ export const getContents = async (req, res) => {
   }
 };
 
+
 export const getContentsSortedByVoteDesc = async (req, res) => {
   try {
     // Get vote counts for all content
     const voteCounts = await Vote.getVoteCounts();
-    // Fetch all content
-    const contents = await Content.find({ show: true });
+
+    // Get all content with their tags using aggregation
+    const contents = await Content.aggregate([
+      { $match: { show: true } },
+      {
+        $lookup: {
+          from: 'contenttags',
+          localField: '_id',
+          foreignField: 'content',
+          as: 'contentTags'
+        }
+      },
+      {
+        $lookup: {
+          from: 'tags',
+          localField: 'contentTags.tag',
+          foreignField: '_id',
+          as: 'tags'
+        }
+      },
+      {
+        $project: {
+          _id: { $toString: '$_id' }, // Convert _id to string
+          title: 1,
+          description: 1,
+          country: 1,
+          author: 1,
+          show: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          owner: 1,
+          exampleSentence: 1,
+          hint: 1,
+          version: 1,
+          tags: {
+            $map: {
+              input: '$tags',
+              as: 'tag',
+              in: {
+                _id: { $toString: '$tag._id' },
+                name: '$tag.name'
+              }
+            }
+          }
+        }
+      }
+    ]);
 
     // Combine content with vote counts and sort
     const contentWithVotes = contents.map(content => {
-      const voteCount = voteCounts.find(vc => vc._id.toString() === content._id.toString())?.count || 0;
+      const voteCount = voteCounts.find(vc => vc._id.toString() === content._id)?.count || 0;
       return { 
-        ...content.toObject(), 
-        voteCount,
-        _id: content._id.toString()
+        ...content,
+        voteCount
       };
     }).sort((a, b) => b.voteCount - a.voteCount);
 
@@ -45,6 +90,36 @@ export const getContentsSortedByVoteDesc = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+// export const getContentsSortedByVoteDesc = async (req, res) => {
+//   try {
+//     // Get vote counts for all content
+//     const voteCounts = await Vote.getVoteCounts();
+//     // Fetch all content
+//     const contents = await Content.find({ show: true });
+
+//     // Combine content with vote counts and sort
+//     const contentWithVotes = contents.map(content => {
+//       const voteCount = voteCounts.find(vc => vc._id.toString() === content._id.toString())?.count || 0;
+//       return { 
+//         ...content.toObject(), 
+//         voteCount,
+//         _id: content._id.toString()
+//       };
+//     }).sort((a, b) => b.voteCount - a.voteCount);
+
+//     if (!contentWithVotes.length) {
+//       return res
+//         .status(404)
+//         .json({ success: false, error: `No content found` });
+//     }
+
+//     res.status(200).json({ success: true, data: contentWithVotes });
+//   } catch(error) {
+//     console.error("Error in get contents sorted by votes:", error.message);
+//     res.status(500).json({ success: false, message: error.message });
+//   }
+// };
 
 export const getContentById = async (req, res) => {
   try {
