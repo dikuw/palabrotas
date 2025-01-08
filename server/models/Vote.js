@@ -18,9 +18,6 @@ const voteSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
-// Compound index to ensure a user can only have one upvote and one downvote per content
-voteSchema.index({ content: 1, user: 1, voteType: 1 }, { unique: true });
-
 // Static method to get vote counts for all content
 voteSchema.statics.getVoteCounts = async function() {
   return this.aggregate([
