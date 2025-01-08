@@ -15,7 +15,7 @@ export const addVote = async (req, res) => {
     if (existingVote && existingVote.voteType === voteType) {
       return res.status(400).json({ 
         success: false, 
-        message: `You already ${voteType === 'up' ? 'upvoted' : 'downvoted'} this content.`
+        message: `You already ${voteType === 'upvote' ? 'upvoted' : 'downvoted'} this content.`
       });
     }
 
