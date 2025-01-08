@@ -174,6 +174,8 @@ i18n
           "Password or username is incorrect" : "Password or username is incorrect",
           "Continue with Google" : "Continue with Google",
           "or" : "or",
+          "Current Streak:" : "Current Streak:",
+          "Longest Streak:" : "Longest Streak:",
         }
       },
       es: {
@@ -347,6 +349,8 @@ i18n
           "Password or username is incorrect" : "Contraseña o nombre de usuario incorrecto",
           "Continue with Google" : "Continuar con Google",
           "or" : "o",
+          "Current Streak:" : "Racha Actual:",
+          "Longest Streak:" : "Racha Más Larga:",
         }
       }
     },
