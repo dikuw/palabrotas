@@ -90,3 +90,7 @@
 34. The application shall allow users to create flashcards from content posts.
 35. The application shall allow users to remove content from their flashcards.
 
+### General
+36. The application shall allow users to change the language of the application.
+37. The application shall allow users to change the theme of the application.
+38. Input text shall be visible to the user in all themes.
