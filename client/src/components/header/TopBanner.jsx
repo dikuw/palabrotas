@@ -5,8 +5,8 @@ import styled from 'styled-components';
 const BannerDiv = styled.div`
   display: block;
   width: 100%;
-  background-color: var(--topHeader);
-  color:  var(--topHeaderText);
+  background-color: var(--secondary);
+  color: var(--text);
   padding: 7px 10px;
   text-align: center;
 `;
@@ -21,7 +21,7 @@ const StyledSelect = styled.select`
   top: 8px;
   right: 4px;
   background-color: var(--primary);
-  color:  var(--almostWhite);
+  color: var(--almostWhite);
 `;
 
 export default function TopBanner(props) {
