@@ -89,8 +89,9 @@ const VoteIcons = styled.div`
   top: 10px;
   right: 10px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
+  gap: 18px;
 `;
 
 const VoteIcon = styled.div`
