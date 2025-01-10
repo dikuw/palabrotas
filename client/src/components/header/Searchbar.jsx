@@ -16,31 +16,56 @@ const SearchInputWrapper = styled.div`
   width: 100%;
   max-width: 900px;
   gap: 10px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+`;
+
+const InputContainer = styled.div`
+  position: relative;
+  flex: ${props => props.flex || 'initial'};
+  width: ${props => props.width || 'auto'};
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+`;
+
+const InputBackground = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 1.5px dashed #000;
+  border-radius: 20px;
+  background: transparent;
+  top: 5.5px;
+  left: 3px;
+  pointer-events: none;
 `;
 
 const SearchBarInner = styled.div`
+  position: relative;
   display: flex;
   align-items: center;
-  flex: 1;
-  border: 1px solid #ccc;
+  border: 1px solid #000;
   border-radius: 20px;
   padding: 5px 10px;
   background-color: white;
+  width: 100%;
 `;
 
 const SearchBarDiv = styled.div`
   width: 100%;
-  height: 2em;
+  height: auto;
   display: flex;
   justify-content: center;
   padding: 30px 0; 
   align-items: center;
+
   @media (max-width: 768px) {
-    padding-left: 16px;
-    padding-bottom: 40px;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 30px;
+    padding: 20px 16px;
   }
 `;
 
@@ -49,7 +74,12 @@ const SearchInput = styled.input`
   outline: none;
   width: 100%;
   padding: 5px;
-  font-size: 16px;
+  font-size: 14px;
+  
+  &::placeholder {
+    font-size: 14px;
+    color: #757575;
+  }
 `;
 
 const SearchIconWrapper = styled.div`
@@ -59,45 +89,54 @@ const SearchIconWrapper = styled.div`
   cursor: pointer;
 `;
 
-const CountrySelect = styled(Select)`
+const CountrySelect = styled.div`
+  position: relative;
   width: 200px;
-  .react-select__control {
-    border-radius: 20px;
-    min-height: 36px;
-    font-size: 14px;
-  }
-  .react-select__multi-value {
-    border-radius: 10px;
-  }
-  .react-select__placeholder {
-    font-size: 12px;
-  }
-  .react-select__input {
-    font-size: 14px;
-  }
-  .react-select__single-value {
-    font-size: 14px;
+
+  @media (max-width: 768px) {
+    width: 100%;
   }
 `;
 
-const TagSelect = styled(Select)`
+const TagSelect = styled.div`
+  position: relative;
   width: 200px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+`;
+
+const StyledSelect = styled(Select)`
   .react-select__control {
+    border: 1px solid #000;
     border-radius: 20px;
     min-height: 36px;
+    font-size: 14px;
+    background-color: white;
+  }
+  .react-select__placeholder {
+    font-size: 14px;
+    color: #757575;
+  }
+  .react-select__input {
+    font-size: 14px;
+  }
+  .react-select__single-value {
     font-size: 14px;
   }
   .react-select__multi-value {
     border-radius: 10px;
   }
-  .react-select__placeholder {
-    font-size: 12px;
+  .react-select__indicators {
+    height: 100%;
   }
-  .react-select__input {
-    font-size: 142px;
-  }
-  .react-select__single-value {
-    font-size: 14px;
+  .react-select__indicator-separator {
+    width: 1px;
+    margin: 3px 0;
+    background: none;
+    border-left: 1.5px dashed #000;
+    align-self: stretch;
   }
 `;
 
@@ -162,44 +201,53 @@ export default function SearchBar() {
   return (
     <SearchBarDiv>
       <SearchInputWrapper>
-        <SearchBarInner>
-          <SearchInput 
-            type="text" 
-            placeholder={t("Search...")} 
-            value={searchTerm}
-            onChange={handleTextChange}
+        <InputContainer flex="1">
+          <InputBackground />
+          <SearchBarInner>
+            <SearchInput 
+              type="text" 
+              placeholder={t("Search...")} 
+              value={searchTerm}
+              onChange={handleTextChange}
+            />
+            {searchTerm ? (
+              <SearchIconWrapper onClick={() => {
+                setSearchTerm('');
+                clearSearch();
+              }}>
+                <FaTimes />
+              </SearchIconWrapper>
+            ) : (
+              <SearchIconWrapper>
+                <FaSearch />
+              </SearchIconWrapper>
+            )}
+          </SearchBarInner>
+        </InputContainer>
+        
+        <InputContainer width="200px">
+          <InputBackground />
+          <StyledSelect
+            isMulti
+            options={countryOptions}
+            value={selectedCountries}
+            onChange={handleCountryChange}
+            placeholder={t("Select countries...")}
+            classNamePrefix="react-select"
           />
-          {searchTerm ? (
-            <SearchIconWrapper onClick={() => {
-              setSearchTerm('');
-              clearSearch();
-            }}>
-              <FaTimes />
-            </SearchIconWrapper>
-          ) : (
-            <SearchIconWrapper>
-              <FaSearch />
-            </SearchIconWrapper>
-          )}
-        </SearchBarInner>
+        </InputContainer>
         
-        <CountrySelect
-          isMulti
-          options={countryOptions}
-          value={selectedCountries}
-          onChange={handleCountryChange}
-          placeholder={t("Select countries...")}
-          classNamePrefix="react-select"
-        />
-        
-        <TagSelect
-          isMulti
-          options={tagOptions}
-          value={selectedTags}
-          onChange={handleTagChange}
-          placeholder={t("Select tags...")}
-          classNamePrefix="react-select"
-        />
+        <InputContainer width="200px">
+          <InputBackground />
+          <StyledSelect
+            isMulti
+            options={tagOptions}
+            value={selectedTags}
+            onChange={handleTagChange}
+            placeholder={t("Select tags...")}
+            classNamePrefix="react-select"
+          />
+        </InputContainer>
       </SearchInputWrapper>
     </SearchBarDiv>
   );
