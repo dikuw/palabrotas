@@ -11,16 +11,39 @@ import { useFlashcardStore } from '../../store/flashcard';
 import { useVoteStore } from '../../store/vote';
 import { useNotificationStore } from '../../store/notification';
 
-const StyledGridFigure = styled.figure`
+const CardContainer = styled.div`
+  position: relative;
   width: 100%;
   margin: 0 0 2rem 0;
+`;
+
+const BackgroundCard = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 1px solid #000;
+  border-radius: 9px;
+  background: #F9BC60;
+  top: 7px;
+  left: 7px;
+`;
+
+const StyledGridFigure = styled.figure`
+  width: 100%;
   padding: 2rem;
-  border: 1px solid var(--primary);
-  background: var(--almostWhite);
-  box-shadow: 0 0 0 5px rgba(0,0,0,0.03);
+  border: 1px solid #000;
+  border-radius: 9px;
+  background: #FFF;
   position: relative;
   display: flex;
   align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  margin: 0;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
 `;
 
 const StyledFlagIcon = styled(ReactCountryFlag)`
@@ -132,32 +155,35 @@ export default function Card({ item, showEditIcon }) {
   };
 
   return (
-    <StyledGridFigure onClick={handleClick}>
-      {item.country && (
-        <StyledFlagIcon countryCode={item.country} svg />
-      )}
-      {showEditIcon && (
-        <StyledEditIcon onClick={handleEdit} title={t('Edit')} />
-      )}
-      <figcaption>
-        <p>{item.title}</p>
-        <p>{item.description}</p>
-      </figcaption>
-      <StyledAuthorText>{t('created by')}: {item.author}</StyledAuthorText> 
-      {authStatus.isLoggedIn && (
-        <StyledAddToFlashcardIcon 
-          onClick={handleAddToFlashcard} 
-          title={t('Add to Flashcards')}
-        />
-      )}
-      <VoteIcons>
-        <VoteIcon onClick={(e) => { e.stopPropagation(); handleVote('upvote'); }}>
-          <FaChevronUp />
-        </VoteIcon>
-        <VoteIcon onClick={(e) => { e.stopPropagation(); handleVote('downvote'); }}>
-          <FaChevronDown />
-        </VoteIcon>
-      </VoteIcons>
-    </StyledGridFigure>
+    <CardContainer onClick={handleClick}>
+      <BackgroundCard />
+      <StyledGridFigure>
+        {item.country && (
+          <StyledFlagIcon countryCode={item.country} svg />
+        )}
+        {showEditIcon && (
+          <StyledEditIcon onClick={handleEdit} title={t('Edit')} />
+        )}
+        <figcaption>
+          <p>{item.title}</p>
+          <p>{item.description}</p>
+        </figcaption>
+        <StyledAuthorText>{t('created by')}: {item.author}</StyledAuthorText> 
+        {authStatus.isLoggedIn && (
+          <StyledAddToFlashcardIcon 
+            onClick={handleAddToFlashcard} 
+            title={t('Add to Flashcards')}
+          />
+        )}
+        <VoteIcons>
+          <VoteIcon onClick={(e) => { e.stopPropagation(); handleVote('upvote'); }}>
+            <FaChevronUp />
+          </VoteIcon>
+          <VoteIcon onClick={(e) => { e.stopPropagation(); handleVote('downvote'); }}>
+            <FaChevronDown />
+          </VoteIcon>
+        </VoteIcons>
+      </StyledGridFigure>
+    </CardContainer>
   );
 };
