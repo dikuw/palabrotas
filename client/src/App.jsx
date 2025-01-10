@@ -32,7 +32,11 @@ const StyledAppContainer = styled.div`
   width: 100%;
   box-sizing: border-box;
   align-items: center;
-  background-color: var(--fondo);
+  background-color: white;
+  background-image: 
+    linear-gradient(var(--primary) 1px, transparent 1px),
+    linear-gradient(90deg, var(--primary) 1px, transparent 1px);
+  background-size: 50px 50px;
 `;
 
 const StyledMainContent = styled.div`
