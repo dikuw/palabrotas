@@ -8,7 +8,7 @@ const StyledFooter = styled.footer`
   flex-flow: row wrap;
   padding: 10px 10px 0px 10px;
   color: var(--almostWhite);
-  background-color: var(--primary);
+  background-color: var(--secondary);
   border-top: 1px solid var(--primary);
   font-size: 0.8rem;
   ul {
@@ -27,10 +27,10 @@ const StyledLegal = styled.div`
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
-  color: #999;
+  color: #FFFFFF;
   flex:  1 100%;
   a {
-    color: #999999;
+    color: #FFFFFF;
   }
   @media (min-width: 40.375em) {
     margin-left: auto;
