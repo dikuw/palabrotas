@@ -176,6 +176,10 @@ i18n
           "or" : "or",
           "Current Streak:" : "Current Streak:",
           "Longest Streak:" : "Longest Streak:",
+          "Hint (optional)" : "Hint (optional)",
+          "Example sentence (optional)" : "Example sentence (optional)",
+          "Cancel" : "Cancel",
+          "Save" : "Save",
         }
       },
       es: {
@@ -351,6 +355,10 @@ i18n
           "or" : "o",
           "Current Streak:" : "Racha Actual:",
           "Longest Streak:" : "Racha Más Larga:",
+          "Hint (optional)" : "Pista (opcional)",
+          "Example sentence (optional)" : "Frase de ejemplo (opcional)",
+          "Cancel" : "Cancelar",
+          "Save" : "Guardar",
         }
       }
     },
