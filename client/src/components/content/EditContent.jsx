@@ -39,10 +39,10 @@ const Input = styled.input`
   color: #000000;
   padding: 15px;
   margin-bottom: 10px;
-  border-radius: 20px;
+  border-radius: 24px;
   font-size: 16px;
   border: 2px solid ${props => props.$hasError ? 'var(--error)' : 'var(--secondary)'};
-  height: 65px;
+  height: 55px;
   width: 100%;
 
   &::placeholder {
@@ -120,6 +120,14 @@ const BackgroundCard = styled.div`
   z-index: ${props => 3 - props.$index};
   bottom: ${props => -5 - (props.$index * 5)}px;
   left: 0;
+`;
+
+const Title = styled.div`
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--text);
+  margin-bottom: 20px;
+  text-align: center;
 `;
 
 export default function EditContent() {
@@ -211,6 +219,8 @@ export default function EditContent() {
     <OuterContainer>
       <FormWrapper>
         <FormContainer onSubmit={formSubmit}>
+          <Title>{t("Edit Content")}</Title>
+          
           <Input
             name="title"
             type="text"

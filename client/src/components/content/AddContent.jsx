@@ -40,10 +40,10 @@ const Input = styled.input`
   color: #000000;
   padding: 15px;
   margin-bottom: 10px;
-  border-radius: 20px;
+  border-radius: 24px;
   font-size: 16px;
   border: 2px solid ${props => props.$hasError ? 'var(--error)' : 'var(--secondary)'};
-  height: 65px;
+  height: 55px;
   width: 100%;
 
   &::placeholder {
@@ -109,6 +109,14 @@ const BackgroundCard = styled.div`
   left: 0;
 `;
 
+const Title = styled.div`
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--text);
+  margin-bottom: 20px;
+  text-align: center;
+`;
+
 export default function AddContent() {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -166,6 +174,8 @@ export default function AddContent() {
     <OuterContainer>
       <FormWrapper>
         <FormContainer onSubmit={formSubmit}>
+          <Title>{t("Add Content")}</Title>
+          
           <Input
             name="title"
             type="text"
