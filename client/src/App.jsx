@@ -82,7 +82,6 @@ function App() {
           <Route path="/admin" 
             element={
               <>
-                <Banner bannerString={t("Site Administration")} />
                 <Admin />
               </>
             }
@@ -90,7 +89,6 @@ function App() {
           <Route path="/register" 
             element={
               <>
-                <Banner bannerString={t("Register a New Account")} />
                 <Register 
                   isLoggedIn={authStatus.isLoggedIn} 
                 />
@@ -100,7 +98,6 @@ function App() {
           <Route path="/login" 
             element={
               <>
-                <Banner bannerString={t("Log In")} />
                 <LocalLogin
                   isLoggedIn={authStatus.isLoggedIn} 
                   // isPasswordIncorrect={isPasswordIncorrect}
@@ -114,7 +111,6 @@ function App() {
           <Route path="/content/:id" 
             element={
               <>
-                <Banner bannerString={t("Entry Details")} />
                 <Content />
               </>
             }
@@ -122,7 +118,6 @@ function App() {
           <Route path="/account" 
             element={
               <>
-                <Banner bannerString={t("Your Account")} />
                 <Account 
                   isLoggedIn={authStatus.isLoggedIn} 
                 />
@@ -132,7 +127,6 @@ function App() {
           <Route path="/flashcards" 
             element={
               <>
-                <Banner bannerString={t("Flashcards")} />
                 <Flashcards 
                   isLoggedIn={authStatus.isLoggedIn} 
                 />
@@ -142,7 +136,6 @@ function App() {
           <Route path="/addContent" 
             element={
               <>
-                <Banner bannerString={t("Add Content")} />
                 <AddContent
                   isLoggedIn={authStatus.isLoggedIn} 
                 />
@@ -152,7 +145,6 @@ function App() {
           <Route path="/editContent/:id" 
             element={
               <>
-                <Banner bannerString={t("Edit Content")} />
                 <EditContent
                   isLoggedIn={authStatus.isLoggedIn} 
                 />
