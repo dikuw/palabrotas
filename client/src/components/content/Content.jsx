@@ -14,11 +14,43 @@ import CommentForm from '../comment/CommentForm';
 import TagGrid from '../tag/TagGrid';
 import AddTagToContent from '../tag/AddTagToContent';
 
-const ContentWrapper = styled.div`
-  width: 90%;
-  max-width: 800px;
-  margin: 0 auto;
+const OuterContainer = styled.div`
   padding: 20px;
+  padding-top: 0;
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+`;
+
+const FormWrapper = styled.div`
+  position: relative;
+  width: 99%;
+  max-width: 800px;
+  margin: 10px auto 20px;
+  z-index: 1;
+`;
+
+const ContentContainer = styled.div`
+  width: 100%;
+  background-color: white;
+  border-radius: 9px;
+  border: 1px solid #000;
+  padding: 20px;
+  position: relative;
+  z-index: 4;
+`;
+
+const BackgroundCard = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 60px;
+  border-radius: 9px;
+  border: 1px solid #000;
+  background-color: var(--primary);
+  z-index: ${props => 3 - props.$index};
+  bottom: ${props => -5 - (props.$index * 5)}px;
+  left: 0;
 `;
 
 const ContentHeader = styled.div`
@@ -54,6 +86,7 @@ const TagContainer = styled.div`
   justify-content: space-between; 
   gap: 10px;
   margin: 10px 0;
+  background-color: white;
 `;
 
 const AddTagButton = styled.button`
@@ -153,56 +186,63 @@ const Content = () => {
   }
 
   return (
-    <ContentWrapper>
-      <ContentHeader>
-        <Title>{content.title}</Title>
-        {content.country && <ReactCountryFlag countryCode={content.country} svg />}
-      </ContentHeader>
-      <Description>{content.description}</Description>
-      {content.exampleSentence && (
-        <ExampleSentence>{content.exampleSentence}</ExampleSentence>
-      )}
-      <AuthorInfo>{t('Created by')}: {content.author}</AuthorInfo>
-      <TagContainer>
-        <TagGrid 
-          contentId={content._id} 
-          refreshTrigger={refreshTrigger}
-        />
-        <AddTagButton onClick={() => setShowAddTag(true)}>
-          {t('+ Add Tag')}
-        </AddTagButton>
-      </TagContainer>
-      {showAddTag && (
-        <AddTagToContent 
-          contentId={content._id} 
-          onClose={handleAddTagClose}
-          onSave={handleTagsUpdated}
-        />
-      )}
-      <CommentSection>
-        <ToggleButton onClick={() => setShowComments(!showComments)}>
-          {showComments ? <FaChevronUp /> : <FaChevronDown />}
-          {t('Show Comments')} ({comments.length})
-        </ToggleButton>
-        {showComments && (
-          <>
-            <CommentList>
-              {comments.map((comment) => (
-                <CommentItem key={comment._id}>
-                  <CommentText>{comment.text}</CommentText>
-                  <CommentMeta>
-                    {t('Created by')}: {comment.owner.name} | {new Date(comment.createdAt).toLocaleString()}
-                  </CommentMeta>
-                </CommentItem>
-              ))}
-            </CommentList>
-            {authStatus.isLoggedIn && (
-              <CommentForm onSubmit={handleAddComment} />
+    <OuterContainer>
+      <FormWrapper>
+        <ContentContainer>
+          <ContentHeader>
+            <Title>{content.title}</Title>
+            {content.country && <ReactCountryFlag countryCode={content.country} svg />}
+          </ContentHeader>
+          <Description>{content.description}</Description>
+          {content.exampleSentence && (
+            <ExampleSentence>{content.exampleSentence}</ExampleSentence>
+          )}
+          <AuthorInfo>{t('Created by')}: {content.author}</AuthorInfo>
+          <TagContainer>
+            <TagGrid 
+              contentId={content._id} 
+              refreshTrigger={refreshTrigger}
+            />
+            <AddTagButton onClick={() => setShowAddTag(true)}>
+              {t('+ Add Tag')}
+            </AddTagButton>
+          </TagContainer>
+          {showAddTag && (
+            <AddTagToContent 
+              contentId={content._id} 
+              onClose={handleAddTagClose}
+              onSave={handleTagsUpdated}
+            />
+          )}
+          <CommentSection>
+            <ToggleButton onClick={() => setShowComments(!showComments)}>
+              {showComments ? <FaChevronUp /> : <FaChevronDown />}
+              {t('Show Comments')} ({comments.length})
+            </ToggleButton>
+            {showComments && (
+              <>
+                <CommentList>
+                  {comments.map((comment) => (
+                    <CommentItem key={comment._id}>
+                      <CommentText>{comment.text}</CommentText>
+                      <CommentMeta>
+                        {t('Created by')}: {comment.owner.name} | {new Date(comment.createdAt).toLocaleString()}
+                      </CommentMeta>
+                    </CommentItem>
+                  ))}
+                </CommentList>
+                {authStatus.isLoggedIn && (
+                  <CommentForm onSubmit={handleAddComment} />
+                )}
+              </>
             )}
-          </>
-        )}
-      </CommentSection>
-    </ContentWrapper>
+          </CommentSection>
+        </ContentContainer>
+        {[0, 1, 2].map((index) => (
+          <BackgroundCard key={index} $index={index} />
+        ))}
+      </FormWrapper>
+    </OuterContainer>
   );
 };
 

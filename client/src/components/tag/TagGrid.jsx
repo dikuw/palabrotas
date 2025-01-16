@@ -28,7 +28,7 @@ const TagItem = styled.div`
     width: 0;
     height: 100%;
     background: inherit;
-    border: 10px solid #eff0f3;
+    border: 10px solid white;
     border-right-color: transparent;
     border-radius: 10px 0 0 10px;
     left: -20px;
