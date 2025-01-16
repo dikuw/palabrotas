@@ -37,7 +37,7 @@ const InputBackground = styled.div`
   position: absolute;
   width: 100%;
   height: 100%;
-  border: 1.5px dashed #000;
+  border: 1.5px dashed #acacac;
   border-radius: 20px;
   background: transparent;
   top: 5.5px;
