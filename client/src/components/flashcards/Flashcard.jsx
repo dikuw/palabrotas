@@ -10,12 +10,45 @@ import { useNotificationStore } from '../../store/notification';
 import FormattedHint from './FlashcardHint';
 import Tooltip from '../shared/Tooltip';
 
+const OuterContainer = styled.div`
+  padding: 20px;
+  padding-top: 0;
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+`;
+
+const FormWrapper = styled.div`
+  position: relative;
+  width: 99%;
+  max-width: 800px;
+  margin: 10px auto 20px;
+  z-index: 1;
+`;
+
 const FlashcardContainer = styled.div`
   width: 100%;
-  margin: 0 0 2rem 0;
-  padding: 2rem;
+  background-color: white;
+  border-radius: 9px;
+  border: 1px solid #000;
+  padding: 20px;
+  position: relative;
+  z-index: 4;
   height: 300px;
   perspective: 1000px;
+`;
+
+const BackgroundCard = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 60px;
+  border-radius: 9px;
+  border: 1px solid #000;
+  background-color: var(--primary);
+  z-index: ${props => 3 - props.$index};
+  bottom: ${props => -5 - (props.$index * 10)}px;
+  left: 0;
 `;
 
 const FlashcardInner = styled.div`
@@ -178,42 +211,49 @@ export default function Flashcard({ item, onNext }) {
   };
 
   return (
-    <FlashcardContainer onClick={handleFlip}>
-      <FlashcardInner $isFlipped={isFlipped}>
-        <FlashcardFront>
-          <Title>{currentItem.content.title}</Title>
-          {showHint && (
-            <Hint>
-              {renderHint()}
-            </Hint>
-          )}
-          <QuestionIconWrapper>          
-            <Tooltip text={t("Show hint")}>
-              <StyledQuestionIcon onClick={handleHint} />
-            </Tooltip>
-          </QuestionIconWrapper>
-        </FlashcardFront>
-        <FlashcardBack>
-          <ContentContainer>
-            <p>{currentItem.content.description}</p>
-            <p>{currentItem.content.exampleSentence}</p>
-          </ContentContainer>
-          <QualityButtonsContainer>
-            {qualityLabels.map(quality => (
-              <QualityButton 
-                key={quality} 
-                $quality={quality} 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleAnswer(quality);
-                }}
-              >
-                {t(quality)}
-              </QualityButton>
-            ))}
-          </QualityButtonsContainer>
-        </FlashcardBack>
-      </FlashcardInner>
-    </FlashcardContainer>
+    <OuterContainer>
+      <FormWrapper>
+        <FlashcardContainer onClick={handleFlip}>
+          <FlashcardInner $isFlipped={isFlipped}>
+            <FlashcardFront>
+              <Title>{currentItem.content.title}</Title>
+              {showHint && (
+                <Hint>
+                  {renderHint()}
+                </Hint>
+              )}
+              <QuestionIconWrapper>          
+                <Tooltip text={t("Show hint")}>
+                  <StyledQuestionIcon onClick={handleHint} />
+                </Tooltip>
+              </QuestionIconWrapper>
+            </FlashcardFront>
+            <FlashcardBack>
+              <ContentContainer>
+                <p>{currentItem.content.description}</p>
+                <p>{currentItem.content.exampleSentence}</p>
+              </ContentContainer>
+              <QualityButtonsContainer>
+                {qualityLabels.map(quality => (
+                  <QualityButton 
+                    key={quality} 
+                    $quality={quality} 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAnswer(quality);
+                    }}
+                  >
+                    {t(quality)}
+                  </QualityButton>
+                ))}
+              </QualityButtonsContainer>
+            </FlashcardBack>
+          </FlashcardInner>
+        </FlashcardContainer>
+        {[0, 1, 2].map((index) => (
+          <BackgroundCard key={index} $index={index} />
+        ))}
+      </FormWrapper>
+    </OuterContainer>
   );
 };

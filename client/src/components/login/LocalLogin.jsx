@@ -9,45 +9,86 @@ import GoogleLogin from './GoogleLogin';
 import { useAuthStore } from '../../store/auth';
 import { useNotificationStore } from '../../store/notification';
 
-const StyledWrapperDiv = styled.div`
-  width: 90%;
-  max-width: 1000px;
+const OuterContainer = styled.div`
+  padding: 20px;
+  padding-top: 0;
+  position: relative;
+  width: 100%;
   display: flex;
-  flex-direction: column;
-  margin: 30px auto;
-  padding: 4px;
-  form {
-    margin-bottom: 20px;
-    display: flex;
-    flex-direction: column;
-    input, select {
-      margin: 0.25rem;
-      padding: 10px;
-      font-size: 1rem;
-    }
-    input:focus, textarea:focus, select:focus {
-      outline: 0;
-      background: #fef2de;
-    }
-    textarea {
-      width: 100%;
-    }
-    button {
-      border: 0;
-    }
+  justify-content: center;
+`;
+
+const FormWrapper = styled.div`
+  position: relative;
+  width: 99%;
+  max-width: 800px;
+  margin: 10px auto 20px;
+  z-index: 1;
+`;
+
+const FormContainer = styled.form`
+  width: 100%;
+  background-color: white;
+  border-radius: 9px;
+  border: 1px solid #000;
+  padding: 20px;
+  position: relative;
+  z-index: 2;
+`;
+
+const Title = styled.div`
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--text);
+  margin-bottom: 20px;
+  text-align: center;
+`;
+
+const Input = styled.input`
+  background-color: #FFF;
+  color: #000000;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 24px;
+  font-size: 16px;
+  border: 2px solid ${props => props.$hasError ? 'var(--error)' : 'var(--secondary)'};
+  height: 55px;
+  width: 100%;
+
+  &::placeholder {
+    color: #666666;
   }
 `;
 
-const StyledWarningDiv = styled.div`
-  text-align: center;
-  padding: 0vw 3vw;
-  color: red;
-  font-weight: 600;
+const ButtonContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  gap: 15px;
+  width: 100%;
 `;
 
-const StyledInput = styled.input`
-  background-color: ${props => props.$hasError ? 'var(--warning)' : 'var(--almostWhite)'};
-  color: ${props => props.$hasError ? 'red' : 'inherit'};
+const Button = styled.button`
+  width: 100%;
+  padding: 10px 15px;
+  border-radius: 24px;
+  border: ${props => props.$primary ? 'none' : '1px dashed #000'};
+  background-color: ${props => props.$primary ? 'var(--primary)' : 'white'};
+  color: ${props => props.$primary ? 'white' : 'var(--text)'};
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.7;
+  }
+`;
+
+const ErrorText = styled.div`
+  color: var(--error);
+  font-size: 14px;
+  margin-bottom: 10px;
 `;
 
 const OrDivider = styled.div`
@@ -56,6 +97,7 @@ const OrDivider = styled.div`
   color: var(--darkGrey);
   font-size: 14px;
   position: relative;
+  width: 100%;
   
   &::before, &::after {
     content: '';
@@ -73,6 +115,12 @@ const OrDivider = styled.div`
   &::after {
     right: 0;
   }
+`;
+
+const GoogleContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  width: 100%;
 `;
 
 export default function LocalLogin(props) {
@@ -134,35 +182,50 @@ export default function LocalLogin(props) {
   };
 
   return (
-    <StyledWrapperDiv>
-      <form onSubmit={loginClick}>
-        <StyledInput
-          name="email"
-          type="email"
-          placeholder={errors.email || t("Email")}
-          value={errors.email ? "" : formData.email}
-          onChange={handleChange}
-          $hasError={!!errors.email}
-        />
-        <StyledInput
-          name="password"
-          type="password"
-          placeholder={errors.password || t("Password")}
-          value={errors.password ? "" : formData.password}
-          onChange={handleChange}
-          $hasError={!!errors.password}
-        />
-        <VisibleActionButton type="submit" buttonLabel={t("Log in")} />
-      </form>
-      {/* <div>{"Forgot your password"}?</div>
-      <form onSubmit={forgotClick}>
-        <input name="forgotEmail" type="text" placeholder={"Email"}  />
-        <VisibleActionButton type="submit" buttonLabel={"Send a Reset"} />
-      </form> */}
-      {t(errors.general) && <div style={{ color: 'red' }}>{t(errors.general)}</div>}
-      <InvisibleActionButton clickHandler={() => handleClick('/register')} buttonLabel={t("No account? Register here!") } />
-      <OrDivider>{t("or")}</OrDivider>
-      <GoogleLogin />
-    </StyledWrapperDiv>
+    <OuterContainer>
+      <FormWrapper>
+        <FormContainer onSubmit={loginClick}>
+          <Title>{t("Log in")}</Title>
+          
+          <Input
+            name="email"
+            type="email"
+            placeholder={t("Email")}
+            value={formData.email}
+            onChange={handleChange}
+            $hasError={!!errors.email}
+          />
+          {errors.email && <ErrorText>{errors.email}</ErrorText>}
+
+          <Input
+            name="password"
+            type="password"
+            placeholder={t("Password")}
+            value={formData.password}
+            onChange={handleChange}
+            $hasError={!!errors.password}
+          />
+          {errors.password && <ErrorText>{errors.password}</ErrorText>}
+
+          <ButtonContainer>
+            <Button type="submit" $primary>
+              {t("Log in")}
+            </Button>
+
+            <Button type="button" onClick={() => handleClick('/register')}>
+              {t("No account? Register here!")}
+            </Button>
+          </ButtonContainer>
+
+          <OrDivider>{t("or")}</OrDivider>
+          
+          <GoogleContainer>
+            <GoogleLogin />
+          </GoogleContainer>
+          
+          {errors.general && <ErrorText>{errors.general}</ErrorText>}
+        </FormContainer>
+      </FormWrapper>
+    </OuterContainer>
   );
 };
