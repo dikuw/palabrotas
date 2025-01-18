@@ -3942,6 +3942,8 @@ input::-moz-focus-inner {
   --error: #dc3545;
   --light: #f8f9fa;
   --dark: #343a40;
+  --darkGrey: #666666;
+  --lightGrey: #dddddd;
   --breakpoint-xs: 0;
   --breakpoint-sm: 576px;
   --breakpoint-md: 768px;
