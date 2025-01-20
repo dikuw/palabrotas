@@ -14,22 +14,24 @@ import { useNotificationStore } from '../../store/notification';
 const CardContainer = styled.div`
   position: relative;
   width: 100%;
+  height: 152px;
   margin: 0 0 2rem 0;
 `;
 
 const BackgroundCard = styled.div`
   position: absolute;
   width: 100%;
-  height: 100%;
+  height: calc(95%);
   border: 1px solid #000;
   border-radius: 9px;
-  background: #F9BC60;
+  background: var(--primary);
   top: 7px;
   left: 7px;
 `;
 
 const StyledGridFigure = styled.figure`
   width: 100%;
+  height: 144px;
   padding: 2rem;
   border: 1px solid #000;
   border-radius: 9px;
