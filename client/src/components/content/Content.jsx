@@ -165,8 +165,12 @@ const Content = () => {
 
   const handleAddComment = async (commentText) => {
     try {
-      await addComment(id, authStatus.user._id, commentText);
-      addNotification(t('Comment added successfully'), 'success');
+      const result = await addComment(id, authStatus.user._id, commentText);
+      if (result) {
+        // Fetch fresh comments to get populated owner data
+        await getCommentsByContentId(id);
+        addNotification(t('Comment added successfully'), 'success');
+      }
     } catch (error) {
       console.error('Error adding comment:', error);
       addNotification(t('Failed to add comment'), 'error');
