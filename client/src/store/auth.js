@@ -26,10 +26,18 @@ export const useAuthStore = create(
         }
       },
       googleLogin: async () => {
-        const res = await fetch("/api/auth/google", {
-          method: "GET",
-          credentials: 'include',
-        })
+        try {
+          const res = await fetch("/api/auth/google", {
+            method: "GET",
+            credentials: 'include',  // Important for handling cookies
+          });
+          // Note: This won't actually return anything as it redirects to Google
+          // The actual auth will happen in the callback
+          return res;
+        } catch (error) {
+          console.error('Error during Google login:', error);
+          throw error;
+        }
       },
       loginUser: async (credentials) => {
         const res = await fetch("/api/auth/login", {
@@ -112,6 +120,27 @@ export const useAuthStore = create(
           throw new Error('Update failed');
         }
         return data;
+      },
+      checkAuthStatus: async () => {
+        try {
+          const res = await fetch("/api/auth/authStatus", {
+            credentials: 'include',
+          });
+          const data = await res.json();
+          if (data.isAuthenticated) {
+            set({ 
+              authStatus: { 
+                isLoggedIn: true, 
+                user: data.user, 
+                isLoading: false 
+              } 
+            });
+          }
+          return data;
+        } catch (error) {
+          console.error('Error checking auth status:', error);
+          throw error;
+        }
       },
     }),
 );

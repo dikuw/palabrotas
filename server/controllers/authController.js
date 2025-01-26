@@ -193,3 +193,38 @@ export const updateUser = async (req, res) => {
   // req.flash('Success', 'Your password has been reset. You are logged in.');
   // res.redirect('/');
 };
+
+export const passportGoogle = (req, res, next) => {
+  passport.authenticate('google', { scope: ['profile', 'email'] })(req, res, next);
+};
+
+export const googleCallback = (req, res, next) => {
+  passport.authenticate('google', function(err, user, info) {
+    if (err) {
+      const frontendURL = process.env.NODE_ENV === 'production'
+        ? 'https://www.palabrotas.app'
+        : 'http://localhost:3000';
+      return res.redirect(`${frontendURL}/login?error=Authentication failed`);
+    }
+    
+    if (!user) {
+      const frontendURL = process.env.NODE_ENV === 'production'
+        ? 'https://www.palabrotas.app'
+        : 'http://localhost:3000';
+      return res.redirect(`${frontendURL}/login?error=No user found`);
+    }
+
+    req.logIn(user, function(err) {
+      if (err) {
+        const frontendURL = process.env.NODE_ENV === 'production'
+          ? 'https://www.palabrotas.app'
+          : 'http://localhost:3000';
+        return res.redirect(`${frontendURL}/login?error=Login failed`);
+      }
+      const frontendURL = process.env.NODE_ENV === 'production'
+        ? 'https://www.palabrotas.app'
+        : 'http://localhost:3000';
+      return res.redirect(frontendURL);
+    });
+  })(req, res, next);
+};

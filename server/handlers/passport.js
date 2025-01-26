@@ -8,27 +8,44 @@ passport.deserializeUser(User.deserializeUser());
 
 passport.use(User.createStrategy());
 
+const callbackURL = process.env.NODE_ENV === 'production'
+  ? 'https://www.palabrotas.app/api/auth/google/callback'  // Production URL
+  : 'http://localhost:5000/api/auth/google/callback';  // Development URL
+
 passport.use(
   new GoogleStrategy(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "/auth/google/callback",
+      callbackURL: callbackURL,
+      proxy: true
     },
-    async (accessToken, refreshToken, profile, done) => {
+    async function(accessToken, refreshToken, profile, done) {
       try {
-        // Find or create a user in your database
-        let user = await User.findOne({ googleId: profile.id });
-        if (!user) {
-          user = await User.create({
-            googleId: profile.id,
-            email: profile.emails[0].value,
-            name: profile.displayName,
-          });
+        // Check if user already exists
+        const existingUser = await User.findOne({ email: profile.emails[0].value });
+        
+        if (existingUser) {
+          // If user exists but was created with local strategy, update with Google ID
+          if (!existingUser.googleId) {
+            existingUser.googleId = profile.id;
+            await existingUser.save();
+          }
+          return done(null, existingUser);
         }
-        done(null, user);
-      } catch (error) {
-        done(error, null);
+
+        // If user doesn't exist, create new user
+        const user = await User.create({
+          email: profile.emails[0].value,
+          name: profile.displayName,
+          googleId: profile.id,
+          // Set a random password since we won't use it
+          password: Math.random().toString(36).slice(-8)
+        });
+
+        return done(null, user);
+      } catch (err) {
+        return done(err, null);
       }
     }
   )
