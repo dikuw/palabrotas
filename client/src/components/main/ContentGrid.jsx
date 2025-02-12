@@ -9,7 +9,7 @@ const GridContainer = styled.div`
   flex-wrap: wrap;
   width: 90%;
   max-width: 1000px;
-  margin: 30px auto;
+  margin: 15px auto;
   justify-content: center; 
 `;
 
