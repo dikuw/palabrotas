@@ -15,7 +15,7 @@ const CardContainer = styled.div`
   position: relative;
   width: 100%;
   height: 152px;
-  margin: 0 0 2rem 0;
+  margin: 0 0 1rem 0;
 `;
 
 const BackgroundCard = styled.div`
