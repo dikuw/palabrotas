@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { useTranslation } from "react-i18next";
 
@@ -41,6 +41,13 @@ const Li = styled.li`
   text-align: center;
   flex-grow: 1;
   height: 100%;
+  padding: 0;
+  margin: 0;
+  background-color: ${props => props.$isActive ? 'var(--primary)' : 'transparent'};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
   @media (min-width: 768px) {
     :hover {
       background-color: var(--primary);
@@ -49,17 +56,23 @@ const Li = styled.li`
 `;
 
 const Link = styled.a`
-  display:block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
-  color: black;
+  height: 100%;
+  padding: 0.5rem 1rem;
+  color: ${props => props.$isActive ? 'white' : 'black'};
   cursor: pointer;
   :hover {
     text-decoration: none;
+    color: ${props => props.$isActive ? 'white' : 'black'};
   }
 `;
 
 export default function NavMenu(props) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation();
   const { logoutUser } = useAuthStore();
   const { menuOpen, setMenuOpen } = useAppStore();
@@ -89,21 +102,36 @@ export default function NavMenu(props) {
 
   return (
     <Ul $menuOpen={menuOpen}>
-      <Li><Link onClick={() => handleClick('/', menuOpen) } >{t("Home")}</Link></Li>
-      <Li><Link onClick={() => handleClick('/addContent', menuOpen) } >{t("Add")}</Link></Li>
+      <Li $isActive={location.pathname === '/'}>
+        <Link $isActive={location.pathname === '/'} onClick={() => handleClick('/', menuOpen)}>{t("Home")}</Link>
+      </Li>
+      <Li $isActive={location.pathname === '/addContent'}>
+        <Link $isActive={location.pathname === '/addContent'} onClick={() => handleClick('/addContent', menuOpen)}>{t("Add")}</Link>
+      </Li>
       {props.isLoggedIn ? (
-          <>
-            <Li><Link onClick={() => handleClick('/account', menuOpen) } >{t("Account")}</Link></Li>
-            <Li><Link onClick={() => handleClick('/flashcards', menuOpen) } >{t("Flashcards")}</Link></Li>
-            {props.isAdmin && <Li><Link onClick={() => handleClick('/admin', menuOpen) } >{t("Administer")}</Link></Li>}
-            <Li><Link onClick={() => logoutClick() } >{t("Log Out")}</Link></Li>
-          </>
-        ) : (
-          <>
-            <Li><Link onClick={() => handleClick('/login', menuOpen) } >{t("Log In")}</Link></Li>
-          </>
-        )
-      }
+        <>
+          <Li $isActive={location.pathname === '/account'}>
+            <Link $isActive={location.pathname === '/account'} onClick={() => handleClick('/account', menuOpen)}>{t("Account")}</Link>
+          </Li>
+          <Li $isActive={location.pathname === '/flashcards'}>
+            <Link $isActive={location.pathname === '/flashcards'} onClick={() => handleClick('/flashcards', menuOpen)}>{t("Flashcards")}</Link>
+          </Li>
+          {props.isAdmin && 
+            <Li $isActive={location.pathname === '/admin'}>
+              <Link $isActive={location.pathname === '/admin'} onClick={() => handleClick('/admin', menuOpen)}>{t("Administer")}</Link>
+            </Li>
+          }
+          <Li>
+            <Link onClick={() => logoutClick()}>{t("Log Out")}</Link>
+          </Li>
+        </>
+      ) : (
+        <>
+          <Li $isActive={location.pathname === '/login'}>
+            <Link $isActive={location.pathname === '/login'} onClick={() => handleClick('/login', menuOpen)}>{t("Log In")}</Link>
+          </Li>
+        </>
+      )}
     </Ul>
   );
 }
