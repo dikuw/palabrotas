@@ -33,6 +33,7 @@ export default function Flashcards() {
   const { authStatus } = useAuthStore();
   const { flashcards, dueFlashcards, getFlashcards, getDueFlashcards, updateFlashcardReview } = useFlashcardStore();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (authStatus.isLoggedIn && authStatus.user) {
@@ -43,18 +44,24 @@ export default function Flashcards() {
 
   const handleReviewAndNext = async (flashcardId, quality, keepInQueue) => {
     try {
+      setIsLoading(true);
       await updateFlashcardReview(flashcardId, quality, keepInQueue);
       
       if (!keepInQueue) {
         const updatedDueFlashcards = dueFlashcards.filter(card => card._id !== flashcardId);
         useFlashcardStore.setState({ dueFlashcards: updatedDueFlashcards });
-
         setCurrentIndex(prevIndex => prevIndex % updatedDueFlashcards.length);
       } else {
         setCurrentIndex(0);
       }
+      
+      // Longer delay to ensure smooth transition
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 600);
     } catch (error) {
       console.error('Error updating flashcard review:', error);
+      setIsLoading(false);
     }
   };
 
@@ -70,6 +77,7 @@ export default function Flashcards() {
             <Flashcard 
               item={dueFlashcards[currentIndex]} 
               onNext={handleReviewAndNext}
+              isLoading={isLoading}
             />
             <FlashcardCounter>
               {currentIndex + 1} {t('of')} {dueFlashcards.length}

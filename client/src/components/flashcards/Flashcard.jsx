@@ -9,6 +9,7 @@ import { useNotificationStore } from '../../store/notification';
 
 import FormattedHint from './FlashcardHint';
 import Tooltip from '../shared/Tooltip';
+import Spinner from '../shared/Spinner';
 
 const OuterContainer = styled.div`
   padding: 20px;
@@ -59,6 +60,7 @@ const FlashcardInner = styled.div`
   transition: transform 0.6s;
   transform-style: preserve-3d;
   ${props => props.$isFlipped && 'transform: rotateY(180deg);'}
+  visibility: ${props => props.$isLoading ? 'hidden' : 'visible'};
 `;
 
 const FlashcardFace = styled.div`
@@ -147,7 +149,16 @@ const ContentContainer = styled.div`
 
 const qualityLabels = ['Again', 'Hard', 'Good', 'Easy'];
 
-export default function Flashcard({ item, onNext }) {
+// Add a styled container for the spinner
+const SpinnerContainer = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+`;
+
+export default function Flashcard({ item, onNext, isLoading }) {
   const { t } = useTranslation();
   const { updateStreak } = useUserStore();
   const { authStatus } = useAuthStore();
@@ -161,6 +172,12 @@ export default function Flashcard({ item, onNext }) {
     setIsFlipped(false);
     setShowHint(false);
   }, [item]);
+
+  useEffect(() => {
+    if (isLoading) {
+      setIsFlipped(false);
+    }
+  }, [isLoading]);
 
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
@@ -186,24 +203,17 @@ export default function Flashcard({ item, onNext }) {
     }
 
     try {
-      setIsFlipped(false);
-      setShowHint(false);
-
+      // Immediately hide current card
       if (quality === 'Again') {
-        // Keep the flashcard in the queue
         await onNext(currentItem._id, quality, true);
       } else {
         await onNext(currentItem._id, quality, false);
       }
 
       const result = await updateStreak(authStatus.user._id);
-
       if (result.updated) {
         addNotification(t(`Streak updated! Current streak: {{streak}}`, { streak: result.streak }), 'success');
       }
-
-      setIsFlipped(false);
-      setShowHint(false);
     } catch (error) {
       console.error('Error updating flashcard review:', error);
       addNotification(t('Error updating flashcard review'), 'error');
@@ -214,7 +224,12 @@ export default function Flashcard({ item, onNext }) {
     <OuterContainer>
       <FormWrapper>
         <FlashcardContainer onClick={handleFlip}>
-          <FlashcardInner $isFlipped={isFlipped}>
+          {isLoading && (
+            <SpinnerContainer>
+              <Spinner size="40px" />
+            </SpinnerContainer>
+          )}
+          <FlashcardInner $isFlipped={isFlipped} $isLoading={isLoading}>
             <FlashcardFront>
               <Title>{currentItem.content.title}</Title>
               {showHint && (
