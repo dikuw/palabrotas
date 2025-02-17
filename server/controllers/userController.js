@@ -210,3 +210,13 @@ export const setAppIntro = async (req, res) => {
   res.status(200).json({ message: 'App intro set' });
 };
 
+export const getUsers = async (req, res) => {
+  try {
+    const users = await User.find({}, 'name email isAdmin createdAt');
+    res.status(200).json({ users });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ message: 'Error fetching users' });
+  }
+};
+

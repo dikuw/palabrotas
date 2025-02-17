@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 export const useUserStore = create((set, get) => ({
-  user: null,
+  users: [],
   isLoading: false,
   error: null,
 
@@ -37,4 +37,29 @@ export const useUserStore = create((set, get) => ({
     const data = await res.json();
     return data;
   }, 
+
+  getUsers: async () => {
+    try {
+      set({ isLoading: true, error: null });
+      const res = await fetch('/api/user/getUsers', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include'  // Important for admin authentication
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to fetch users');
+      }
+
+      const data = await res.json();
+      set({ users: data.users, isLoading: false });
+      return data.users;
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      set({ error: error.message, isLoading: false });
+      throw error;
+    }
+  },
 }));

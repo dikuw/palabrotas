@@ -1,6 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+
+import Users from './Users';
 import InvisibleActionButton from '../shared/InvisibleActionButton';
 
 const StyledDiv = styled.div`
@@ -24,6 +26,7 @@ export default function Admin(props) {
 
   return (
     <StyledDiv>
+      <Users />
       <InvisibleActionButton clickHandler={goBack} buttonLabel={"Back to Site"} />
     </StyledDiv>
   );
