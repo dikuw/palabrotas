@@ -8,29 +8,20 @@ import { useTranslation } from "react-i18next";
 const Ul = styled.ul`
   list-style: none;
   display: flex;
-  width: 100%;
-  justify-content: space-between;
-  align-items: center; /* align vertical */
-  z-index: 10;
-  margin-bottom: 0px;
+  flex-flow: row nowrap;
+  z-index: 19;
+
   @media (max-width: 768px) {
     flex-flow: column nowrap;
-    justify-content: space-between;
-    align-items: flex-end;
-    background-color: #fafafa;
-    border-right: solid 1px black;
+    background-color: white;
     position: fixed;
-    transform: ${({ menuOpen }) => menuOpen ? 'translateX(0)' : 'translateX(-100%)'};
+    transform: ${({ $menuOpen }) => $menuOpen ? 'translateX(0)' : 'translateX(100%)'};
     top: 0;
-    left: 0;
+    right: 0;
     height: 100vh;
-    width: 150px;
-    padding: 20vh 12px;
+    width: 100%;
+    padding-top: 3.5rem;
     transition: transform 0.3s ease-in-out;
-    li {
-      color: black;
-      text-align: end;
-    }
   }
 `;
 
@@ -55,10 +46,10 @@ const Link = styled.a`
   }
 `;
 
-export default function AdminNavMenu(props) {
+export default function AdminNavMenu({ menuOpen, isLoggedIn, isAdmin }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { menuOpen, setMenuOpen } = useAppStore();
+  const { setMenuOpen } = useAppStore();
   
   const handleClick = (link, menuOpen) => {
     setMenuOpen(!menuOpen)
@@ -66,9 +57,9 @@ export default function AdminNavMenu(props) {
   }
  
   return (
-    <Ul>
-      {!props.isLoggedIn && <Li><Link onClick={() => handleClick('/login', menuOpen) } >{t("Log In")}</Link></Li>}
-      {props.isAdmin &&
+    <Ul $menuOpen={menuOpen}>
+      {!isLoggedIn && <Li><Link onClick={() => handleClick('/login', menuOpen) } >{t("Log In")}</Link></Li>}
+      {isAdmin &&
         <>
           <Li><Link onClick={() => handleClick('/', menuOpen) } >{t("Back to Site")}</Link></Li>
         </>

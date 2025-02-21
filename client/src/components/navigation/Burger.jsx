@@ -43,17 +43,25 @@ export default function Burger(props) {
 
   return (
     <>
-      <StyledBurger $menuOpen={menuOpen} onClick={() => setMenuOpen(!menuOpen)} >
+      <StyledBurger $menuOpen={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
         <div />
         <div />
         <div />
       </StyledBurger>
       {(currentRoute === "/admin" || currentRoute === "/contents") ? (
-          <AdminNavMenu isLoggedIn={props.isLoggedIn} isAdmin={props.isAdmin} />
-        ) : (
-          <NavMenu isLoggedIn={props.isLoggedIn} isAdmin={props.isAdmin} logoutUser={props.logoutUser} />
-       )
-      }
+        <AdminNavMenu 
+          menuOpen={menuOpen}
+          isLoggedIn={props.isLoggedIn} 
+          isAdmin={props.isAdmin} 
+        />
+      ) : (
+        <NavMenu 
+          menuOpen={menuOpen}
+          isLoggedIn={props.isLoggedIn} 
+          isAdmin={props.isAdmin} 
+          logoutUser={props.logoutUser} 
+        />
+      )}
     </>
   );
 }

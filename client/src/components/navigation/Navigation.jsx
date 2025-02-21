@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useLocation } from 'react-router-dom';
 import Burger from './Burger';
 
 const Nav = styled.nav`
@@ -15,7 +16,15 @@ const Nav = styled.nav`
     margin-top: 30px;
   }
 `
+
 export default function Navigation(props) {
+  const location = useLocation();
+  
+  // Don't render navigation on Admin route
+  if (location.pathname === '/admin') {
+    return null;
+  }
+
   return (
     <Nav>
       <Burger isLoggedIn={props.isLoggedIn} isAdmin={props.isAdmin} history={props.history} logoutUser={props.logoutUser} />
