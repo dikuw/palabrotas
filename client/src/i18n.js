@@ -180,6 +180,7 @@ i18n
           "Example sentence (optional)" : "Example sentence (optional)",
           "Cancel" : "Cancel",
           "Save" : "Save",
+          "remaining" : "remaining",
         }
       },
       es: {
@@ -359,6 +360,7 @@ i18n
           "Example sentence (optional)" : "Frase de ejemplo (opcional)",
           "Cancel" : "Cancelar",
           "Save" : "Guardar",
+          "remaining" : "restantes",
         }
       }
     },

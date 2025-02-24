@@ -80,7 +80,7 @@ export default function Flashcards() {
               isLoading={isLoading}
             />
             <FlashcardCounter>
-              {currentIndex + 1} {t('of')} {dueFlashcards.length}
+              {dueFlashcards.length} {t('remaining')}
             </FlashcardCounter>
           </>
         ) : (
