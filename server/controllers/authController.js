@@ -84,21 +84,32 @@ export const passportTW = (req, res, next) => {
 }
 
 export const login = async (req, res) => {
-  if (!req.user) {
-    return res.status(401).json({
-      success: false,
-      message: 'Incorrect email or password'
+  try {
+    const user = await User.findById(req.user._id);
+    
+    // Update login stats
+    user.lastLogin = new Date();
+    user.loginCount += 1;
+    user.loginHistory.push({
+      timestamp: new Date(),
+      method: 'local'
     });
+    
+    await user.save();
+
+    res.json({
+      authenticated: true,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        isAdmin: user.isAdmin || false
+      }
+    });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ success: false, message: 'Error during login' });
   }
-  res.json({
-    authenticated: true,
-    user: {
-      _id: req.user._id,
-      name: req.user.name,
-      email: req.user.email,
-      isAdmin: req.user.isAdmin || false
-    }
-  });
 };
 
 export const logout = (req, res) => {
@@ -214,13 +225,24 @@ export const googleCallback = (req, res, next) => {
       return res.redirect(`${frontendURL}/login?error=No user found`);
     }
 
-    req.logIn(user, function(err) {
+    req.logIn(user, async function(err) {
       if (err) {
         const frontendURL = process.env.NODE_ENV === 'production'
           ? 'https://www.palabrotas.app'
           : 'http://localhost:3000';
         return res.redirect(`${frontendURL}/login?error=Login failed`);
       }
+
+      // Update login stats
+      user.lastLogin = new Date();
+      user.loginCount += 1;
+      user.loginHistory.push({
+        timestamp: new Date(),
+        method: 'google'
+      });
+      
+      await user.save();
+
       const frontendURL = process.env.NODE_ENV === 'production'
         ? 'https://www.palabrotas.app'
         : 'http://localhost:3000';

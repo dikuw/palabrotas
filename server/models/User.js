@@ -33,6 +33,18 @@ const userSchema = new mongoose.Schema({
     unique: true,
     sparse: true
   },
+  lastLogin: Date,
+  loginCount: {
+    type: Number,
+    default: 0
+  },
+  loginHistory: [{
+    timestamp: Date,
+    method: {
+      type: String,
+      enum: ['local', 'google']
+    }
+  }]
 }, { timestamps: true });
 
 userSchema.plugin(passportLocalMongoose, { usernameField: 'email' });
