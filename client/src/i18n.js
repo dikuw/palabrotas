@@ -181,6 +181,8 @@ i18n
           "Cancel" : "Cancel",
           "Save" : "Save",
           "remaining" : "remaining",
+          "N/A": "N/A",
+           "Last Login": "Last Login",
         }
       },
       es: {
@@ -361,6 +363,8 @@ i18n
           "Cancel" : "Cancelar",
           "Save" : "Guardar",
           "remaining" : "restantes",
+          "N/A": "N/A",
+          "Last Login": "Último Acceso",
         }
       }
     },

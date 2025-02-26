@@ -46,7 +46,7 @@ export const useUserStore = create((set, get) => ({
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include'  // Important for admin authentication
+        credentials: 'include'
       });
 
       if (!res.ok) {

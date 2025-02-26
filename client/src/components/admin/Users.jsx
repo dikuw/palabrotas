@@ -80,6 +80,7 @@ export default function Users() {
   }
 
   const formatDate = (dateString) => {
+    if (!dateString) return t('N/A');
     return new Date(dateString).toLocaleDateString();
   };
 
@@ -93,6 +94,7 @@ export default function Users() {
             <Th>{t("Email")}</Th>
             <Th>{t("Admin")}</Th>
             <Th>{t("Created")}</Th>
+            <Th>{t("Last Login")}</Th>
           </tr>
         </thead>
         <tbody>
@@ -102,6 +104,7 @@ export default function Users() {
               <Td>{user.email}</Td>
               <Td>{user.isAdmin ? '✓' : '—'}</Td>
               <Td>{formatDate(user.createdAt)}</Td>
+              <Td>{formatDate(user.lastLogin)}</Td>
             </Tr>
           ))}
         </tbody>
