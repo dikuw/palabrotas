@@ -52,13 +52,17 @@ export default function Flashcards() {
         useFlashcardStore.setState({ dueFlashcards: updatedDueFlashcards });
         setCurrentIndex(prevIndex => prevIndex % updatedDueFlashcards.length);
       } else {
+        // Move the current card to the end of the deck
+        const currentCard = dueFlashcards[currentIndex];
+        const remainingCards = dueFlashcards.filter((_, index) => index !== currentIndex);
+        const reorderedCards = [...remainingCards, currentCard];
+        useFlashcardStore.setState({ dueFlashcards: reorderedCards });
         setCurrentIndex(0);
       }
       
-      // Longer delay to ensure smooth transition
       setTimeout(() => {
         setIsLoading(false);
-      }, 600);
+      }, 300);
     } catch (error) {
       console.error('Error updating flashcard review:', error);
       setIsLoading(false);
