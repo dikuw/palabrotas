@@ -6,6 +6,7 @@ import { NoPermissionDiv } from '../shared/index';
 import { useTranslation } from 'react-i18next';
 
 import Flashcard from './Flashcard';
+import Spinner from '../shared/Spinner';
 
 const StyledWrapperDiv = styled.div`
   width: 90%;
@@ -28,17 +29,35 @@ const Message = styled.p`
   font-size: 1em;
 `;
 
+const SpinnerContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+`;
+
 export default function Flashcards() {
   const { t } = useTranslation();
   const { authStatus } = useAuthStore();
   const { flashcards, dueFlashcards, getFlashcards, getDueFlashcards, updateFlashcardReview } = useFlashcardStore();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (authStatus.isLoggedIn && authStatus.user) {
-      getFlashcards(authStatus.user._id);
-      getDueFlashcards(authStatus.user._id);
+      const loadData = async () => {
+        try {
+          await Promise.all([
+            getFlashcards(authStatus.user._id),
+            getDueFlashcards(authStatus.user._id)
+          ]);
+          setIsLoading(false);
+        } catch (error) {
+          console.error('Error loading flashcards:', error);
+          setIsLoading(false);
+        }
+      };
+      loadData();
     }
   }, [authStatus.isLoggedIn, authStatus.user, getFlashcards, getDueFlashcards]);
 
@@ -71,6 +90,16 @@ export default function Flashcards() {
 
   if (!authStatus.isLoggedIn || !authStatus.user) {
     return <NoPermissionDiv divLabel={t("Please log in to view this page")}></NoPermissionDiv>
+  }
+
+  if (isLoading) {
+    return (
+      <StyledWrapperDiv>
+        <SpinnerContainer>
+          <Spinner size="40px" />
+        </SpinnerContainer>
+      </StyledWrapperDiv>
+    );
   }
 
   return (
