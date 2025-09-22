@@ -17,6 +17,7 @@ const StyledFooter = styled.footer`
   }
   a {
     color: var(--almostWhite);
+    text-decoration: none;
     :hover {
       text-decoration: none;
     }
