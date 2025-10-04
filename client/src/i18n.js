@@ -183,6 +183,10 @@ i18n
           "remaining" : "remaining",
           "N/A": "N/A",
            "Last Login": "Last Login",
+           "Chat": "Chat",
+           "User Management": "User Management",
+           "Admin": "Admin",
+           "Created": "Created",
         }
       },
       es: {
@@ -365,6 +369,10 @@ i18n
           "remaining" : "restantes",
           "N/A": "N/A",
           "Last Login": "Último Acceso",
+          "Chat": "Chat",
+          "User Management": "Gestión de Usuarios",
+          "Admin": "Administrador",
+          "Created": "Creado",
         }
       }
     },
