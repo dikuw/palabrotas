@@ -197,9 +197,15 @@ i18n
            "Please log in to use the chat feature": "Please log in to use the chat feature",
            "Type your message...": "Type your message...",
            "Send message": "Send message",
-           "Start recording": "Start recording",
-           "Stop recording": "Stop recording",
-           "Audio recording feature coming soon!": "Audio recording feature coming soon!",
+          "Start recording": "Start recording",
+          "Stop recording": "Stop recording",
+          "Audio recording feature coming soon!": "Audio recording feature coming soon!",
+          "Listening...": "Listening...",
+          "Speech recognized!": "Speech recognized!",
+          "Speech recognition failed": "Speech recognition failed",
+          "No speech detected": "No speech detected",
+          "Microphone access denied": "Microphone access denied",
+          "Speech recognition not supported": "Speech recognition not supported",
         }
       },
       es: {
@@ -399,6 +405,12 @@ i18n
           "Start recording": "Iniciar grabación",
           "Stop recording": "Detener grabación",
           "Audio recording feature coming soon!": "La función de grabación de audio está próximamente disponible!",
+          "Listening...": "Escuchando...",
+          "Speech recognized!": "¡Voz reconocida!",
+          "Speech recognition failed": "Falló el reconocimiento de voz",
+          "No speech detected": "No se detectó voz",
+          "Microphone access denied": "Acceso al micrófono denegado",
+          "Speech recognition not supported": "Reconocimiento de voz no soportado",
         }
       }
     },
