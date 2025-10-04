@@ -152,8 +152,8 @@ export default function Chat() {
   
   const [inputValue, setInputValue] = useState('');
   const [isRecording, setIsRecording] = useState(false);
-  const [mediaRecorder, setMediaRecorder] = useState(null);
-  const [audioChunks, setAudioChunks] = useState([]);
+  const [isProcessingAudio, setIsProcessingAudio] = useState(false);
+  const [recognition, setRecognition] = useState(null);
 
   useEffect(() => {
     if (authStatus.isLoggedIn && authStatus.user) {
@@ -161,14 +161,72 @@ export default function Chat() {
     }
   }, [authStatus.isLoggedIn]);
 
+  // Initialize speech recognition
+  useEffect(() => {
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognitionInstance = new SpeechRecognition();
+      
+      recognitionInstance.continuous = false;
+      recognitionInstance.interimResults = false;
+      recognitionInstance.lang = 'es-ES'; // Spanish language
+      
+      recognitionInstance.onstart = () => {
+        setIsRecording(true);
+        addNotification(t('Listening...'), 'info');
+      };
+      
+      recognitionInstance.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        setInputValue(transcript);
+        setIsProcessingAudio(false);
+        addNotification(t('Speech recognized!'), 'success');
+      };
+      
+      recognitionInstance.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        setIsRecording(false);
+        setIsProcessingAudio(false);
+        
+        let errorMessage = t('Speech recognition failed');
+        if (event.error === 'no-speech') {
+          errorMessage = t('No speech detected');
+        } else if (event.error === 'not-allowed') {
+          errorMessage = t('Microphone access denied');
+        }
+        
+        addNotification(errorMessage, 'error');
+      };
+      
+      recognitionInstance.onend = () => {
+        setIsRecording(false);
+        setIsProcessingAudio(false);
+      };
+      
+      setRecognition(recognitionInstance);
+    } else {
+      console.warn('Speech recognition not supported in this browser');
+    }
+  }, [t, addNotification]);
+
+  // Cleanup recognition on unmount
+  useEffect(() => {
+    return () => {
+      if (recognition) {
+        recognition.stop();
+      }
+    };
+  }, [recognition]);
+
   const loadExistingChats = async () => {
     try {
-      await getChats(authStatus.user._id);
+      const fetchedChats = await getChats(authStatus.user._id);
       
-      // If we have chats but no current chat, load the first one
-      if (chats.length > 0 && !currentChat) {
-        loadChat(chats[0]);
-      } else if (chats.length === 0) {
+      if (fetchedChats.length > 0) {
+        // Load the last chat in the array (most recent)
+        const mostRecentChat = fetchedChats[fetchedChats.length - 1];
+        loadChat(mostRecentChat);
+      } else {
         // If no chats exist, create a new one
         await createChat(authStatus.user._id, 'New Chat');
       }
@@ -196,38 +254,16 @@ export default function Chat() {
     handleSendMessage(inputValue);
   };
 
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream);
-      const chunks = [];
-
-      recorder.ondataavailable = (event) => {
-        chunks.push(event.data);
-      };
-
-      recorder.onstop = async () => {
-        const audioBlob = new Blob(chunks, { type: 'audio/wav' });
-        // Here you would typically send the audio to a speech-to-text service
-        // For now, we'll just show a placeholder message
-        addNotification(t('Audio recording feature coming soon!'), 'info');
-        stream.getTracks().forEach(track => track.stop());
-      };
-
-      recorder.start();
-      setMediaRecorder(recorder);
-      setAudioChunks(chunks);
-      setIsRecording(true);
-    } catch (error) {
-      console.error('Error starting recording:', error);
-      addNotification(t('Failed to start recording'), 'error');
+  const startRecording = () => {
+    if (recognition && !isRecording) {
+      setIsProcessingAudio(true);
+      recognition.start();
     }
   };
 
   const stopRecording = () => {
-    if (mediaRecorder && isRecording) {
-      mediaRecorder.stop();
-      setIsRecording(false);
+    if (recognition && isRecording) {
+      recognition.stop();
     }
   };
 
@@ -290,8 +326,14 @@ export default function Chat() {
             type="button"
             onClick={handleRecordingClick}
             $isRecording={isRecording}
-            disabled={isLoading}
-            title={isRecording ? t('Stop recording') : t('Start recording')}
+            disabled={isLoading || isProcessingAudio || !recognition}
+            title={
+              !recognition 
+                ? t('Speech recognition not supported') 
+                : isRecording 
+                  ? t('Stop recording') 
+                  : t('Start recording')
+            }
           >
             {isRecording ? <FaStop /> : <FaMicrophone />}
           </ActionButton>
