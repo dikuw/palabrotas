@@ -14,6 +14,7 @@ import Register from './components/login/Register';
 import LocalLogin from './components/login/LocalLogin';
 import Account from './components/account/Account';
 import Flashcards from './components/flashcards/Flashcards';
+import Chat from './components/chat/Chat';
 import Grid from './components/main/Grid';
 import Content from './components/content/Content';
 import AddContent from './components/content/AddContent';
@@ -128,6 +129,15 @@ function App() {
             element={
               <>
                 <Flashcards 
+                  isLoggedIn={authStatus.isLoggedIn} 
+                />
+              </>
+            }
+          />
+          <Route path="/chat" 
+            element={
+              <>
+                <Chat 
                   isLoggedIn={authStatus.isLoggedIn} 
                 />
               </>
