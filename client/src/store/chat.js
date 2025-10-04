@@ -16,7 +16,7 @@ export const useChatStore = create((set, get) => ({
   createChat: async (userId, title = "New Chat") => {
     try {
       set({ isLoading: true });
-      const res = await fetch("/api/chat", {
+      const res = await fetch("/api/chat/new", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -100,7 +100,7 @@ export const useChatStore = create((set, get) => ({
   getChats: async (userId) => {
     try {
       set({ isLoading: true });
-      const res = await fetch(`/api/chat/${userId}`, {
+      const res = await fetch(`/api/chat/chats/${userId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

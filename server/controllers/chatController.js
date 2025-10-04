@@ -73,3 +73,42 @@ export const getChats = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch chats" });
   }
 };
+
+export const updateChat = async (req, res) => {
+  try {
+    const { chatId } = req.params;
+    const { title } = req.body;
+
+    const chat = await Chat.findByIdAndUpdate(
+      chatId,
+      { title, updatedAt: new Date() },
+      { new: true }
+    );
+
+    if (!chat) {
+      return res.status(404).json({ error: "Chat not found" });
+    }
+
+    res.json(chat);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to update chat" });
+  }
+};
+
+export const deleteChat = async (req, res) => {
+  try {
+    const { chatId } = req.params;
+
+    const chat = await Chat.findByIdAndDelete(chatId);
+
+    if (!chat) {
+      return res.status(404).json({ error: "Chat not found" });
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to delete chat" });
+  }
+};
