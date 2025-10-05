@@ -1,4 +1,5 @@
 import authRouter from './authRoutes.js';
+import avatarRouter from './avatarRoutes.js';
 import chatRouter from './chatRoutes.js';
 import userRouter from './userRoutes.js';
 import contentRouter from './contentRoutes.js'; 
@@ -10,6 +11,7 @@ import tagRouter from './tagRoutes.js';
 
 export default (app) => {
   app.use("/api/auth", authRouter);
+  app.use("/api/avatar", avatarRouter);
   app.use("/api/chat", chatRouter);
   app.use("/api/user", userRouter);
   app.use("/api/content", contentRouter);

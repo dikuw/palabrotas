@@ -6,6 +6,7 @@ import { FaMicrophone, FaStop, FaPaperPlane } from 'react-icons/fa';
 import { useAuthStore } from '../../store/auth';
 import { useChatStore } from '../../store/chat';
 import { useNotificationStore } from '../../store/notification';
+import { useAvatarStore } from '../../store/avatar';
 import Spinner from '../shared/Spinner';
 
 const ChatContainer = styled.div`
@@ -135,6 +136,69 @@ const EmptyState = styled.div`
   margin-top: 50px;
 `;
 
+const AvatarSection = styled.div`
+  width: 100%;
+  max-width: 800px;
+  margin: 20px auto 0;
+  padding: 20px;
+  background-color: white;
+  border-radius: 9px;
+  border: 1px solid #000;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const AvatarTitle = styled.h3`
+  margin: 0 0 15px 0;
+  color: var(--primary);
+  font-size: 1.2rem;
+`;
+
+const AvatarContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+  align-items: center;
+`;
+
+const AvatarImage = styled.img`
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid var(--primary);
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  
+  &:hover {
+    transform: scale(1.05);
+  }
+`;
+
+const AvatarPlaceholder = styled.div`
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px dashed #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 0.8rem;
+  text-align: center;
+`;
+
+const AvatarLoading = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  color: #666;
+`;
+
 export default function Chat() {
   const { t } = useTranslation();
   const { authStatus } = useAuthStore();
@@ -148,6 +212,11 @@ export default function Chat() {
     loadChat,
     chats
   } = useChatStore();
+  const { 
+    avatars, 
+    isLoading: avatarsLoading, 
+    getAvatars 
+  } = useAvatarStore();
   const addNotification = useNotificationStore(state => state.addNotification);
   
   const [inputValue, setInputValue] = useState('');
@@ -158,8 +227,18 @@ export default function Chat() {
   useEffect(() => {
     if (authStatus.isLoggedIn && authStatus.user) {
       loadExistingChats();
+      loadUserAvatars();
     }
   }, [authStatus.isLoggedIn]);
+
+  const loadUserAvatars = async () => {
+    try {
+      await getAvatars(authStatus.user._id);
+    } catch (error) {
+      console.error('Error loading avatars:', error);
+      // Don't show notification for avatar loading errors as it's not critical
+    }
+  };
 
   // Initialize speech recognition
   useEffect(() => {
@@ -286,7 +365,38 @@ export default function Chat() {
   }
 
   return (
-    <ChatContainer>
+    <>
+      {/* Avatar Section */}
+      <AvatarSection>
+        {avatarsLoading ? (
+          <AvatarLoading>
+            <Spinner size="20px" />
+            <span style={{ marginLeft: '10px' }}>{t('Loading avatars...')}</span>
+          </AvatarLoading>
+        ) : avatars.length > 0 ? (
+          <AvatarContainer>
+            {avatars.map((avatar) => (
+              <AvatarImage
+                key={avatar._id}
+                src={avatar.imageUrl}
+                alt={avatar.description}
+                title={avatar.description}
+                onClick={() => {
+                  // Optional: Add click handler for avatar actions
+                  console.log('Avatar clicked:', avatar);
+                }}
+              />
+            ))}
+          </AvatarContainer>
+        ) : (
+          <AvatarPlaceholder>
+            {t('No avatars yet')}
+          </AvatarPlaceholder>
+        )}
+      </AvatarSection>
+
+      {/* Chat Container */}
+      <ChatContainer>
       <MessagesContainer>
         {messages.length === 0 ? (
           <EmptyState>
@@ -347,6 +457,7 @@ export default function Chat() {
           </ActionButton>
         </InputContainer>
       </form>
-    </ChatContainer>
+      </ChatContainer>
+    </>
   );
 }
