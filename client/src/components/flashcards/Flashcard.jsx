@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaQuestionCircle } from 'react-icons/fa';
+import ReactCountryFlag from "react-country-flag";
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 
@@ -158,6 +159,14 @@ const SpinnerContainer = styled.div`
   z-index: 5;
 `;
 
+const StyledFlagIcon = styled(ReactCountryFlag)`
+  position: absolute;
+  top: 10px;
+  left: 15px;
+  font-size: 1.25rem !important;
+  z-index: 6;
+`;
+
 export default function Flashcard({ item, onNext, isLoading }) {
   const { t } = useTranslation();
   const { updateStreak } = useUserStore();
@@ -231,6 +240,9 @@ export default function Flashcard({ item, onNext, isLoading }) {
           )}
           <FlashcardInner $isFlipped={isFlipped} $isLoading={isLoading}>
             <FlashcardFront>
+              {currentItem.content.country && !isFlipped && (
+                <StyledFlagIcon countryCode={currentItem.content.country} svg />
+              )}
               <Title>{currentItem.content.title}</Title>
               {showHint && (
                 <Hint>
