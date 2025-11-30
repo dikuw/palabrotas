@@ -24,7 +24,7 @@ export const getContentsSortedByVoteDesc = async (req, res) => {
 
     // Get all content with their tags using aggregation
     const contents = await Content.aggregate([
-      { $match: { show: true } },
+      { $match: { show: true, isCourseContent: { $ne: true } } },
       {
         $lookup: {
           from: 'contenttags',
@@ -55,6 +55,7 @@ export const getContentsSortedByVoteDesc = async (req, res) => {
           exampleSentence: 1,
           hint: 1,
           version: 1,
+          isCourseContent: 1,
           tags: {
             $map: {
               input: '$tags',

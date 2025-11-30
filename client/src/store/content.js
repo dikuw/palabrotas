@@ -54,7 +54,7 @@ export const useContentStore = create((set, get) => ({
       },
     })
     const data = await res.json();
-    const visibleContents = data.data.filter(content => content.show === true);
+    const visibleContents = data.data.filter(content => content.show === true && !content.isCourseContent);
     set({ contents: visibleContents });
   }, 
   getContentsSortedByVoteDesc: async () => {
@@ -96,7 +96,7 @@ export const useContentStore = create((set, get) => ({
     set({ isSearching: true, searchTerm });
     const { contents, selectedCountries, selectedTags } = get();
     
-    let filtered = contents;
+    let filtered = contents.filter(content => !content.isCourseContent);
 
     if (searchTerm) {
       filtered = filtered.filter(content => 

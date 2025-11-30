@@ -45,6 +45,10 @@ const contentSchema = new mongoose.Schema({
     required: 'You must supply a country',
     default: 'CO'
   },
+  isCourseContent: {
+    type: Boolean,
+    default: false
+  },
 }, { timestamps: true });
 
 function autopopulate(next) {
