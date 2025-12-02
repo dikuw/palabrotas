@@ -10,13 +10,18 @@ const StyledCourseContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: relative;
+  gap: 2rem;
+`;
+
+const HeaderSection = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
 `;
 
 const LessonDropdown = styled.select`
-  position: absolute;
-  top: 2rem;
-  left: 15rem;
   padding: 0.75rem 1rem;
   font-size: 1rem;
   border: 2px solid var(--secondary);
@@ -41,6 +46,20 @@ const LessonDropdown = styled.select`
   &:hover {
     border-color: var(--primary);
   }
+`;
+
+const LessonInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+`;
+
+const LessonTitleText = styled.h2`
+  font-size: 1.5rem;
+  color: var(--primary);
+  margin: 0;
+  text-align: left;
 `;
 
 const StyledContent = styled.div`
@@ -75,20 +94,27 @@ export default function Course(props) {
   return (
     <>
       <StyledCourseContainer>
-        {lessons.length > 0 && (
-          <LessonDropdown 
-            value={selectedLesson} 
-            onChange={handleLessonChange}
-          >
-            <option value="">{t("Select a lesson...")}</option>
-            {lessons.map((lesson) => (
-              <option key={lesson._id} value={lesson._id}>
-                {t("Lesson")} {lesson.lessonNumber}
-              </option>
-            ))}
-          </LessonDropdown>
-        )}
         <StyledContent>
+          <HeaderSection>
+            {lessons.length > 0 && (
+              <LessonDropdown 
+                value={selectedLesson} 
+                onChange={handleLessonChange}
+              >
+                <option value="">{t("Select a lesson...")}</option>
+                {lessons.map((lesson) => (
+                  <option key={lesson._id} value={lesson._id}>
+                    {t("Lesson")} {lesson.lessonNumber}
+                  </option>
+                ))}
+              </LessonDropdown>
+            )}
+            {currentLesson && (
+              <LessonInfo>
+                <LessonTitleText>{currentLesson.title}</LessonTitleText>
+              </LessonInfo>
+            )}
+          </HeaderSection>
           <Lesson lesson={currentLesson} vocabulary={lessonContent} />
         </StyledContent>
       </StyledCourseContainer>

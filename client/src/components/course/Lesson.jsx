@@ -10,12 +10,6 @@ const LessonContainer = styled.div`
   gap: 1.5rem;
 `;
 
-const LessonTitle = styled.h2`
-  font-size: 2rem;
-  color: var(--primary);
-  margin-bottom: 0.5rem;
-`;
-
 const LessonDescription = styled.p`
   font-size: 1.1rem;
   color: #666;
@@ -24,12 +18,6 @@ const LessonDescription = styled.p`
 
 const VocabularySection = styled.div`
   margin-top: 1rem;
-`;
-
-const VocabularyTitle = styled.h3`
-  font-size: 1.5rem;
-  color: var(--primary);
-  margin-bottom: 1rem;
 `;
 
 const PlaceholderText = styled.p`
@@ -52,14 +40,10 @@ export default function Lesson({ lesson, vocabulary }) {
 
   return (
     <LessonContainer>
-      <div>
-        <LessonTitle>{lesson.title}</LessonTitle>
-        {lesson.description && (
-          <LessonDescription>{lesson.description}</LessonDescription>
-        )}
-      </div>
+      {lesson.description && (
+        <LessonDescription>{lesson.description}</LessonDescription>
+      )}
       <VocabularySection>
-        <VocabularyTitle>{t("Vocabulary")}</VocabularyTitle>
         <LessonContent vocabulary={vocabulary} />
       </VocabularySection>
     </LessonContainer>
