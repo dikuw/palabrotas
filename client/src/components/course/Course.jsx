@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useTranslation } from "react-i18next";
-import Banner from '../header/Banner';
 
 const StyledCourseContainer = styled.div`
   width: 100%;
@@ -32,7 +31,6 @@ export default function Course(props) {
 
   return (
     <>
-      <Banner bannerString={t("Course")} />
       <StyledCourseContainer>
         <StyledContent>
           <StyledPlaceholder>
