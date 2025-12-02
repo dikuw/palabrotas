@@ -20,6 +20,11 @@
 .env.production.local
 variables.env
 
+# Google Cloud Platform keys (never commit these!)
+server/config/*.json
+**/gcp-key.json
+**/*-key.json
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
