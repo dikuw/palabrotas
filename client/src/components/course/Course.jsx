@@ -52,14 +52,25 @@ const LessonInfo = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  justify-content: center;
   flex: 1;
+  height: calc(0.75rem * 2 + 1rem + 2px); /* Match dropdown height */
 `;
 
 const LessonTitleText = styled.h2`
-  font-size: 1.5rem;
+  font-size: 1rem;
   color: var(--primary);
   margin: 0;
   text-align: left;
+  line-height: 1.2;
+`;
+
+const LessonDescriptionText = styled.p`
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0.25rem 0 0 0;
+  text-align: left;
+  line-height: 1.2;
 `;
 
 const StyledContent = styled.div`
@@ -111,7 +122,12 @@ export default function Course(props) {
             )}
             {currentLesson && (
               <LessonInfo>
-                <LessonTitleText>{currentLesson.title}</LessonTitleText>
+                <LessonTitleText>
+                  {currentLesson.title.replace(/^Lesson \d+:\s*/i, '')}
+                </LessonTitleText>
+                {currentLesson.description && (
+                  <LessonDescriptionText>{currentLesson.description}</LessonDescriptionText>
+                )}
               </LessonInfo>
             )}
           </HeaderSection>

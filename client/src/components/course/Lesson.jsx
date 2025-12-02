@@ -7,17 +7,11 @@ const LessonContainer = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-`;
-
-const LessonDescription = styled.p`
-  font-size: 1.1rem;
-  color: #666;
-  margin-bottom: 1rem;
+  gap: 0;
 `;
 
 const VocabularySection = styled.div`
-  margin-top: 1rem;
+  margin-top: 0;
 `;
 
 const PlaceholderText = styled.p`
@@ -40,9 +34,6 @@ export default function Lesson({ lesson, vocabulary }) {
 
   return (
     <LessonContainer>
-      {lesson.description && (
-        <LessonDescription>{lesson.description}</LessonDescription>
-      )}
       <VocabularySection>
         <LessonContent vocabulary={vocabulary} />
       </VocabularySection>
