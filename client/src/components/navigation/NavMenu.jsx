@@ -116,6 +116,9 @@ export default function NavMenu(props) {
           <Li $isActive={location.pathname === '/flashcards'}>
             <Link $isActive={location.pathname === '/flashcards'} onClick={() => handleClick('/flashcards', menuOpen)}>{t("Flashcards")}</Link>
           </Li>
+          <Li $isActive={location.pathname === '/course'}>
+            <Link $isActive={location.pathname === '/course'} onClick={() => handleClick('/course', menuOpen)}>{t("Course")}</Link>
+          </Li>
           <Li $isActive={location.pathname === '/chat'}>
             <Link $isActive={location.pathname === '/chat'} onClick={() => handleClick('/chat', menuOpen)}>{t("Chat")}</Link>
           </Li>

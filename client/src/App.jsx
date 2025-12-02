@@ -14,6 +14,7 @@ import Register from './components/login/Register';
 import LocalLogin from './components/login/LocalLogin';
 import Account from './components/account/Account';
 import Flashcards from './components/flashcards/Flashcards';
+import Course from './components/course/Course';
 import Chat from './components/chat/Chat';
 import Grid from './components/main/Grid';
 import Content from './components/content/Content';
@@ -129,6 +130,15 @@ function App() {
             element={
               <>
                 <Flashcards 
+                  isLoggedIn={authStatus.isLoggedIn} 
+                />
+              </>
+            }
+          />
+          <Route path="/course" 
+            element={
+              <>
+                <Course 
                   isLoggedIn={authStatus.isLoggedIn} 
                 />
               </>
