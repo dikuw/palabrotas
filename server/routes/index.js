@@ -8,6 +8,7 @@ import feedbackRouter from './feedbackRoutes.js';
 import commentRouter from './commentRoutes.js';
 import voteRouter from './voteRoutes.js';
 import tagRouter from './tagRoutes.js';
+import courseRouter from './courseRoutes.js';
 
 export default (app) => {
   app.use("/api/auth", authRouter);
@@ -20,4 +21,5 @@ export default (app) => {
   app.use("/api/comment", commentRouter);
   app.use("/api/vote", voteRouter);
   app.use("/api/tag", tagRouter);
+  app.use("/api/course", courseRouter);
 };
