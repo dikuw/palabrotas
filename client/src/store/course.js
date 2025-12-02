@@ -57,6 +57,22 @@ export const useCourseStore = create((set, get) => ({
       console.error("Error in getLessonContent:", error);
       return [];
     }
+  },
+  getContentAudioFiles: async (contentId) => {
+    try {
+      const res = await fetch(`/api/course/getContentAudioFiles/${contentId}`);
+      const data = await res.json();
+      
+      if (res.ok && data.success) {
+        return data.data;
+      } else {
+        console.error("Error fetching audio files:", data.message || "Unknown error");
+        return [];
+      }
+    } catch (error) {
+      console.error("Error in getContentAudioFiles:", error);
+      return [];
+    }
   }
 }));
 

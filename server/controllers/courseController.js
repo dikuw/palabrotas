@@ -1,5 +1,6 @@
 import Lesson from '../models/Lesson.js';
 import Content from '../models/Content.js';
+import AudioFile from '../models/AudioFile.js';
 
 export const getLessons = async (req, res) => {
   try {
@@ -60,6 +61,19 @@ export const getLessonContent = async (req, res) => {
     res.status(200).json({ success: true, data: vocabulary });
   } catch (error) {
     console.error("Error in get lesson content:", error.message);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const getContentAudioFiles = async (req, res) => {
+  try {
+    const { contentId } = req.params;
+    const audioFiles = await AudioFile.find({ content: contentId })
+      .sort({ order: 1 });
+    
+    res.status(200).json({ success: true, data: audioFiles });
+  } catch (error) {
+    console.error("Error in get content audio files:", error.message);
     res.status(500).json({ success: false, message: error.message });
   }
 };

@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useTranslation } from "react-i18next";
+import LessonContent from './LessonContent';
 
 const LessonContainer = styled.div`
   width: 100%;
@@ -31,16 +32,6 @@ const VocabularyTitle = styled.h3`
   margin-bottom: 1rem;
 `;
 
-const VocabularyContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 1rem;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  min-height: 200px;
-`;
-
 const PlaceholderText = styled.p`
   text-align: center;
   color: #999;
@@ -69,17 +60,7 @@ export default function Lesson({ lesson, vocabulary }) {
       </div>
       <VocabularySection>
         <VocabularyTitle>{t("Vocabulary")}</VocabularyTitle>
-        <VocabularyContent>
-          {vocabulary && vocabulary.length > 0 ? (
-            vocabulary.map((item) => (
-              <div key={item._id}>
-                <strong>{item.title}</strong> - {item.description}
-              </div>
-            ))
-          ) : (
-            <PlaceholderText>{t("No vocabulary content available")}</PlaceholderText>
-          )}
-        </VocabularyContent>
+        <LessonContent vocabulary={vocabulary} />
       </VocabularySection>
     </LessonContainer>
   );
