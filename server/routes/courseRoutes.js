@@ -1,9 +1,11 @@
 import express from 'express';
-import { getLessons } from '../controllers/courseController.js';
+import { getLessons, getLesson, getLessonContent } from '../controllers/courseController.js';
 
 const router = express.Router();
 
 router.get("/getLessons", getLessons);
+router.get("/getLesson/:lessonId", getLesson);
+router.get("/getLessonContent/:lessonId", getLessonContent);
 
 export default router;
 
