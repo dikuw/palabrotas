@@ -6,6 +6,7 @@ export const lesson = {
   lessonNumber: 1,
   title: "Lesson 1: Greetings",
   description: "Learn basic Spanish greetings and introductions",
+  chatPrompt: "You are a friendly Spanish teacher helping a student practice greetings. Use the vocabulary: Hola, Buenos días, Adiós. Have a conversation about meeting someone new.",
   vocabulary: [
     {
       title: "Hola",

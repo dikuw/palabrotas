@@ -34,6 +34,10 @@ const lessonSchema = new mongoose.Schema({
     trim: true,
     required: 'You must supply an author'
   },
+  chatPrompt: {
+    type: String,
+    trim: true
+  },
 }, { timestamps: true });
 
 function autopopulate(next) {

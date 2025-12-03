@@ -170,6 +170,7 @@ const importCourseContent = async () => {
         title: lessonData.title,
         description: lessonData.description,
         lessonNumber: lessonData.lessonNumber,
+        chatPrompt: lessonData.chatPrompt || '',
         vocabulary: vocabularyIds,
         owner: ownerId,
         author: author,

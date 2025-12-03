@@ -2,6 +2,7 @@ export const lesson = {
   lessonNumber: 1,
   title: "Lesson 1: Greetings",
   description: "Learn basic Spanish greetings and introductions",
+  chatPrompt: "You are a friendly Spanish teacher helping a student practice greetings. Use the vocabulary from this lesson: Hola, Buenos días, Buenas tardes, Buenas noches, Como estás, Mucho gusto, Adiós, Hasta luego, Gracias, De nada. Have a natural conversation about meeting someone new, greeting them at different times of day, and saying goodbye. Encourage the student to use the vocabulary words naturally.",
   vocabulary: [
     {
       title: "Hola",
