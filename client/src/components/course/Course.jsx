@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useTranslation } from "react-i18next";
 import { useCourseStore } from '../../store/course';
 import Lesson from './Lesson';
+import Spinner from '../shared/Spinner';
 
 const StyledCourseContainer = styled.div`
   width: 100%;
@@ -82,25 +83,68 @@ const StyledContent = styled.div`
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 `;
 
+const SpinnerContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+`;
+
 export default function Course(props) {
   const { t } = useTranslation();
   const { lessons, currentLesson, lessonContent, getLessons, getLesson, getLessonContent } = useCourseStore();
   const [selectedLesson, setSelectedLesson] = useState('');
+  const [isLoadingLessons, setIsLoadingLessons] = useState(true);
+  const [isLoadingLesson, setIsLoadingLesson] = useState(false);
 
   useEffect(() => {
-    getLessons();
+    const loadLessons = async () => {
+      setIsLoadingLessons(true);
+      try {
+        await getLessons();
+      } catch (error) {
+        console.error('Error loading lessons:', error);
+      } finally {
+        setIsLoadingLessons(false);
+      }
+    };
+    loadLessons();
   }, [getLessons]);
 
   useEffect(() => {
     if (selectedLesson) {
-      getLesson(selectedLesson);
-      getLessonContent(selectedLesson);
+      const loadLesson = async () => {
+        setIsLoadingLesson(true);
+        try {
+          await Promise.all([
+            getLesson(selectedLesson),
+            getLessonContent(selectedLesson)
+          ]);
+        } catch (error) {
+          console.error('Error loading lesson:', error);
+        } finally {
+          setIsLoadingLesson(false);
+        }
+      };
+      loadLesson();
     }
   }, [selectedLesson, getLesson, getLessonContent]);
 
   const handleLessonChange = (e) => {
     setSelectedLesson(e.target.value);
   };
+
+  if (isLoadingLessons) {
+    return (
+      <StyledCourseContainer>
+        <StyledContent>
+          <SpinnerContainer>
+            <Spinner size="40px" />
+          </SpinnerContainer>
+        </StyledContent>
+      </StyledCourseContainer>
+    );
+  }
 
   return (
     <>
@@ -131,7 +175,13 @@ export default function Course(props) {
               </LessonInfo>
             )}
           </HeaderSection>
-          <Lesson lesson={currentLesson} vocabulary={lessonContent} />
+          {isLoadingLesson ? (
+            <SpinnerContainer>
+              <Spinner size="40px" />
+            </SpinnerContainer>
+          ) : (
+            <Lesson lesson={currentLesson} vocabulary={lessonContent} isLoading={isLoadingLesson} />
+          )}
         </StyledContent>
       </StyledCourseContainer>
     </>

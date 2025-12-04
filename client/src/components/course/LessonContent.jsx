@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useTranslation } from "react-i18next";
 import { FaVolumeUp, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { useCourseStore } from '../../store/course';
+import Spinner from '../shared/Spinner';
 
 const CardsContainer = styled.div`
   display: flex;
@@ -143,6 +144,14 @@ const PlaceholderText = styled.p`
   padding: 2rem;
 `;
 
+const SpinnerContainer = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+`;
+
 export default function LessonContent({ vocabulary }) {
   const { t } = useTranslation();
   const { getContentAudioFiles } = useCourseStore();
@@ -151,6 +160,7 @@ export default function LessonContent({ vocabulary }) {
   const [audioFiles, setAudioFiles] = useState({});
   const [currentAudioIndex, setCurrentAudioIndex] = useState({});
   const [audioElements, setAudioElements] = useState({});
+  const [isLoadingAudio, setIsLoadingAudio] = useState(false);
 
   useEffect(() => {
     // Reset revealed state when vocabulary changes
@@ -162,18 +172,27 @@ export default function LessonContent({ vocabulary }) {
   useEffect(() => {
     // Fetch audio files for all vocabulary items
     const fetchAudioFiles = async () => {
-      const audioFilesMap = {};
-      for (const item of vocabulary) {
-        const files = await getContentAudioFiles(item._id);
-        if (files && files.length > 0) {
-          audioFilesMap[item._id] = files;
+      setIsLoadingAudio(true);
+      try {
+        const audioFilesMap = {};
+        for (const item of vocabulary) {
+          const files = await getContentAudioFiles(item._id);
+          if (files && files.length > 0) {
+            audioFilesMap[item._id] = files;
+          }
         }
+        setAudioFiles(audioFilesMap);
+      } catch (error) {
+        console.error('Error fetching audio files:', error);
+      } finally {
+        setIsLoadingAudio(false);
       }
-      setAudioFiles(audioFilesMap);
     };
 
     if (vocabulary && vocabulary.length > 0) {
       fetchAudioFiles();
+    } else {
+      setIsLoadingAudio(false);
     }
   }, [vocabulary, getContentAudioFiles]);
 
@@ -264,6 +283,11 @@ export default function LessonContent({ vocabulary }) {
     <CardsContainer>
       <CardWrapper>
         <Card onClick={(e) => handleCardClick(currentItem._id, e)}>
+          {isLoadingAudio && (
+            <SpinnerContainer>
+              <Spinner size="40px" />
+            </SpinnerContainer>
+          )}
           <CardContent>
             <EnglishText>{currentItem.description}</EnglishText>
             <SpanishText $isVisible={isRevealed}>
@@ -281,14 +305,14 @@ export default function LessonContent({ vocabulary }) {
         </Card>
       </CardWrapper>
       <NavigationContainer>
-        <NavButton onClick={goToPrevious} disabled={currentIndex === 0}>
+        <NavButton onClick={goToPrevious} disabled={currentIndex === 0 || isLoadingAudio}>
           <FaChevronLeft />
           {t("Previous")}
         </NavButton>
         <CardCounter>
           {currentIndex + 1} / {vocabulary.length}
         </CardCounter>
-        <NavButton onClick={goToNext} disabled={currentIndex === vocabulary.length - 1}>
+        <NavButton onClick={goToNext} disabled={currentIndex === vocabulary.length - 1 || isLoadingAudio}>
           {t("Next")}
           <FaChevronRight />
         </NavButton>
