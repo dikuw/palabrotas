@@ -170,17 +170,25 @@ export default function LessonContent({ vocabulary }) {
   }, [vocabulary]);
 
   useEffect(() => {
-    // Fetch audio files for all vocabulary items
+    // Fetch audio files for all vocabulary items in parallel
     const fetchAudioFiles = async () => {
       setIsLoadingAudio(true);
       try {
+        // Fetch all audio files in parallel instead of sequentially
+        const audioFilesPromises = vocabulary.map(item => 
+          getContentAudioFiles(item._id).then(files => ({
+            itemId: item._id,
+            files: files && files.length > 0 ? files : []
+          }))
+        );
+        
+        const results = await Promise.all(audioFilesPromises);
         const audioFilesMap = {};
-        for (const item of vocabulary) {
-          const files = await getContentAudioFiles(item._id);
-          if (files && files.length > 0) {
-            audioFilesMap[item._id] = files;
+        results.forEach(({ itemId, files }) => {
+          if (files.length > 0) {
+            audioFilesMap[itemId] = files;
           }
-        }
+        });
         setAudioFiles(audioFilesMap);
       } catch (error) {
         console.error('Error fetching audio files:', error);
