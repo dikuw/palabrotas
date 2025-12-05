@@ -66,13 +66,6 @@ const LessonTitleText = styled.h2`
   line-height: 1.2;
 `;
 
-const LessonDescriptionText = styled.p`
-  font-size: 0.9rem;
-  color: #666;
-  margin: 0.25rem 0 0 0;
-  text-align: left;
-  line-height: 1.2;
-`;
 
 const StyledContent = styled.div`
   max-width: 800px;
@@ -169,9 +162,6 @@ export default function Course(props) {
                 <LessonTitleText>
                   {currentLesson.title.replace(/^Lesson \d+:\s*/i, '')}
                 </LessonTitleText>
-                {currentLesson.description && (
-                  <LessonDescriptionText>{currentLesson.description}</LessonDescriptionText>
-                )}
               </LessonInfo>
             )}
           </HeaderSection>
