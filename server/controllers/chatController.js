@@ -5,12 +5,38 @@ const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export const createChat = async (req, res) => {
   try {
-    const { userId, title } = req.body;
+    const { userId, title, prompt } = req.body;
+
+    // Initialize messages array
+    const initialMessages = [];
+
+    // If a prompt is provided, process it and get an AI response
+    if (prompt && prompt.trim()) {
+      // Format messages for OpenAI API
+      const formattedMessages = [
+        { role: "system", content: "You are a helpful Spanish tutor." },
+        { role: "user", content: prompt }
+      ];
+
+      // Get AI response
+      const response = await client.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: formattedMessages,
+        max_tokens: 1000,
+        temperature: 0.7
+      });
+
+      const aiMessage = response.choices[0].message.content;
+
+      // Add both user and assistant messages
+      initialMessages.push({ role: "user", content: prompt });
+      initialMessages.push({ role: "assistant", content: aiMessage });
+    }
 
     const newChat = await Chat.create({
       userId,
       title: title || "New Chat",
-      messages: []
+      messages: initialMessages
     });
 
     res.status(201).json(newChat);
