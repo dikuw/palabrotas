@@ -13,7 +13,7 @@ export const useChatStore = create((set, get) => ({
   setLoading: (isLoading) => set({ isLoading }),
   
   // Create a new chat
-  createChat: async (userId, title = "New Chat") => {
+  createChat: async (userId, title = "New Chat", prompt = null) => {
     try {
       set({ isLoading: true });
       const res = await fetch("/api/chat/new", {
@@ -22,7 +22,7 @@ export const useChatStore = create((set, get) => ({
           "Content-Type": "application/json",
         },
         credentials: 'include',
-        body: JSON.stringify({ userId, title }),
+        body: JSON.stringify({ userId, title, ...(prompt && { prompt }) }),
       });
       
       if (!res.ok) {
@@ -33,7 +33,7 @@ export const useChatStore = create((set, get) => ({
       set((state) => ({ 
         chats: [...state.chats, data],
         currentChat: data,
-        messages: [],
+        messages: data.messages || [],
         isLoading: false
       }));
       return data;

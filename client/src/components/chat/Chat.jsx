@@ -199,6 +199,43 @@ const AvatarLoading = styled.div`
   color: #666;
 `;
 
+const ChatSelectorContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 20px;
+  padding: 0 20px;
+`;
+
+const ChatSelect = styled.select`
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: white;
+  font-size: 16px;
+  color: #333;
+  cursor: pointer;
+  min-width: 200px;
+  outline: none;
+  transition: border-color 0.2s;
+  
+  &:hover {
+    border-color: var(--primary);
+  }
+  
+  &:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+  }
+`;
+
+const ChatSelectLabel = styled.label`
+  margin-right: 10px;
+  font-weight: 500;
+  color: #333;
+`;
+
 export default function Chat() {
   const { t } = useTranslation();
   const { authStatus } = useAuthStore();
@@ -315,6 +352,16 @@ export default function Chat() {
     }
   };
 
+  const handleChatSelect = (e) => {
+    const selectedChatId = e.target.value;
+    if (selectedChatId) {
+      const selectedChat = chats.find(chat => chat._id === selectedChatId);
+      if (selectedChat) {
+        loadChat(selectedChat);
+      }
+    }
+  };
+
   const handleSendMessage = async (messageContent) => {
     if (!messageContent.trim() || !currentChat) return;
 
@@ -393,6 +440,23 @@ export default function Chat() {
             {t('No avatars yet')}
           </AvatarPlaceholder>
         )}
+        
+        {/* Chat Selector Dropdown */}
+        <ChatSelectorContainer>
+          <ChatSelectLabel htmlFor="chat-selector">{t('Select Chat:')}</ChatSelectLabel>
+          <ChatSelect
+            id="chat-selector"
+            value={currentChat?._id || ''}
+            onChange={handleChatSelect}
+          >
+            <option value="">{t('-- Select a chat --')}</option>
+            {chats.map((chat) => (
+              <option key={chat._id} value={chat._id}>
+                {chat.title || t('Untitled Chat')}
+              </option>
+            ))}
+          </ChatSelect>
+        </ChatSelectorContainer>
       </AvatarSection>
 
       {/* Chat Container */}
