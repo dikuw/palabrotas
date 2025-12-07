@@ -8,6 +8,7 @@ const messageSchema = new mongoose.Schema({
 
 const chatSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  lessonId: { type: mongoose.Schema.Types.ObjectId, ref: "Lesson" }, // Optional: associate chat with a lesson
   title: { type: String, default: "New Chat" }, // Optional: auto-generate or let user name it
   messages: [messageSchema],
   createdAt: { type: Date, default: Date.now },

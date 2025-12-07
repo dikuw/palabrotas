@@ -1,21 +1,31 @@
 import Chat from "../models/Chat.js";
+import Lesson from "../models/Lesson.js";
 import OpenAI from "openai";
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export const createChat = async (req, res) => {
   try {
-    const { userId, title, prompt } = req.body;
+    const { userId, title, prompt, lessonId } = req.body;
 
     // Initialize messages array
     const initialMessages = [];
+    let finalPrompt = prompt;
 
-    // If a prompt is provided, process it and get an AI response
-    if (prompt && prompt.trim()) {
+    // If lessonId is provided and no prompt is given, fetch the lesson's chatPrompt
+    if (lessonId && !prompt) {
+      const lesson = await Lesson.findById(lessonId);
+      if (lesson && lesson.chatPrompt) {
+        finalPrompt = lesson.chatPrompt;
+      }
+    }
+
+    // If a prompt is provided (either directly or from lesson), process it and get an AI response
+    if (finalPrompt && finalPrompt.trim()) {
       // Format messages for OpenAI API
       const formattedMessages = [
         { role: "system", content: "You are a helpful Spanish tutor." },
-        { role: "user", content: prompt }
+        { role: "user", content: finalPrompt }
       ];
 
       // Get AI response
@@ -29,12 +39,13 @@ export const createChat = async (req, res) => {
       const aiMessage = response.choices[0].message.content;
 
       // Add both user and assistant messages
-      initialMessages.push({ role: "user", content: prompt });
+      initialMessages.push({ role: "user", content: finalPrompt });
       initialMessages.push({ role: "assistant", content: aiMessage });
     }
 
     const newChat = await Chat.create({
       userId,
+      lessonId: lessonId || undefined,
       title: title || "New Chat",
       messages: initialMessages
     });
@@ -97,6 +108,17 @@ export const getChats = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch chats" });
+  }
+};
+
+export const getChatsByLesson = async (req, res) => {
+  try {
+    const { userId, lessonId } = req.params;
+    const chats = await Chat.find({ userId, lessonId }).sort({ updatedAt: -1 });
+    res.json(chats);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch chats by lesson" });
   }
 };
 
