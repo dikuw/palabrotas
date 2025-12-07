@@ -13,7 +13,7 @@ export const useChatStore = create((set, get) => ({
   setLoading: (isLoading) => set({ isLoading }),
   
   // Create a new chat
-  createChat: async (userId, title = "New Chat", prompt = null) => {
+  createChat: async (userId, title = "New Chat", prompt = null, lessonId = null) => {
     try {
       set({ isLoading: true });
       const res = await fetch("/api/chat/new", {
@@ -22,7 +22,7 @@ export const useChatStore = create((set, get) => ({
           "Content-Type": "application/json",
         },
         credentials: 'include',
-        body: JSON.stringify({ userId, title, ...(prompt && { prompt }) }),
+        body: JSON.stringify({ userId, title, ...(prompt && { prompt }), ...(lessonId && { lessonId }) }),
       });
       
       if (!res.ok) {
@@ -120,6 +120,38 @@ export const useChatStore = create((set, get) => ({
       return data;
     } catch (error) {
       console.error('Error fetching chats:', error);
+      set({ 
+        chats: [],
+        isLoading: false
+      });
+      throw error;
+    }
+  },
+
+  // Get chats by lesson for a user
+  getChatsByLesson: async (userId, lessonId) => {
+    try {
+      set({ isLoading: true });
+      const res = await fetch(`/api/chat/chats/${userId}/lesson/${lessonId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: 'include',
+      });
+      
+      if (!res.ok) {
+        throw new Error('Failed to fetch chats by lesson');
+      }
+      
+      const data = await res.json();
+      set({ 
+        chats: Array.isArray(data) ? data : [],
+        isLoading: false
+      });
+      return data;
+    } catch (error) {
+      console.error('Error fetching chats by lesson:', error);
       set({ 
         chats: [],
         isLoading: false

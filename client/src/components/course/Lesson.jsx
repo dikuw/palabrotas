@@ -35,7 +35,7 @@ export default function Lesson({ lesson, vocabulary }) {
   return (
     <LessonContainer>
       <VocabularySection>
-        <LessonContent vocabulary={vocabulary} />
+        <LessonContent vocabulary={vocabulary} lesson={lesson} />
       </VocabularySection>
     </LessonContainer>
   );

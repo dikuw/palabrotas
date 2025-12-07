@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from "react-i18next";
-import { FaVolumeUp, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import { FaVolumeUp, FaChevronLeft, FaChevronRight, FaComments } from 'react-icons/fa';
 import { useCourseStore } from '../../store/course';
+import { useChatStore } from '../../store/chat';
+import { useAuthStore } from '../../store/auth';
+import { useNotificationStore } from '../../store/notification';
 import Spinner from '../shared/Spinner';
 
 const CardsContainer = styled.div`
@@ -152,15 +156,95 @@ const SpinnerContainer = styled.div`
   z-index: 5;
 `;
 
-export default function LessonContent({ vocabulary }) {
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
+
+const ModalContent = styled.div`
+  background-color: white;
+  padding: 2rem;
+  border-radius: 9px;
+  border: 2px solid var(--secondary);
+  max-width: 400px;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+`;
+
+const ModalTitle = styled.h3`
+  margin: 0;
+  color: var(--primary);
+  font-size: 1.2rem;
+`;
+
+const ModalMessage = styled.p`
+  margin: 0;
+  color: #666;
+`;
+
+const ModalButtons = styled.div`
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+`;
+
+const ModalButton = styled.button`
+  padding: 0.75rem 1.5rem;
+  border: 2px solid var(--secondary);
+  border-radius: 20px;
+  background-color: white;
+  color: var(--primary);
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: var(--primary);
+    color: white;
+    border-color: var(--primary);
+  }
+  
+  &:active {
+    transform: scale(0.95);
+  }
+  
+  ${props => props.$primary && `
+    background-color: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    
+    &:hover {
+      background-color: var(--primaryDark);
+    }
+  `}
+`;
+
+export default function LessonContent({ vocabulary, lesson }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { getContentAudioFiles } = useCourseStore();
+  const { authStatus } = useAuthStore();
+  const { createChat, getChatsByLesson, loadChat } = useChatStore();
+  const addNotification = useNotificationStore(state => state.addNotification);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [revealedItems, setRevealedItems] = useState({});
   const [audioFiles, setAudioFiles] = useState({});
   const [currentAudioIndex, setCurrentAudioIndex] = useState({});
   const [audioElements, setAudioElements] = useState({});
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
+  const [showChatModal, setShowChatModal] = useState(false);
+  const [existingChats, setExistingChats] = useState([]);
+  const [isLoadingChats, setIsLoadingChats] = useState(false);
 
   useEffect(() => {
     // Reset revealed state when vocabulary changes
@@ -273,6 +357,68 @@ export default function LessonContent({ vocabulary }) {
     }
   };
 
+  const handleChatClick = async () => {
+    if (!lesson || !authStatus.user) return;
+
+    setIsLoadingChats(true);
+    try {
+      // Check for existing chats for this lesson
+      const chats = await getChatsByLesson(authStatus.user._id, lesson._id);
+      setExistingChats(chats || []);
+      
+      if (chats && chats.length > 0) {
+        // Show modal to ask user
+        setShowChatModal(true);
+      } else {
+        // No existing chats, create new one directly
+        await createNewLessonChat();
+      }
+    } catch (error) {
+      console.error('Error checking for existing chats:', error);
+      addNotification(t('Failed to load chats'), 'error');
+    } finally {
+      setIsLoadingChats(false);
+    }
+  };
+
+  const createNewLessonChat = async () => {
+    if (!lesson || !authStatus.user) return;
+
+    setShowChatModal(false);
+    
+    try {
+      // Count existing chats for this lesson to determine the number
+      const existingChatsCount = existingChats.length;
+      const chatNumber = existingChatsCount + 1;
+      const title = `Lesson ${lesson.lessonNumber} - ${chatNumber}`;
+
+      // Create chat with lessonId (prompt will be taken from lesson.chatPrompt)
+      await createChat(authStatus.user._id, title, null, lesson._id);
+      
+      // Navigate to chat page
+      navigate('/chat');
+    } catch (error) {
+      console.error('Error creating new chat:', error);
+      addNotification(t('Failed to create chat'), 'error');
+    }
+  };
+
+  const useExistingChat = () => {
+    if (existingChats.length > 0) {
+      // Load the most recent chat (first in array since they're sorted by updatedAt desc)
+      const latestChat = existingChats[0];
+      loadChat(latestChat);
+      
+      // Navigate to chat page (Chat component will load all chats on mount)
+      navigate('/chat');
+    }
+    setShowChatModal(false);
+  };
+
+  const handleModalClose = () => {
+    setShowChatModal(false);
+  };
+
   if (!vocabulary || vocabulary.length === 0) {
     return (
       <CardsContainer>
@@ -324,7 +470,39 @@ export default function LessonContent({ vocabulary }) {
           {t("Next")}
           <FaChevronRight />
         </NavButton>
+        {lesson && (
+          <NavButton 
+            onClick={handleChatClick} 
+            disabled={isLoadingChats || isLoadingAudio}
+            title={t("Open chat for this lesson")}
+          >
+            <FaComments />
+            {t("Chat")}
+          </NavButton>
+        )}
       </NavigationContainer>
+      
+      {showChatModal && (
+        <ModalOverlay onClick={handleModalClose}>
+          <ModalContent onClick={(e) => e.stopPropagation()}>
+            <ModalTitle>{t("Chat Already Exists")}</ModalTitle>
+            <ModalMessage>
+              {t("You already have")} {existingChats.length} {existingChats.length === 1 ? t("chat") : t("chats")} {t("for this lesson. Would you like to use an existing chat or create a new one?")}
+            </ModalMessage>
+            <ModalButtons>
+              <ModalButton onClick={handleModalClose}>
+                {t("Cancel")}
+              </ModalButton>
+              <ModalButton onClick={useExistingChat} $primary>
+                {t("Use Existing")}
+              </ModalButton>
+              <ModalButton onClick={createNewLessonChat} $primary>
+                {t("New Chat")}
+              </ModalButton>
+            </ModalButtons>
+          </ModalContent>
+        </ModalOverlay>
+      )}
     </CardsContainer>
   );
 }
