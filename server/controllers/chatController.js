@@ -17,18 +17,22 @@ export const createChat = async (req, res) => {
       const lesson = await Lesson.findById(lessonId);
       if (lesson && lesson.chatPrompt) {
         finalPrompt = lesson.chatPrompt;
+        console.log(`Found lesson ${lessonId}, using chatPrompt: ${lesson.chatPrompt.substring(0, 100)}...`);
+      } else {
+        console.log(`Lesson ${lessonId} not found or has no chatPrompt`);
       }
     }
 
-    // If a prompt is provided (either directly or from lesson), process it and get an AI response
+    // If a prompt is provided (either directly or from lesson), have the AI initiate the conversation
     if (finalPrompt && finalPrompt.trim()) {
-      // Format messages for OpenAI API
+      // Format messages for OpenAI API - use the prompt as context for the AI to initiate
       const formattedMessages = [
         { role: "system", content: "You are a helpful Spanish tutor." },
-        { role: "user", content: finalPrompt }
+        { role: "user", content: `Based on this lesson context: "${finalPrompt}". Please initiate a conversation with the student. Start by greeting them and introducing the topic naturally, as if you're beginning a tutoring session.` }
       ];
 
-      // Get AI response
+      console.log('Calling OpenAI to generate initial message...');
+      // Get AI response - this will be the first message the student sees
       const response = await client.chat.completions.create({
         model: "gpt-4o-mini",
         messages: formattedMessages,
@@ -37,10 +41,12 @@ export const createChat = async (req, res) => {
       });
 
       const aiMessage = response.choices[0].message.content;
+      console.log(`AI generated initial message: ${aiMessage.substring(0, 100)}...`);
 
-      // Add both user and assistant messages
-      initialMessages.push({ role: "user", content: finalPrompt });
+      // Only add the assistant's initiating message (not the user prompt)
       initialMessages.push({ role: "assistant", content: aiMessage });
+    } else {
+      console.log('No prompt provided, creating empty chat');
     }
 
     const newChat = await Chat.create({
@@ -50,9 +56,10 @@ export const createChat = async (req, res) => {
       messages: initialMessages
     });
 
+    console.log(`Created chat ${newChat._id} with ${initialMessages.length} initial messages`);
     res.status(201).json(newChat);
   } catch (err) {
-    console.error(err);
+    console.error('Error creating chat:', err);
     res.status(500).json({ error: "Failed to create chat" });
   }
 };
@@ -73,8 +80,15 @@ export const sendMessage = async (req, res) => {
     // Add the new user message
     formattedMessages.push({ role: "user", content: message });
 
-    // Add system message at the beginning
-    formattedMessages.unshift({ role: "system", content: "You are a helpful Spanish tutor." });
+    // Build system message - include lesson context if this is a lesson chat
+    let systemMessage = "You are a helpful Spanish tutor.";
+    if (chat.lessonId) {
+      const lesson = await Lesson.findById(chat.lessonId);
+      if (lesson && lesson.chatPrompt) {
+        systemMessage = `You are a helpful Spanish tutor. ${lesson.chatPrompt}`;
+      }
+    }
+    formattedMessages.unshift({ role: "system", content: systemMessage });
 
     // Limit context to last 10 messages (including system message)
     const context = formattedMessages.slice(-11); // Keep system + last 10 messages

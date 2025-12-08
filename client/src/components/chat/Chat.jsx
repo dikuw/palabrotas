@@ -247,7 +247,8 @@ export default function Chat() {
     sendMessage, 
     getChats,
     loadChat,
-    chats
+    chats,
+    setChats
   } = useChatStore();
   const { 
     avatars, 
@@ -338,13 +339,26 @@ export default function Chat() {
     try {
       const fetchedChats = await getChats(authStatus.user._id);
       
-      if (fetchedChats.length > 0) {
-        // Load the last chat in the array (most recent)
-        const mostRecentChat = fetchedChats[fetchedChats.length - 1];
-        loadChat(mostRecentChat);
+      // If we have a currentChat, make sure it's in the fetched chats array
+      if (currentChat) {
+        const chatExists = fetchedChats.some(chat => chat._id === currentChat._id);
+        if (!chatExists && Array.isArray(fetchedChats)) {
+          // Add currentChat to the array so it appears in the dropdown
+          const updatedChats = [...fetchedChats, currentChat];
+          setChats(updatedChats);
+        }
+        // Keep the currentChat - don't overwrite it
       } else {
-        // If no chats exist, create a new one
-        await createChat(authStatus.user._id, 'New Chat');
+        // Only load default chat if no current chat is already set
+        // This preserves the chat that was loaded when navigating from a lesson
+        if (fetchedChats && fetchedChats.length > 0) {
+          // Load the last chat in the array (most recent)
+          const mostRecentChat = fetchedChats[fetchedChats.length - 1];
+          loadChat(mostRecentChat);
+        } else {
+          // If no chats exist, create a new one
+          await createChat(authStatus.user._id, 'New Chat');
+        }
       }
     } catch (error) {
       console.error('Error loading chats:', error);

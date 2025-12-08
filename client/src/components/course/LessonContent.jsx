@@ -358,7 +358,22 @@ export default function LessonContent({ vocabulary, lesson }) {
   };
 
   const handleChatClick = async () => {
-    if (!lesson || !authStatus.user) return;
+    if (!lesson || !authStatus.user) {
+      console.error('Cannot open chat: missing lesson or user', { lesson, user: authStatus.user });
+      return;
+    }
+
+    if (!lesson._id) {
+      console.error('Lesson object missing _id:', lesson);
+      addNotification(t('Lesson data is incomplete'), 'error');
+      return;
+    }
+
+    console.log('Opening chat for lesson:', { 
+      lessonId: lesson._id, 
+      lessonNumber: lesson.lessonNumber,
+      hasChatPrompt: !!lesson.chatPrompt 
+    });
 
     setIsLoadingChats(true);
     try {
@@ -392,8 +407,20 @@ export default function LessonContent({ vocabulary, lesson }) {
       const chatNumber = existingChatsCount + 1;
       const title = `Lesson ${lesson.lessonNumber} - ${chatNumber}`;
 
+      console.log('Creating new lesson chat:', { 
+        userId: authStatus.user._id, 
+        title, 
+        lessonId: lesson._id,
+        lessonHasPrompt: !!lesson.chatPrompt 
+      });
+
       // Create chat with lessonId (prompt will be taken from lesson.chatPrompt)
-      await createChat(authStatus.user._id, title, null, lesson._id);
+      const newChat = await createChat(authStatus.user._id, title, null, lesson._id);
+      
+      console.log('Chat created:', { 
+        chatId: newChat._id, 
+        messagesCount: newChat.messages?.length || 0 
+      });
       
       // Navigate to chat page
       navigate('/chat');
@@ -407,6 +434,10 @@ export default function LessonContent({ vocabulary, lesson }) {
     if (existingChats.length > 0) {
       // Load the most recent chat (first in array since they're sorted by updatedAt desc)
       const latestChat = existingChats[0];
+      console.log('Loading existing chat:', { 
+        chatId: latestChat._id, 
+        messagesCount: latestChat.messages?.length || 0 
+      });
       loadChat(latestChat);
       
       // Navigate to chat page (Chat component will load all chats on mount)
