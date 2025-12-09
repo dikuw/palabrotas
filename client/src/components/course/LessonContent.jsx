@@ -296,10 +296,16 @@ export default function LessonContent({ vocabulary, lesson }) {
     if (e.target.closest('button')) {
       return;
     }
-    setRevealedItems(prev => ({
-      ...prev,
-      [itemId]: !prev[itemId]
-    }));
+    // Only reveal if not already revealed (one-way reveal, no toggle)
+    setRevealedItems(prev => {
+      if (prev[itemId]) {
+        return prev; // Already revealed, don't change
+      }
+      return {
+        ...prev,
+        [itemId]: true
+      };
+    });
   };
 
   const handleAudioClick = (itemId, e) => {
