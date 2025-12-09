@@ -477,16 +477,15 @@ export default function LessonContent({ vocabulary, lesson }) {
     <CardsContainer>
       <CardWrapper>
         <Card onClick={(e) => handleCardClick(currentItem._id, e)}>
-          {isLoadingAudio && (
-            <SpinnerContainer>
-              <Spinner size="40px" />
-            </SpinnerContainer>
-          )}
-          {hasAudio && (
+          {(isLoadingAudio || hasAudio) && (
             <AudioButtonContainer>
-              <AudioButton onClick={(e) => handleAudioClick(currentItem._id, e)}>
-                <FaVolumeUp />
-              </AudioButton>
+              {isLoadingAudio ? (
+                <Spinner size="24px" />
+              ) : (
+                <AudioButton onClick={(e) => handleAudioClick(currentItem._id, e)}>
+                  <FaVolumeUp />
+                </AudioButton>
+              )}
             </AudioButtonContainer>
           )}
           <CardContent>
