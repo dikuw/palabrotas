@@ -67,22 +67,25 @@ const SpanishText = styled.div`
 `;
 
 const AudioButtonContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-top: 0.5rem;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
 `;
 
 const AudioButton = styled.button`
-  padding: 0.75rem 1.5rem;
+  padding: 0.5rem;
   border: 2px solid var(--secondary);
-  border-radius: 20px;
+  border-radius: 50%;
   background-color: white;
   color: var(--primary);
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 1.2rem;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
   transition: all 0.2s ease;
 
   &:hover {
@@ -473,19 +476,18 @@ export default function LessonContent({ vocabulary, lesson }) {
               <Spinner size="40px" />
             </SpinnerContainer>
           )}
+          {hasAudio && (
+            <AudioButtonContainer>
+              <AudioButton onClick={(e) => handleAudioClick(currentItem._id, e)}>
+                <FaVolumeUp />
+              </AudioButton>
+            </AudioButtonContainer>
+          )}
           <CardContent>
             <EnglishText>{currentItem.description}</EnglishText>
             <SpanishText $isVisible={isRevealed}>
               {isRevealed ? currentItem.title : '••••••'}
             </SpanishText>
-            {hasAudio && (
-              <AudioButtonContainer>
-                <AudioButton onClick={(e) => handleAudioClick(currentItem._id, e)}>
-                  <FaVolumeUp />
-                  {t("Hear it!")}
-                </AudioButton>
-              </AudioButtonContainer>
-            )}
           </CardContent>
         </Card>
       </CardWrapper>
