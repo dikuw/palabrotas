@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
 import { useTranslation } from "react-i18next";
 import { useNavigate } from 'react-router-dom';
 import { FaVolumeUp, FaChevronLeft, FaChevronRight, FaComments } from 'react-icons/fa';
@@ -73,6 +73,26 @@ const AudioButtonContainer = styled.div`
   z-index: 10;
 `;
 
+const pulse = keyframes`
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.7;
+  }
+`;
+
+const AudioIcon = styled.span`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  ${props => props.$isLoading && css`
+    animation: ${pulse} 1.5s ease-in-out infinite;
+  `}
+`;
+
 const AudioButton = styled.button`
   padding: 0.5rem;
   border: 2px solid var(--secondary);
@@ -88,14 +108,18 @@ const AudioButton = styled.button`
   height: 2.5rem;
   transition: all 0.2s ease;
 
-  &:hover {
+  &:hover:not(:disabled) {
     background-color: var(--primary);
     color: white;
     border-color: var(--primary);
   }
 
-  &:active {
+  &:active:not(:disabled) {
     transform: scale(0.95);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
   }
 `;
 
@@ -479,13 +503,14 @@ export default function LessonContent({ vocabulary, lesson }) {
         <Card onClick={(e) => handleCardClick(currentItem._id, e)}>
           {(isLoadingAudio || hasAudio) && (
             <AudioButtonContainer>
-              {isLoadingAudio ? (
-                <Spinner size="24px" />
-              ) : (
-                <AudioButton onClick={(e) => handleAudioClick(currentItem._id, e)}>
+              <AudioButton 
+                onClick={(e) => handleAudioClick(currentItem._id, e)}
+                disabled={isLoadingAudio || !hasAudio}
+              >
+                <AudioIcon $isLoading={isLoadingAudio}>
                   <FaVolumeUp />
-                </AudioButton>
-              )}
+                </AudioIcon>
+              </AudioButton>
             </AudioButtonContainer>
           )}
           <CardContent>
