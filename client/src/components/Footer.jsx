@@ -43,7 +43,7 @@ export default function Footer() {
   return (
     <StyledFooter >
       <StyledLegal>
-        <p>&copy; 2024-2025</p>
+        <p>&copy; 2024-2026</p>
         <p>{t("Created with")}<a rel="noopener noreferrer" href="http://www.dikuw.com/" target="_blank"> 🖤</a></p>
       </StyledLegal>
     </StyledFooter>
