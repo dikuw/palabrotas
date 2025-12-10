@@ -132,19 +132,19 @@ const NavigationContainer = styled.div`
 `;
 
 const NavButton = styled.button`
-  padding: 0.75rem 1.5rem;
+  padding: 0.75rem;
   border: 2px solid var(--secondary);
-  border-radius: 20px;
+  border-radius: 50%;
   background-color: white;
   color: var(--primary);
   cursor: pointer;
   font-size: 1rem;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  transition: all 0.2s ease;
-  min-width: 120px;
   justify-content: center;
+  transition: all 0.2s ease;
+  width: 3rem;
+  height: 3rem;
 
   &:hover:not(:disabled) {
     background-color: var(--primary);
@@ -524,13 +524,11 @@ export default function LessonContent({ vocabulary, lesson }) {
       <NavigationContainer>
         <NavButton onClick={goToPrevious} disabled={currentIndex === 0 || isLoadingAudio}>
           <FaChevronLeft />
-          {t("Previous")}
         </NavButton>
         <CardCounter>
           {currentIndex + 1} / {vocabulary.length}
         </CardCounter>
         <NavButton onClick={goToNext} disabled={currentIndex === vocabulary.length - 1 || isLoadingAudio}>
-          {t("Next")}
           <FaChevronRight />
         </NavButton>
         {lesson && (
@@ -540,7 +538,6 @@ export default function LessonContent({ vocabulary, lesson }) {
             title={t("Open chat for this lesson")}
           >
             <FaComments />
-            {t("Chat")}
           </NavButton>
         )}
       </NavigationContainer>
