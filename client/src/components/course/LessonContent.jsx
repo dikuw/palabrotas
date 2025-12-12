@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { useTranslation } from "react-i18next";
 import { useNavigate } from 'react-router-dom';
-import { FaVolumeUp, FaChevronLeft, FaChevronRight, FaComments } from 'react-icons/fa';
+import { FaVolumeUp, FaChevronLeft, FaChevronRight, FaComments, FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
 import { useCourseStore } from '../../store/course';
 import { useChatStore } from '../../store/chat';
 import { useAuthStore } from '../../store/auth';
@@ -71,6 +71,85 @@ const AudioButtonContainer = styled.div`
   top: 1rem;
   right: 1rem;
   z-index: 10;
+`;
+
+const ProgressIndicator = styled.div`
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 10;
+  width: 60px;
+  height: 60px;
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+  background: ${props => {
+    const { consecutiveCorrect } = props;
+    // Calculate progress: 0 = red, 10+ = green
+    const maxProgress = 10;
+    const progress = Math.min(consecutiveCorrect / maxProgress, 1);
+    
+    // Interpolate from red to green
+    const red = Math.round(255 * (1 - progress));
+    const green = Math.round(255 * progress);
+    return `rgb(${red}, ${green}, 0)`;
+  }};
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: background 0.3s ease;
+`;
+
+const FeedbackButtons = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+`;
+
+const FeedbackButton = styled.button`
+  padding: 0.75rem 1.5rem;
+  border: 2px solid var(--secondary);
+  border-radius: 20px;
+  background-color: white;
+  color: var(--primary);
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  min-width: 120px;
+
+  &:hover:not(:disabled) {
+    background-color: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    transform: translateY(-2px);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.95);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  ${props => props.$variant === 'up' && `
+    &:hover:not(:disabled) {
+      background-color: #4caf50;
+      border-color: #4caf50;
+      color: white;
+    }
+  `}
+
+  ${props => props.$variant === 'down' && `
+    &:hover:not(:disabled) {
+      background-color: #f44336;
+      border-color: #f44336;
+      color: white;
+    }
+  `}
 `;
 
 const pulse = keyframes`
@@ -259,7 +338,7 @@ const ModalButton = styled.button`
 export default function LessonContent({ vocabulary, lesson }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { getContentAudioFiles } = useCourseStore();
+  const { getContentAudioFiles, recordProgress, getLessonProgress } = useCourseStore();
   const { authStatus } = useAuthStore();
   const { createChat, getChatsByLesson, loadChat } = useChatStore();
   const addNotification = useNotificationStore(state => state.addNotification);
@@ -272,13 +351,34 @@ export default function LessonContent({ vocabulary, lesson }) {
   const [showChatModal, setShowChatModal] = useState(false);
   const [existingChats, setExistingChats] = useState([]);
   const [isLoadingChats, setIsLoadingChats] = useState(false);
+  const [consecutiveCorrect, setConsecutiveCorrect] = useState(0);
+  const [isRecordingProgress, setIsRecordingProgress] = useState(false);
 
   useEffect(() => {
     // Reset revealed state when vocabulary changes
     setRevealedItems({});
     setCurrentIndex(0);
     setCurrentAudioIndex({});
+    setConsecutiveCorrect(0);
   }, [vocabulary]);
+
+  useEffect(() => {
+    // Fetch progress when lesson changes
+    const fetchProgress = async () => {
+      if (lesson && lesson._id && authStatus.user) {
+        try {
+          const progress = await getLessonProgress(lesson._id);
+          if (progress) {
+            setConsecutiveCorrect(progress.consecutiveCorrect || 0);
+          }
+        } catch (error) {
+          console.error('Error fetching lesson progress:', error);
+        }
+      }
+    };
+
+    fetchProgress();
+  }, [lesson, authStatus.user, getLessonProgress]);
 
   useEffect(() => {
     // Fetch audio files for all vocabulary items in parallel
@@ -483,6 +583,44 @@ export default function LessonContent({ vocabulary, lesson }) {
     setShowChatModal(false);
   };
 
+  const handleProgressClick = async (isCorrect) => {
+    if (!lesson || !lesson._id || !authStatus.user || isRecordingProgress) {
+      console.log('handleProgressClick early return:', { 
+        hasLesson: !!lesson, 
+        hasLessonId: !!(lesson && lesson._id),
+        hasUser: !!authStatus.user,
+        isRecording: isRecordingProgress 
+      });
+      return;
+    }
+
+    const currentItem = vocabulary[currentIndex];
+    if (!currentItem || !currentItem._id) {
+      console.log('handleProgressClick: missing currentItem:', { currentItem, currentIndex });
+      return;
+    }
+
+    console.log('handleProgressClick calling API:', { 
+      lessonId: lesson._id, 
+      contentId: currentItem._id, 
+      isCorrect 
+    });
+
+    setIsRecordingProgress(true);
+    try {
+      const result = await recordProgress(lesson._id, currentItem._id, isCorrect);
+      console.log('handleProgressClick result:', result);
+      if (result && result.stats) {
+        setConsecutiveCorrect(result.stats.consecutiveCorrect || 0);
+      }
+    } catch (error) {
+      console.error('Error recording progress:', error);
+      addNotification(error.message || t('Failed to record progress'), 'error');
+    } finally {
+      setIsRecordingProgress(false);
+    }
+  };
+
   if (!vocabulary || vocabulary.length === 0) {
     return (
       <CardsContainer>
@@ -501,6 +639,9 @@ export default function LessonContent({ vocabulary, lesson }) {
     <CardsContainer>
       <CardWrapper>
         <Card onClick={(e) => handleCardClick(currentItem._id, e)}>
+          {authStatus.user && lesson && (
+            <ProgressIndicator consecutiveCorrect={consecutiveCorrect} />
+          )}
           {(isLoadingAudio || hasAudio) && (
             <AudioButtonContainer>
               <AudioButton 
@@ -518,6 +659,32 @@ export default function LessonContent({ vocabulary, lesson }) {
             <SpanishText $isVisible={isRevealed}>
               {isRevealed ? currentItem.title : '••••••'}
             </SpanishText>
+            {isRevealed && authStatus.user && lesson && (
+              <FeedbackButtons>
+                <FeedbackButton
+                  $variant="down"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleProgressClick(false);
+                  }}
+                  disabled={isRecordingProgress}
+                >
+                  <FaThumbsDown />
+                  {t("Didn't get it")}
+                </FeedbackButton>
+                <FeedbackButton
+                  $variant="up"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleProgressClick(true);
+                  }}
+                  disabled={isRecordingProgress}
+                >
+                  <FaThumbsUp />
+                  {t("Got it")}
+                </FeedbackButton>
+              </FeedbackButtons>
+            )}
           </CardContent>
         </Card>
       </CardWrapper>

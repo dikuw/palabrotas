@@ -73,6 +73,50 @@ export const useCourseStore = create((set, get) => ({
       console.error("Error in getContentAudioFiles:", error);
       return [];
     }
+  },
+  recordProgress: async (lessonId, contentId, isCorrect) => {
+    try {
+      console.log('recordProgress called:', { lessonId, contentId, isCorrect });
+      const res = await fetch(`/api/course/recordProgress/${lessonId}/${contentId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ isCorrect })
+      });
+      const data = await res.json();
+      
+      console.log('recordProgress response:', { status: res.status, ok: res.ok, data });
+      
+      if (res.ok && data.success) {
+        return data.data;
+      } else {
+        console.error("Error recording progress:", data.error || data.message || "Unknown error");
+        throw new Error(data.error || data.message || "Failed to record progress");
+      }
+    } catch (error) {
+      console.error("Error in recordProgress:", error);
+      throw error;
+    }
+  },
+  getLessonProgress: async (lessonId) => {
+    try {
+      const res = await fetch(`/api/course/getLessonProgress/${lessonId}`, {
+        credentials: 'include'
+      });
+      const data = await res.json();
+      
+      if (res.ok && data.success) {
+        return data.data;
+      } else {
+        console.error("Error fetching lesson progress:", data.message || "Unknown error");
+        return null;
+      }
+    } catch (error) {
+      console.error("Error in getLessonProgress:", error);
+      return null;
+    }
   }
 }));
 

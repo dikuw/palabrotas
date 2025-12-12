@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import Lesson from '../models/Lesson.js';
 import Content from '../models/Content.js';
 import AudioFile from '../models/AudioFile.js';
@@ -85,7 +86,10 @@ export const recordProgress = async (req, res) => {
     const { lessonId, contentId } = req.params;
     const { isCorrect } = req.body;
 
+    console.log('recordProgress called:', { lessonId, contentId, isCorrect, user: req.user?._id });
+
     if (!req.isAuthenticated() || !req.user) {
+      console.log('Authentication failed:', { isAuthenticated: req.isAuthenticated(), hasUser: !!req.user });
       return res.status(401).json({ 
         success: false, 
         error: 'User not authenticated' 
@@ -95,6 +99,7 @@ export const recordProgress = async (req, res) => {
     const userId = req.user._id;
 
     if (typeof isCorrect !== 'boolean') {
+      console.log('Invalid isCorrect type:', typeof isCorrect);
       return res.status(400).json({ 
         success: false, 
         error: 'isCorrect must be a boolean' 
@@ -102,16 +107,25 @@ export const recordProgress = async (req, res) => {
     }
 
     // Verify lesson and content exist
-    const lesson = await Lesson.findById(lessonId);
-    if (!lesson) {
+    // Use direct MongoDB query to bypass autopopulate middleware
+    const lessonDoc = await mongoose.connection.db.collection('lessons').findOne(
+      { _id: new mongoose.Types.ObjectId(lessonId) },
+      { projection: { vocabulary: 1 } }
+    );
+    
+    if (!lessonDoc) {
+      console.log('Lesson not found:', lessonId);
       return res.status(404).json({ 
         success: false, 
         error: 'Lesson not found' 
       });
     }
-
+    
+    const lesson = { vocabulary: lessonDoc.vocabulary };
+    
     const content = await Content.findById(contentId);
     if (!content) {
+      console.log('Content not found:', contentId);
       return res.status(404).json({ 
         success: false, 
         error: 'Content not found' 
@@ -119,12 +133,32 @@ export const recordProgress = async (req, res) => {
     }
 
     // Verify content belongs to lesson
-    if (!lesson.vocabulary.includes(contentId)) {
+    // lesson.vocabulary contains ObjectIds from direct MongoDB query
+    const vocabularyIds = (lesson.vocabulary || []).map(id => id.toString());
+    const contentIdStr = contentId.toString();
+    
+    console.log('Checking vocabulary:', { 
+      contentId: contentIdStr, 
+      vocabularyIds: vocabularyIds,
+      vocabularyCount: vocabularyIds.length,
+      lessonId 
+    });
+    
+    if (!vocabularyIds.includes(contentIdStr)) {
+      console.log('Content does not belong to lesson:', { 
+        contentId: contentIdStr, 
+        vocabularyIds: vocabularyIds,
+        lessonId 
+      });
       return res.status(400).json({ 
         success: false, 
         error: 'Content does not belong to this lesson' 
       });
     }
+    
+    console.log('Content validation passed:', { contentId: contentIdStr, lessonId });
+
+    console.log('Creating progress record:', { userId, lessonId, contentId, isCorrect });
 
     // Create progress record
     const progress = new LessonProgress({
@@ -135,9 +169,11 @@ export const recordProgress = async (req, res) => {
     });
 
     await progress.save();
+    console.log('Progress record saved:', progress._id);
 
     // Get updated progress stats
     const progressStats = await LessonProgress.getLessonProgress(userId, lessonId);
+    console.log('Progress stats:', progressStats);
 
     res.status(200).json({ 
       success: true, 
@@ -147,7 +183,7 @@ export const recordProgress = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error("Error in record progress:", error.message);
+    console.error("Error in record progress:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
