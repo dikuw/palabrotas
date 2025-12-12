@@ -210,6 +210,7 @@ i18n
           "Lesson" : "Lesson",
           "Select a lesson..." : "Select a lesson...",
           "Select a lesson to view its content" : "Select a lesson to view its content",
+          "Open chat for this lesson" : "Open chat for this lesson",
         }
       },
       es: {
@@ -419,6 +420,7 @@ i18n
           "Lesson" : "Lección",
           "Select a lesson..." : "Selecciona una lección...",
           "Select a lesson to view its content" : "Selecciona una lección para ver su contenido",
+          "Open chat for this lesson" : "Abrir chat para esta lección",
         }
       }
     },
