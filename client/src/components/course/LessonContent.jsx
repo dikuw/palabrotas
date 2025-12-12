@@ -98,10 +98,10 @@ const ProgressIndicator = styled.div`
   height: 60px;
   clip-path: polygon(0 0, 100% 0, 0 100%);
   background: ${props => {
-    const { consecutiveCorrect } = props;
+    const { $consecutiveCorrect } = props;
     // Calculate progress: 0 = red, 10+ = green
     const maxProgress = 10;
-    const progress = Math.min(consecutiveCorrect / maxProgress, 1);
+    const progress = Math.min($consecutiveCorrect / maxProgress, 1);
     
     // Interpolate from red to green
     const red = Math.round(255 * (1 - progress));
@@ -659,7 +659,7 @@ export default function LessonContent({ vocabulary, lesson }) {
       <CardWrapper>
         <Card onClick={(e) => handleCardClick(currentItem._id, e)}>
           {authStatus.user && lesson && (
-            <ProgressIndicator consecutiveCorrect={consecutiveCorrect} />
+            <ProgressIndicator $consecutiveCorrect={consecutiveCorrect} />
           )}
           {(isLoadingAudio || hasAudio) && (
             <AudioButtonContainer>
@@ -689,7 +689,6 @@ export default function LessonContent({ vocabulary, lesson }) {
                   disabled={isRecordingProgress}
                 >
                   <FaThumbsDown />
-                  {t("Didn't get it")}
                 </FeedbackButton>
                 <FeedbackButton
                   $variant="up"
@@ -700,7 +699,6 @@ export default function LessonContent({ vocabulary, lesson }) {
                   disabled={isRecordingProgress}
                 >
                   <FaThumbsUp />
-                  {t("Got it")}
                 </FeedbackButton>
               </FeedbackButtons>
             )}
