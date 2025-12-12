@@ -24,7 +24,7 @@ const CardWrapper = styled.div`
 const Card = styled.div`
   position: relative;
   width: 100%;
-  min-height: 200px;
+  height: 250px;
   padding: 2rem;
   background-color: white;
   border: 2px solid var(--secondary);
@@ -33,7 +33,6 @@ const Card = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 1.5rem;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 
@@ -46,22 +45,39 @@ const Card = styled.div`
 const CardContent = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 1rem;
+  height: 100%;
+  flex: 1;
+  min-height: 0;
 `;
 
 const EnglishText = styled.div`
-  font-size: 1.5rem;
+  font-size: clamp(1rem, 2vw, 1.5rem);
   font-weight: 600;
   color: var(--primary);
   text-align: center;
+  flex-shrink: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 `;
 
 const SpanishText = styled.div`
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 3vw, 2rem);
   font-weight: 700;
   color: var(--secondary);
   text-align: center;
   min-height: 2.5rem;
+  flex-shrink: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   opacity: ${props => props.$isVisible ? 1 : 0};
   transition: opacity 0.3s ease;
 `;
@@ -100,24 +116,27 @@ const ProgressIndicator = styled.div`
 const FeedbackButtons = styled.div`
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 1rem;
-  margin-top: 1rem;
+  flex-shrink: 0;
+  margin-top: auto;
 `;
 
 const FeedbackButton = styled.button`
-  padding: 0.75rem 1.5rem;
+  padding: clamp(0.5rem, 1.5vw, 0.75rem) clamp(1rem, 3vw, 1.5rem);
   border: 2px solid var(--secondary);
   border-radius: 20px;
   background-color: white;
   color: var(--primary);
   cursor: pointer;
-  font-size: 1.2rem;
+  font-size: clamp(0.9rem, 2vw, 1.2rem);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   transition: all 0.2s ease;
-  min-width: 120px;
+  min-width: clamp(100px, 20vw, 120px);
+  flex-shrink: 1;
 
   &:hover:not(:disabled) {
     background-color: var(--primary);
