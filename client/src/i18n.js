@@ -206,6 +206,10 @@ i18n
           "No speech detected": "No speech detected",
           "Microphone access denied": "Microphone access denied",
           "Speech recognition not supported": "Speech recognition not supported",
+          "Course" : "Course",
+          "Lesson" : "Lesson",
+          "Select a lesson..." : "Select a lesson...",
+          "Select a lesson to view its content" : "Select a lesson to view its content",
         }
       },
       es: {
@@ -411,6 +415,10 @@ i18n
           "No speech detected": "No se detectó voz",
           "Microphone access denied": "Acceso al micrófono denegado",
           "Speech recognition not supported": "Reconocimiento de voz no soportado",
+          "Course" : "Curso",
+          "Lesson" : "Lección",
+          "Select a lesson..." : "Selecciona una lección...",
+          "Select a lesson to view its content" : "Selecciona una lección para ver su contenido",
         }
       }
     },
