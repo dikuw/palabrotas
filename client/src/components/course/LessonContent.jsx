@@ -89,27 +89,69 @@ const AudioButtonContainer = styled.div`
   z-index: 10;
 `;
 
-const ProgressIndicator = styled.div`
+const ProgressIndicatorContainer = styled.div`
   position: absolute;
   top: 1rem;
   left: 1rem;
   z-index: 10;
-  width: 60px;
-  height: 60px;
-  clip-path: polygon(0 0, 100% 0, 0 100%);
-  background: ${props => {
-    const { $consecutiveCorrect } = props;
-    // Calculate progress: 0 = red, 10+ = green
-    const maxProgress = 10;
-    const progress = Math.min($consecutiveCorrect / maxProgress, 1);
-    
-    // Interpolate from red to green
-    const red = Math.round(255 * (1 - progress));
-    const green = Math.round(255 * progress);
-    return `rgb(${red}, ${green}, 0)`;
-  }};
-  border-radius: 4px;
+  width: 80px;
+  height: 46px; /* width * tan(30°) ≈ 80 * 0.577 ≈ 46 */
+  border: 2px solid #333;
+  clip-path: polygon(0 100%, 100% 100%, 100% 0%);
+  background: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+`;
+
+const TriangleSegment = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: ${props => {
+    // Each segment is 25% of the width, positioned from left
+    // Segment 1 (leftmost): 0-25% from left
+    // Segment 2: 25-50% from left
+    // Segment 3: 50-75% from left
+    // Segment 4 (rightmost): 75-100% from left
+    const leftPercent = (props.$segment - 1) * 25;
+    return `${leftPercent}%`;
+  }};
+  width: 25%;
+  height: 100%;
+  clip-path: ${props => {
+    // Right triangle with right angle at bottom-right (100%, 100%)
+    // Hypotenuse goes from bottom-left (0, 100%) to top-right (100%, 0%)
+    // At x position, the height from bottom is: y_from_bottom = (x / width) * height
+    // So at x=0, y_from_bottom=0 (we're at bottom-left, full height from bottom)
+    // At x=width, y_from_bottom=height (we're at top-right, 0 height from bottom)
+    
+    // For each segment (25% width slices from left):
+    // Segment 1: x from 0% to 25% → height from bottom: 100% to 75%
+    // Segment 2: x from 25% to 50% → height from bottom: 75% to 50%
+    // Segment 3: x from 50% to 75% → height from bottom: 50% to 25%
+    // Segment 4: x from 75% to 100% → height from bottom: 25% to 0%
+    
+    const segmentNum = props.$segment;
+    const leftXPercent = (segmentNum - 1) * 25; // Left edge of segment in container
+    const rightXPercent = segmentNum * 25; // Right edge of segment in container
+    
+    // Height from bottom at left edge: 100% - (leftXPercent / 100) * 100% = (100 - leftXPercent)%
+    // Height from bottom at right edge: 100% - (rightXPercent / 100) * 100% = (100 - rightXPercent)%
+    const heightFromBottomAtLeft = 100 - leftXPercent;
+    const heightFromBottomAtRight = 100 - rightXPercent;
+    
+    // Create trapezoid: top follows hypotenuse, bottom is horizontal
+    // Points: (left, top), (right, top), (right, bottom), (left, bottom)
+    // Top edge follows the hypotenuse
+    return `polygon(0% ${heightFromBottomAtLeft}%, 100% ${heightFromBottomAtRight}%, 100% 100%, 0% 100%)`;
+  }};
+  background: ${props => {
+    if (!props.$visible) {
+      return 'white';
+    }
+    const colors = ['#f44336', '#ff9800', '#ffeb3b', '#4caf50']; // red, orange, yellow, green
+    return colors[props.$segment - 1];
+  }};
+  border-right: ${props => props.$segment < 4 ? '1px solid #333' : 'none'};
   transition: background 0.3s ease;
 `;
 
@@ -279,6 +321,11 @@ const SpinnerContainer = styled.div`
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 5;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const ModalOverlay = styled.div`
@@ -372,6 +419,7 @@ export default function LessonContent({ vocabulary, lesson }) {
   const [isLoadingChats, setIsLoadingChats] = useState(false);
   const [consecutiveCorrect, setConsecutiveCorrect] = useState(0);
   const [isRecordingProgress, setIsRecordingProgress] = useState(false);
+  const [isLoadingProgress, setIsLoadingProgress] = useState(false);
 
   useEffect(() => {
     // Reset revealed state when vocabulary changes
@@ -382,9 +430,10 @@ export default function LessonContent({ vocabulary, lesson }) {
   }, [vocabulary]);
 
   useEffect(() => {
-    // Fetch progress when lesson changes
+    // Fetch progress when lesson changes or when navigating between cards
     const fetchProgress = async () => {
       if (lesson && lesson._id && authStatus.user) {
+        setIsLoadingProgress(true);
         try {
           const progress = await getLessonProgress(lesson._id);
           if (progress) {
@@ -392,12 +441,14 @@ export default function LessonContent({ vocabulary, lesson }) {
           }
         } catch (error) {
           console.error('Error fetching lesson progress:', error);
+        } finally {
+          setIsLoadingProgress(false);
         }
       }
     };
 
     fetchProgress();
-  }, [lesson, authStatus.user, getLessonProgress]);
+  }, [lesson, authStatus.user, getLessonProgress, currentIndex]);
 
   useEffect(() => {
     // Fetch audio files for all vocabulary items in parallel
@@ -659,7 +710,20 @@ export default function LessonContent({ vocabulary, lesson }) {
       <CardWrapper>
         <Card onClick={(e) => handleCardClick(currentItem._id, e)}>
           {authStatus.user && lesson && (
-            <ProgressIndicator $consecutiveCorrect={consecutiveCorrect} />
+            <ProgressIndicatorContainer>
+              {isLoadingProgress ? (
+                <SpinnerContainer>
+                  <Spinner />
+                </SpinnerContainer>
+              ) : (
+                <>
+                  <TriangleSegment $segment={1} $visible={consecutiveCorrect >= 0} />
+                  <TriangleSegment $segment={2} $visible={consecutiveCorrect >= 1} />
+                  <TriangleSegment $segment={3} $visible={consecutiveCorrect >= 2} />
+                  <TriangleSegment $segment={4} $visible={consecutiveCorrect >= 3} />
+                </>
+              )}
+            </ProgressIndicatorContainer>
           )}
           {(isLoadingAudio || hasAudio) && (
             <AudioButtonContainer>
