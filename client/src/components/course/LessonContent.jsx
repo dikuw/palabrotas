@@ -404,7 +404,7 @@ const ModalButton = styled.button`
 export default function LessonContent({ vocabulary, lesson }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { getContentAudioFiles, recordProgress, getLessonProgress } = useCourseStore();
+  const { getContentAudioFiles, recordProgress, getLessonProgress, getContentProgress } = useCourseStore();
   const { authStatus } = useAuthStore();
   const { createChat, getChatsByLesson, loadChat } = useChatStore();
   const addNotification = useNotificationStore(state => state.addNotification);
@@ -417,7 +417,7 @@ export default function LessonContent({ vocabulary, lesson }) {
   const [showChatModal, setShowChatModal] = useState(false);
   const [existingChats, setExistingChats] = useState([]);
   const [isLoadingChats, setIsLoadingChats] = useState(false);
-  const [consecutiveCorrect, setConsecutiveCorrect] = useState(0);
+  const [contentProgress, setContentProgress] = useState({}); // Map of contentId -> consecutiveCorrect
   const [isRecordingProgress, setIsRecordingProgress] = useState(false);
   const [isLoadingProgress, setIsLoadingProgress] = useState(false);
 
@@ -426,21 +426,29 @@ export default function LessonContent({ vocabulary, lesson }) {
     setRevealedItems({});
     setCurrentIndex(0);
     setCurrentAudioIndex({});
-    setConsecutiveCorrect(0);
+    setContentProgress({});
   }, [vocabulary]);
 
   useEffect(() => {
-    // Fetch progress when lesson changes or when navigating between cards
+    // Fetch progress for the current content item when lesson changes or when navigating between cards
     const fetchProgress = async () => {
-      if (lesson && lesson._id && authStatus.user) {
+      if (lesson && lesson._id && authStatus.user && vocabulary && vocabulary.length > 0) {
+        const currentItem = vocabulary[currentIndex];
+        if (!currentItem || !currentItem._id) {
+          return;
+        }
+
         setIsLoadingProgress(true);
         try {
-          const progress = await getLessonProgress(lesson._id);
+          const progress = await getContentProgress(lesson._id, currentItem._id);
           if (progress) {
-            setConsecutiveCorrect(progress.consecutiveCorrect || 0);
+            setContentProgress(prev => ({
+              ...prev,
+              [currentItem._id]: progress.consecutiveCorrect || 0
+            }));
           }
         } catch (error) {
-          console.error('Error fetching lesson progress:', error);
+          console.error('Error fetching content progress:', error);
         } finally {
           setIsLoadingProgress(false);
         }
@@ -448,7 +456,7 @@ export default function LessonContent({ vocabulary, lesson }) {
     };
 
     fetchProgress();
-  }, [lesson, authStatus.user, getLessonProgress, currentIndex]);
+  }, [lesson, authStatus.user, getContentProgress, currentIndex, vocabulary]);
 
   useEffect(() => {
     // Fetch audio files for all vocabulary items in parallel
@@ -678,10 +686,26 @@ export default function LessonContent({ vocabulary, lesson }) {
 
     setIsRecordingProgress(true);
     try {
-      const result = await recordProgress(lesson._id, currentItem._id, isCorrect);
-      console.log('handleProgressClick result:', result);
-      if (result && result.stats) {
-        setConsecutiveCorrect(result.stats.consecutiveCorrect || 0);
+      await recordProgress(lesson._id, currentItem._id, isCorrect);
+      
+      // Always fetch updated progress for this specific content item after recording
+      // Add a small delay to ensure database has committed the change
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      const updatedProgress = await getContentProgress(lesson._id, currentItem._id);
+      console.log('Updated progress for content:', { 
+        contentId: currentItem._id, 
+        progress: updatedProgress,
+        consecutiveCorrect: updatedProgress?.consecutiveCorrect 
+      });
+      
+      if (updatedProgress !== null && updatedProgress !== undefined) {
+        setContentProgress(prev => ({
+          ...prev,
+          [currentItem._id]: updatedProgress.consecutiveCorrect || 0
+        }));
+      } else {
+        console.warn('No progress returned for content:', currentItem._id);
       }
     } catch (error) {
       console.error('Error recording progress:', error);
@@ -704,6 +728,7 @@ export default function LessonContent({ vocabulary, lesson }) {
   const files = audioFiles[currentItem._id] || [];
   const currentAudioIdx = currentAudioIndex[currentItem._id] || 0;
   const hasAudio = files.length > 0;
+  const consecutiveCorrect = contentProgress[currentItem._id] || 0;
 
   return (
     <CardsContainer>

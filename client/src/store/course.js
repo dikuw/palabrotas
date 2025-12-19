@@ -117,6 +117,24 @@ export const useCourseStore = create((set, get) => ({
       console.error("Error in getLessonProgress:", error);
       return null;
     }
+  },
+  getContentProgress: async (lessonId, contentId) => {
+    try {
+      const res = await fetch(`/api/course/getContentProgress/${lessonId}/${contentId}`, {
+        credentials: 'include'
+      });
+      const data = await res.json();
+      
+      if (res.ok && data.success) {
+        return data.data;
+      } else {
+        console.error("Error fetching content progress:", data.message || "Unknown error");
+        return null;
+      }
+    } catch (error) {
+      console.error("Error in getContentProgress:", error);
+      return null;
+    }
   }
 }));
 

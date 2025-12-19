@@ -224,3 +224,95 @@ export const getLessonProgress = async (req, res) => {
   }
 };
 
+// Get progress stats for a specific content item
+export const getContentProgress = async (req, res) => {
+  try {
+    const { lessonId, contentId } = req.params;
+
+    if (!req.isAuthenticated() || !req.user) {
+      return res.status(401).json({ 
+        success: false, 
+        error: 'User not authenticated' 
+      });
+    }
+
+    const userId = req.user._id;
+
+    // Verify lesson exists - use direct MongoDB query to bypass autopopulate middleware
+    const lessonDoc = await mongoose.connection.db.collection('lessons').findOne(
+      { _id: new mongoose.Types.ObjectId(lessonId) },
+      { projection: { vocabulary: 1 } }
+    );
+    
+    if (!lessonDoc) {
+      console.log('Lesson not found:', lessonId);
+      return res.status(404).json({ 
+        success: false, 
+        error: 'Lesson not found' 
+      });
+    }
+    
+    const lesson = { vocabulary: lessonDoc.vocabulary };
+
+    // Verify content exists
+    const content = await Content.findById(contentId);
+    if (!content) {
+      console.log('Content not found:', contentId);
+      return res.status(404).json({ 
+        success: false, 
+        error: 'Content not found' 
+      });
+    }
+
+    // Verify content belongs to lesson (log warning but don't block for read operations)
+    // lesson.vocabulary contains ObjectIds from direct MongoDB query
+    // Convert ObjectIds to strings for comparison
+    const vocabularyIds = (lesson.vocabulary || []).map(id => {
+      // Handle both ObjectId objects and strings
+      if (id && typeof id.toString === 'function') {
+        return id.toString();
+      }
+      return String(id);
+    });
+    const contentIdStr = contentId.toString();
+    
+    console.log('getContentProgress - Checking vocabulary:', {
+      contentId: contentIdStr,
+      vocabularyIds: vocabularyIds,
+      vocabularyCount: vocabularyIds.length,
+      lessonId,
+      vocabularyRaw: lesson.vocabulary?.map(id => id?.toString?.() || String(id))
+    });
+    
+    if (!vocabularyIds.includes(contentIdStr)) {
+      console.warn('getContentProgress - Content may not belong to lesson (proceeding anyway):', {
+        contentId: contentIdStr,
+        vocabularyIds: vocabularyIds,
+        lessonId
+      });
+      // Don't block read operations - just log a warning
+      // The progress query will return empty results if content doesn't belong to lesson anyway
+    } else {
+      console.log('getContentProgress - Content validation passed:', { contentId: contentIdStr, lessonId });
+    }
+
+    // Get progress stats for this content
+    const progressStats = await LessonProgress.getContentProgress(userId, lessonId, contentId);
+    
+    console.log('getContentProgress response:', {
+      userId: userId?.toString(),
+      lessonId,
+      contentId,
+      progressStats
+    });
+
+    res.status(200).json({ 
+      success: true, 
+      data: progressStats
+    });
+  } catch (error) {
+    console.error("Error in get content progress:", error.message);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
