@@ -51,6 +51,10 @@ const CardContent = styled.div`
   height: 100%;
   flex: 1;
   min-height: 0;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  box-sizing: border-box;
 `;
 
 const EnglishText = styled.div`
@@ -58,26 +62,38 @@ const EnglishText = styled.div`
   font-weight: 600;
   color: var(--primary);
   text-align: center;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   flex-shrink: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
 `;
 
 const SpanishText = styled.div`
-  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-size: clamp(1.25rem, 3vw, 2rem);
   font-weight: 700;
   color: var(--secondary);
   text-align: center;
   min-height: 2.5rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   flex-shrink: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
   opacity: ${props => props.$isVisible ? 1 : 0};
   transition: opacity 0.3s ease;
 `;
