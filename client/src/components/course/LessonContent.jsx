@@ -56,8 +56,8 @@ const CardContent = styled.div`
   box-sizing: border-box;
   /* Align first row with ProgressIndicatorContainer and AudioButtonContainer (top: 1rem) */
   padding-top: 1rem;
-  padding-left: 5rem;
-  padding-right: 3.5rem;
+  padding-left: 2.5rem;
+  padding-right: 2.5rem;
   padding-bottom: 0.5rem;
 `;
 
