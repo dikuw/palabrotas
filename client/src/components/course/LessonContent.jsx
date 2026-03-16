@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { useTranslation } from "react-i18next";
 import { useNavigate } from 'react-router-dom';
@@ -45,56 +45,72 @@ const Card = styled.div`
 const CardContent = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
   height: 100%;
   flex: 1;
   min-height: 0;
   width: 100%;
   min-width: 0;
-  overflow: hidden;
+  overflow: visible;
   box-sizing: border-box;
+  /* Align first row with ProgressIndicatorContainer and AudioButtonContainer (top: 1rem) */
+  padding-top: 1rem;
+  padding-left: 5rem;
+  padding-right: 3.5rem;
+  padding-bottom: 0.5rem;
+`;
+
+/* English row: same height as the overlay row (progress + audio) so they align */
+const EnglishSlot = styled.div`
+  flex: 0 0 auto;
+  height: 52px;
+  min-height: 52px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+`;
+
+/* Spanish + placeholder: takes remaining space and is centered vertically */
+const SpanishSlot = styled.div`
+  flex: 1 1 auto;
+  min-height: 2.5rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  opacity: ${props => props.$visible ? 1 : 0.7};
+  transition: opacity 0.3s ease;
 `;
 
 const EnglishText = styled.div`
-  font-size: clamp(1rem, 2vw, 1.5rem);
+  font-size: inherit;
   font-weight: 600;
   color: var(--primary);
   text-align: center;
   width: 100%;
   max-width: 100%;
   min-width: 0;
-  flex-shrink: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
   word-wrap: break-word;
   overflow-wrap: break-word;
   word-break: break-word;
 `;
 
 const SpanishText = styled.div`
-  font-size: clamp(1.25rem, 3vw, 2rem);
+  font-size: inherit;
   font-weight: 700;
   color: var(--secondary);
   text-align: center;
-  min-height: 2.5rem;
   width: 100%;
   max-width: 100%;
   min-width: 0;
-  flex-shrink: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
   word-wrap: break-word;
   overflow-wrap: break-word;
   word-break: break-word;
-  opacity: ${props => props.$isVisible ? 1 : 0};
+  opacity: ${props => props.$isVisible ? 1 : 0.7};
   transition: opacity 0.3s ease;
 `;
 
@@ -416,6 +432,57 @@ const ModalButton = styled.button`
     }
   `}
 `;
+
+/**
+ * Scales font size down so that children fit within the container height.
+ * Container must have a defined height.
+ */
+function FitText({ children, initialFontSize = 18, minFontSize = 11 }) {
+  const containerRef = useRef(null);
+  const innerRef = useRef(null);
+  const [fontSize, setFontSize] = useState(initialFontSize);
+
+  useLayoutEffect(() => {
+    const container = containerRef.current;
+    const inner = innerRef.current;
+    if (!container || !inner) return;
+
+    let size = initialFontSize;
+    inner.style.fontSize = `${size}px`;
+
+    while (size > minFontSize && inner.scrollHeight > container.clientHeight) {
+      size = Math.max(minFontSize, size - 2);
+      inner.style.fontSize = `${size}px`;
+    }
+    setFontSize(size);
+  }, [children, initialFontSize, minFontSize]);
+
+  return (
+    <div
+      ref={containerRef}
+      style={{
+        height: '100%',
+        width: '100%',
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <div
+        ref={innerRef}
+        style={{
+          fontSize: `${fontSize}px`,
+          textAlign: 'center',
+          width: '100%',
+          maxWidth: '100%',
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
 
 export default function LessonContent({ vocabulary, lesson }) {
   const { t } = useTranslation();
@@ -779,10 +846,18 @@ export default function LessonContent({ vocabulary, lesson }) {
             </AudioButtonContainer>
           )}
           <CardContent>
-            <EnglishText>{currentItem.description}</EnglishText>
-            <SpanishText $isVisible={isRevealed}>
-              {isRevealed ? currentItem.title : '••••••'}
-            </SpanishText>
+            <EnglishSlot>
+              <FitText initialFontSize={20} minFontSize={12}>
+                <EnglishText>{currentItem.description}</EnglishText>
+              </FitText>
+            </EnglishSlot>
+            <SpanishSlot $visible={isRevealed}>
+              <FitText initialFontSize={22} minFontSize={12}>
+                <SpanishText $isVisible={isRevealed}>
+                  {isRevealed ? currentItem.title : '••••••'}
+                </SpanishText>
+              </FitText>
+            </SpanishSlot>
             {isRevealed && authStatus.user && lesson && (
               <FeedbackButtons>
                 <FeedbackButton
