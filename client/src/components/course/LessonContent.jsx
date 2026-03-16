@@ -61,11 +61,10 @@ const CardContent = styled.div`
   padding-bottom: 0.5rem;
 `;
 
-/* English row: same height as the overlay row (progress + audio) so they align */
-const EnglishSlot = styled.div`
-  flex: 0 0 auto;
-  height: 52px;
-  min-height: 52px;
+/* English-only view: centered in the card when showing front of flashcard */
+const EnglishOnlySlot = styled.div`
+  flex: 1 1 auto;
+  min-height: 0;
   width: 100%;
   display: flex;
   align-items: center;
@@ -73,7 +72,7 @@ const EnglishSlot = styled.div`
   overflow: hidden;
 `;
 
-/* Spanish + placeholder: takes remaining space and is centered vertically */
+/* Spanish view: takes remaining space and is centered when showing back of flashcard */
 const SpanishSlot = styled.div`
   flex: 1 1 auto;
   min-height: 2.5rem;
@@ -82,8 +81,6 @@ const SpanishSlot = styled.div`
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  opacity: ${props => props.$visible ? 1 : 0.7};
-  transition: opacity 0.3s ease;
 `;
 
 const EnglishText = styled.div`
@@ -110,8 +107,6 @@ const SpanishText = styled.div`
   word-wrap: break-word;
   overflow-wrap: break-word;
   word-break: break-word;
-  opacity: ${props => props.$isVisible ? 1 : 0.7};
-  transition: opacity 0.3s ease;
 `;
 
 const AudioButtonContainer = styled.div`
@@ -577,20 +572,15 @@ export default function LessonContent({ vocabulary, lesson }) {
   }, [vocabulary, getContentAudioFiles]);
 
   const handleCardClick = (itemId, e) => {
-    // Don't reveal if clicking on audio button
+    // Don't flip if clicking on a button
     if (e.target.closest('button')) {
       return;
     }
-    // Only reveal if not already revealed (one-way reveal, no toggle)
-    setRevealedItems(prev => {
-      if (prev[itemId]) {
-        return prev; // Already revealed, don't change
-      }
-      return {
-        ...prev,
-        [itemId]: true
-      };
-    });
+    // Toggle between English (front) and Spanish (back) like a flashcard
+    setRevealedItems(prev => ({
+      ...prev,
+      [itemId]: !prev[itemId]
+    }));
   };
 
   const handleAudioClick = (itemId, e) => {
@@ -833,7 +823,7 @@ export default function LessonContent({ vocabulary, lesson }) {
               )}
             </ProgressIndicatorContainer>
           )}
-          {(isLoadingAudio || hasAudio) && (
+          {isRevealed && (isLoadingAudio || hasAudio) && (
             <AudioButtonContainer>
               <AudioButton 
                 onClick={(e) => handleAudioClick(currentItem._id, e)}
@@ -846,41 +836,44 @@ export default function LessonContent({ vocabulary, lesson }) {
             </AudioButtonContainer>
           )}
           <CardContent>
-            <EnglishSlot>
-              <FitText initialFontSize={20} minFontSize={12}>
-                <EnglishText>{currentItem.description}</EnglishText>
-              </FitText>
-            </EnglishSlot>
-            <SpanishSlot $visible={isRevealed}>
-              <FitText initialFontSize={22} minFontSize={12}>
-                <SpanishText $isVisible={isRevealed}>
-                  {isRevealed ? currentItem.title : '••••••'}
-                </SpanishText>
-              </FitText>
-            </SpanishSlot>
-            {isRevealed && authStatus.user && lesson && (
-              <FeedbackButtons>
-                <FeedbackButton
-                  $variant="down"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleProgressClick(false);
-                  }}
-                  disabled={isRecordingProgress}
-                >
-                  <FaThumbsDown />
-                </FeedbackButton>
-                <FeedbackButton
-                  $variant="up"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleProgressClick(true);
-                  }}
-                  disabled={isRecordingProgress}
-                >
-                  <FaThumbsUp />
-                </FeedbackButton>
-              </FeedbackButtons>
+            {!isRevealed ? (
+              <EnglishOnlySlot>
+                <FitText initialFontSize={20} minFontSize={12}>
+                  <EnglishText>{currentItem.description}</EnglishText>
+                </FitText>
+              </EnglishOnlySlot>
+            ) : (
+              <>
+                <SpanishSlot>
+                  <FitText initialFontSize={22} minFontSize={12}>
+                    <SpanishText>{currentItem.title}</SpanishText>
+                  </FitText>
+                </SpanishSlot>
+                {authStatus.user && lesson && (
+                  <FeedbackButtons>
+                    <FeedbackButton
+                      $variant="down"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleProgressClick(false);
+                      }}
+                      disabled={isRecordingProgress}
+                    >
+                      <FaThumbsDown />
+                    </FeedbackButton>
+                    <FeedbackButton
+                      $variant="up"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleProgressClick(true);
+                      }}
+                      disabled={isRecordingProgress}
+                    >
+                      <FaThumbsUp />
+                    </FeedbackButton>
+                  </FeedbackButtons>
+                )}
+              </>
             )}
           </CardContent>
         </Card>
