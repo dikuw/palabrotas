@@ -807,6 +807,7 @@ export default function LessonContent({ vocabulary, lesson }) {
     <CardsContainer>
       <CardWrapper>
         <Card onClick={(e) => handleCardClick(currentItem._id, e)}>
+          {/* START FUTURE SCOPE 
           {authStatus.user && lesson && (
             <ProgressIndicatorContainer>
               {isLoadingProgress ? (
@@ -823,6 +824,7 @@ export default function LessonContent({ vocabulary, lesson }) {
               )}
             </ProgressIndicatorContainer>
           )}
+          {/* END FUTURE SCOPE */}
           {isRevealed && (isLoadingAudio || hasAudio) && (
             <AudioButtonContainer>
               <AudioButton 
@@ -849,6 +851,7 @@ export default function LessonContent({ vocabulary, lesson }) {
                     <SpanishText>{currentItem.title}</SpanishText>
                   </FitText>
                 </SpanishSlot>
+                {/* START FUTURE SCOPE 
                 {authStatus.user && lesson && (
                   <FeedbackButtons>
                     <FeedbackButton
@@ -873,6 +876,7 @@ export default function LessonContent({ vocabulary, lesson }) {
                     </FeedbackButton>
                   </FeedbackButtons>
                 )}
+                {/* END FUTURE SCOPE */}
               </>
             )}
           </CardContent>
@@ -888,6 +892,7 @@ export default function LessonContent({ vocabulary, lesson }) {
         <NavButton onClick={goToNext} disabled={currentIndex === vocabulary.length - 1 || isLoadingAudio}>
           <FaChevronRight />
         </NavButton>
+        {/* START FUTURE SCOPE 
         {lesson && (
           <NavButton 
             onClick={handleChatClick} 
@@ -897,6 +902,7 @@ export default function LessonContent({ vocabulary, lesson }) {
             <FaComments />
           </NavButton>
         )}
+        {/* END FUTURE SCOPE */}
       </NavigationContainer>
       
       {showChatModal && (
