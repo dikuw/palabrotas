@@ -98,7 +98,7 @@ const EnglishText = styled.div`
 
 const SpanishText = styled.div`
   font-size: inherit;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--secondary);
   text-align: center;
   width: 100%;
