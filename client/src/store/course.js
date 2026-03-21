@@ -135,6 +135,49 @@ export const useCourseStore = create((set, get) => ({
       console.error("Error in getContentProgress:", error);
       return null;
     }
-  }
+  },
+  /**
+   * Add a single lesson vocabulary item (by content id) to the logged-in user's flashcards.
+   * Use the current card's content `_id` and the lesson `_id` — not the whole lesson list.
+   */
+  addLessonContentFlashcard: async (lessonId, contentId) => {
+    try {
+      const res = await fetch(`/api/course/addFlashcard/${lessonId}/${contentId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+      const data = await res.json();
+
+      if (res.status === 201 && data.success) {
+        return {
+          success: true,
+          message: data.message,
+          flashcard: data.flashcard,
+        };
+      }
+
+      if (res.status === 409) {
+        return {
+          success: false,
+          alreadyExists: true,
+          message: data.message,
+          flashcard: data.flashcard,
+        };
+      }
+
+      const errMsg = data.error || data.message || 'Failed to add flashcard';
+      console.error('Error adding lesson content flashcard:', errMsg);
+      return { success: false, message: errMsg };
+    } catch (error) {
+      console.error('Error in addLessonContentFlashcard:', error);
+      return {
+        success: false,
+        message: 'An error occurred while adding the flashcard.',
+      };
+    }
+  },
 }));
 

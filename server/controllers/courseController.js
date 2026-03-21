@@ -3,6 +3,7 @@ import Lesson from '../models/Lesson.js';
 import Content from '../models/Content.js';
 import AudioFile from '../models/AudioFile.js';
 import LessonProgress from '../models/LessonProgress.js';
+import Flashcard from '../models/Flashcard.js';
 
 export const getLessons = async (req, res) => {
   try {
@@ -316,3 +317,93 @@ export const getContentProgress = async (req, res) => {
   }
 };
 
+/**
+ * Add a lesson vocabulary item (Content) to the current user's flashcards.
+ * Validates that the content belongs to the lesson's vocabulary.
+ */
+export const addCourseContentFlashcard = async (req, res) => {
+  try {
+    if (!req.isAuthenticated() || !req.user) {
+      return res.status(401).json({
+        success: false,
+        error: 'User not authenticated',
+      });
+    }
+
+    const { lessonId, contentId } = req.params;
+    const userId = req.user._id;
+
+    if (!mongoose.isValidObjectId(lessonId) || !mongoose.isValidObjectId(contentId)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid lesson or content id',
+      });
+    }
+
+    const lessonDoc = await mongoose.connection.db.collection('lessons').findOne(
+      { _id: new mongoose.Types.ObjectId(lessonId) },
+      { projection: { vocabulary: 1 } }
+    );
+
+    if (!lessonDoc) {
+      return res.status(404).json({
+        success: false,
+        error: 'Lesson not found',
+      });
+    }
+
+    const content = await Content.findById(contentId);
+    if (!content) {
+      return res.status(404).json({
+        success: false,
+        error: 'Content not found',
+      });
+    }
+
+    const vocabularyIds = (lessonDoc.vocabulary || []).map((id) => id.toString());
+    if (!vocabularyIds.includes(contentId.toString())) {
+      return res.status(400).json({
+        success: false,
+        error: 'Content does not belong to this lesson',
+      });
+    }
+
+    const existingFlashcard = await Flashcard.findOne({ user: userId, content: contentId }).populate(
+      'content'
+    );
+    if (existingFlashcard) {
+      return res.status(409).json({
+        success: false,
+        message: 'This flashcard already exists in your collection.',
+        flashcard: existingFlashcard,
+      });
+    }
+
+    const flashcard = new Flashcard({
+      user: userId,
+      content: contentId,
+    });
+    await flashcard.save();
+    await flashcard.populate('content');
+
+    res.status(201).json({
+      success: true,
+      message: 'Flashcard added successfully',
+      flashcard,
+    });
+  } catch (error) {
+    if (error.code === 11000) {
+      const existing = await Flashcard.findOne({
+        user: req.user?._id,
+        content: req.params.contentId,
+      }).populate('content');
+      return res.status(409).json({
+        success: false,
+        message: 'This flashcard already exists in your collection.',
+        flashcard: existing,
+      });
+    }
+    console.error('Error in addCourseContentFlashcard:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

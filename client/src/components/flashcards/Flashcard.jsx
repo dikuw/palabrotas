@@ -229,6 +229,12 @@ export default function Flashcard({ item, onNext, isLoading }) {
     }
   };
 
+  /* Course/lesson vocabulary: English prompt is stored in description, Spanish in title (see LessonContent). */
+  const content = currentItem.content;
+  const isCourseContent = content?.isCourseContent === true;
+  const frontMainText = isCourseContent ? content.description : content.title;
+  const backMainText = isCourseContent ? content.title : content.description;
+
   return (
     <OuterContainer>
       <FormWrapper>
@@ -243,7 +249,7 @@ export default function Flashcard({ item, onNext, isLoading }) {
               {currentItem.content.country && !isFlipped && (
                 <StyledFlagIcon countryCode={currentItem.content.country} svg />
               )}
-              <Title>{currentItem.content.title}</Title>
+              <Title>{frontMainText}</Title>
               {showHint && (
                 <Hint>
                   {renderHint()}
@@ -257,7 +263,7 @@ export default function Flashcard({ item, onNext, isLoading }) {
             </FlashcardFront>
             <FlashcardBack>
               <ContentContainer>
-                <p>{currentItem.content.description}</p>
+                <p>{backMainText}</p>
                 <p>{currentItem.content.exampleSentence}</p>
               </ContentContainer>
               <QualityButtonsContainer>

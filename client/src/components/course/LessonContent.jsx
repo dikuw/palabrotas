@@ -2,7 +2,7 @@ import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { useTranslation } from "react-i18next";
 import { useNavigate } from 'react-router-dom';
-import { FaVolumeUp, FaChevronLeft, FaChevronRight, FaComments, FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
+import { FaVolumeUp, FaChevronLeft, FaChevronRight, FaComments, FaThumbsUp, FaThumbsDown, FaPlus } from 'react-icons/fa';
 import { useCourseStore } from '../../store/course';
 import { useChatStore } from '../../store/chat';
 import { useAuthStore } from '../../store/auth';
@@ -114,6 +114,20 @@ const AudioButtonContainer = styled.div`
   top: 1rem;
   right: 1rem;
   z-index: 10;
+`;
+
+/* Match main Card.jsx StyledAddToFlashcardIcon */
+const StyledAddToFlashcardIcon = styled(FaPlus)`
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  color: var(--primary);
+  z-index: 10;
+  &:hover {
+    color: var(--secondary);
+  }
 `;
 
 const ProgressIndicatorContainer = styled.div`
@@ -482,7 +496,13 @@ function FitText({ children, initialFontSize = 18, minFontSize = 11 }) {
 export default function LessonContent({ vocabulary, lesson }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { getContentAudioFiles, recordProgress, getLessonProgress, getContentProgress } = useCourseStore();
+  const {
+    getContentAudioFiles,
+    recordProgress,
+    getLessonProgress,
+    getContentProgress,
+    addLessonContentFlashcard,
+  } = useCourseStore();
   const { authStatus } = useAuthStore();
   const { createChat, getChatsByLesson, loadChat } = useChatStore();
   const addNotification = useNotificationStore(state => state.addNotification);
@@ -572,8 +592,8 @@ export default function LessonContent({ vocabulary, lesson }) {
   }, [vocabulary, getContentAudioFiles]);
 
   const handleCardClick = (itemId, e) => {
-    // Don't flip if clicking on a button
-    if (e.target.closest('button')) {
+    // Don't flip if clicking on a button or the add-to-flashcards control
+    if (e.target.closest('button') || e.target.closest('[data-lesson-flashcard-add]')) {
       return;
     }
     // Toggle between English (front) and Spanish (back) like a flashcard
@@ -803,6 +823,24 @@ export default function LessonContent({ vocabulary, lesson }) {
   const hasAudio = files.length > 0;
   const consecutiveCorrect = contentProgress[currentItem._id] || 0;
 
+  const handleAddCurrentToFlashcards = async (e) => {
+    e.stopPropagation();
+    if (!authStatus.isLoggedIn || !authStatus.user?._id) {
+      addNotification(t('Please log in to add flashcards'), 'info');
+      return;
+    }
+    if (!lesson?._id || !currentItem?._id) return;
+
+    const result = await addLessonContentFlashcard(lesson._id, currentItem._id);
+    if (result.success) {
+      addNotification(result.message || t('Added to flashcards successfully!'), 'success');
+    } else if (result.alreadyExists) {
+      addNotification(result.message || t('This flashcard already exists in your collection.'), 'info');
+    } else {
+      addNotification(result.message || t('Failed to add to flashcards. Please try again.'), 'error');
+    }
+  };
+
   return (
     <CardsContainer>
       <CardWrapper>
@@ -836,6 +874,13 @@ export default function LessonContent({ vocabulary, lesson }) {
                 </AudioIcon>
               </AudioButton>
             </AudioButtonContainer>
+          )}
+          {authStatus.isLoggedIn && lesson && isRevealed && (
+            <StyledAddToFlashcardIcon
+              data-lesson-flashcard-add
+              onClick={handleAddCurrentToFlashcards}
+              title={t('Add to Flashcards')}
+            />
           )}
           <CardContent>
             {!isRevealed ? (
