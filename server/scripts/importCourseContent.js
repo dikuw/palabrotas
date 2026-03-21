@@ -150,7 +150,7 @@ const importCourseContent = async () => {
             description: vocab.description,
             hint: vocab.hint || '',
             exampleSentence: vocab.exampleSentence || '',
-            country: vocab.country || 'CO',
+            country: vocab.country || 'all',
             isCourseContent: true,
             owner: ownerId,
             author: author,

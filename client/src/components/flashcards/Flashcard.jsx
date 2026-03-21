@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaQuestionCircle } from 'react-icons/fa';
+import { FaQuestionCircle, FaGlobe } from 'react-icons/fa';
 import ReactCountryFlag from "react-country-flag";
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +11,7 @@ import { useNotificationStore } from '../../store/notification';
 import FormattedHint from './FlashcardHint';
 import Tooltip from '../shared/Tooltip';
 import Spinner from '../shared/Spinner';
+import { isAllCountriesCode } from '../shared/countries';
 
 const OuterContainer = styled.div`
   padding: 20px;
@@ -167,6 +168,15 @@ const StyledFlagIcon = styled(ReactCountryFlag)`
   z-index: 6;
 `;
 
+const StyledGlobeIcon = styled(FaGlobe)`
+  position: absolute;
+  top: 10px;
+  left: 15px;
+  font-size: 1.25rem;
+  z-index: 6;
+  color: var(--primary);
+`;
+
 export default function Flashcard({ item, onNext, isLoading }) {
   const { t } = useTranslation();
   const { updateStreak } = useUserStore();
@@ -247,7 +257,11 @@ export default function Flashcard({ item, onNext, isLoading }) {
           <FlashcardInner $isFlipped={isFlipped} $isLoading={isLoading}>
             <FlashcardFront>
               {currentItem.content.country && !isFlipped && (
-                <StyledFlagIcon countryCode={currentItem.content.country} svg />
+                isAllCountriesCode(currentItem.content.country) ? (
+                  <StyledGlobeIcon title={t('All regions')} aria-label={t('All regions')} />
+                ) : (
+                  <StyledFlagIcon countryCode={currentItem.content.country} svg />
+                )
               )}
               <Title>{frontMainText}</Title>
               {showHint && (

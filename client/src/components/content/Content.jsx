@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { FaChevronDown, FaChevronUp, FaGlobe } from 'react-icons/fa';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
@@ -63,6 +63,12 @@ const ContentHeader = styled.div`
 const Title = styled.h1`
   font-size: 2rem;
   color: var(--primary);
+`;
+
+const HeaderGlobeIcon = styled(FaGlobe)`
+  font-size: 1.5rem;
+  color: var(--primary);
+  flex-shrink: 0;
 `;
 
 const Description = styled.p`
@@ -189,13 +195,20 @@ const Content = () => {
     return <div>{t('Loading...')}</div>;
   }
 
+  const regionLabel = t('All regions');
+
   return (
     <OuterContainer>
       <FormWrapper>
         <ContentContainer>
           <ContentHeader>
             <Title>{content.title}</Title>
-            {content.country && <ReactCountryFlag countryCode={content.country} svg />}
+            {content.country &&
+              (isAllCountriesCode(content.country) ? (
+                <HeaderGlobeIcon title={regionLabel} aria-label={regionLabel} />
+              ) : (
+                <ReactCountryFlag countryCode={content.country} svg />
+              ))}
           </ContentHeader>
           <Description>{content.description}</Description>
           {content.exampleSentence && (

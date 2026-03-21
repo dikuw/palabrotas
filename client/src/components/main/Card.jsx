@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaEdit, FaPlus, FaChevronUp, FaChevronDown  } from 'react-icons/fa';
+import { FaEdit, FaPlus, FaChevronUp, FaChevronDown, FaGlobe } from 'react-icons/fa';
 import ReactCountryFlag from "react-country-flag";
 import { useTranslation } from "react-i18next";
 import styled from 'styled-components';
@@ -10,10 +10,10 @@ import { useContentStore } from '../../store/content';
 import { useFlashcardStore } from '../../store/flashcard';
 import { useVoteStore } from '../../store/vote';
 import { useNotificationStore } from '../../store/notification';
-import { countries } from '../shared/countries';
+import { countries, isAllCountriesCode } from '../shared/countries';
 
 function getCountryNameByCode(code) {
-  if (!code) return '';
+  if (!code || isAllCountriesCode(code)) return '';
   const upper = String(code).toUpperCase();
   const found = countries.find((c) => c.code === upper);
   return found?.name ?? upper;
@@ -66,6 +66,11 @@ const FlagIconWrapper = styled.span`
 
 const StyledFlagIcon = styled(ReactCountryFlag)`
   font-size: 1rem !important;
+`;
+
+const StyledGlobeIcon = styled(FaGlobe)`
+  font-size: 1rem;
+  color: var(--primary);
 `;
 
 const StyledEditIcon = styled(FaEdit)`
@@ -170,15 +175,21 @@ export default function Card({ item, showEditIcon }) {
     }
   };
 
-  const countryName = item.country ? getCountryNameByCode(item.country) : '';
+  const countryLabel =
+    item.country &&
+    (isAllCountriesCode(item.country) ? t('All regions') : getCountryNameByCode(item.country));
 
   return (
     <CardContainer onClick={handleClick}>
       <BackgroundCard />
       <StyledGridFigure>
         {item.country && (
-          <FlagIconWrapper title={countryName} aria-label={countryName}>
-            <StyledFlagIcon countryCode={item.country} svg />
+          <FlagIconWrapper title={countryLabel || undefined} aria-label={countryLabel || undefined}>
+            {isAllCountriesCode(item.country) ? (
+              <StyledGlobeIcon aria-hidden />
+            ) : (
+              <StyledFlagIcon countryCode={item.country} svg />
+            )}
           </FlagIconWrapper>
         )}
         {showEditIcon && (

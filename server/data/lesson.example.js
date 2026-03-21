@@ -13,21 +13,21 @@ export const lesson = {
       description: "Hello",
       hint: "Common greeting",
       exampleSentence: "Hola, ¿cómo estás?",
-      country: "ES" // Optional, defaults to 'CO' if not provided
+      country: "all" // Optional; omit or use "all" for general Spanish (globe in UI)
     },
     {
       title: "Buenos días",
       description: "Good morning",
       hint: "Used until noon",
       exampleSentence: "Buenos días, señor.",
-      country: "ES"
+      country: "all"
     },
     {
       title: "Adiós",
       description: "Goodbye",
       hint: "Formal farewell",
       exampleSentence: "Adiós, hasta luego.",
-      country: "ES"
+      country: "all"
     }
   ]
 };

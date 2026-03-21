@@ -1,3 +1,11 @@
+/** Course / lesson vocabulary uses this instead of a single country code. */
+export const ALL_COUNTRIES_CODE = 'all';
+
+export function isAllCountriesCode(code) {
+  if (code === undefined || code === null) return false;
+  return String(code).trim().toLowerCase() === ALL_COUNTRIES_CODE;
+}
+
 export const countries = [
   { name: "Argentina", code: "AR" },
   { name: "Bolivia", code: "BO" },
