@@ -10,6 +10,14 @@ import { useContentStore } from '../../store/content';
 import { useFlashcardStore } from '../../store/flashcard';
 import { useVoteStore } from '../../store/vote';
 import { useNotificationStore } from '../../store/notification';
+import { countries } from '../shared/countries';
+
+function getCountryNameByCode(code) {
+  if (!code) return '';
+  const upper = String(code).toUpperCase();
+  const found = countries.find((c) => c.code === upper);
+  return found?.name ?? upper;
+}
 
 const CardContainer = styled.div`
   position: relative;
@@ -48,10 +56,15 @@ const StyledGridFigure = styled.figure`
   }
 `;
 
-const StyledFlagIcon = styled(ReactCountryFlag)`
+const FlagIconWrapper = styled.span`
   position: absolute;
   top: 10px;
   left: 10px;
+  line-height: 0;
+  cursor: default;
+`;
+
+const StyledFlagIcon = styled(ReactCountryFlag)`
   font-size: 1rem !important;
 `;
 
@@ -157,12 +170,16 @@ export default function Card({ item, showEditIcon }) {
     }
   };
 
+  const countryName = item.country ? getCountryNameByCode(item.country) : '';
+
   return (
     <CardContainer onClick={handleClick}>
       <BackgroundCard />
       <StyledGridFigure>
         {item.country && (
-          <StyledFlagIcon countryCode={item.country} svg />
+          <FlagIconWrapper title={countryName} aria-label={countryName}>
+            <StyledFlagIcon countryCode={item.country} svg />
+          </FlagIconWrapper>
         )}
         {showEditIcon && (
           <StyledEditIcon onClick={handleEdit} title={t('Edit')} />
