@@ -2,12 +2,57 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { TextToSpeechClient } from '@google-cloud/text-to-speech';
 import { Storage } from '@google-cloud/storage';
-import { fileURLToPath } from 'url';
 import User from '../models/User.js';
 import Content from '../models/Content.js';
 import AudioFile from '../models/AudioFile.js';
 
 dotenv.config();
+
+/**
+ * Optional: only generate audio for vocabulary in one lesson (by lessonNumber).
+ * Usage:
+ *   node server/scripts/generateAudioFiles.js
+ *   node server/scripts/generateAudioFiles.js --lesson 80
+ *   node server/scripts/generateAudioFiles.js 80
+ */
+function parseLessonNumberArg() {
+  const args = process.argv.slice(2);
+  if (args.includes('--help') || args.includes('-h')) {
+    console.log(`
+Usage:
+  node server/scripts/generateAudioFiles.js
+  node server/scripts/generateAudioFiles.js --lesson <lessonNumber>
+  node server/scripts/generateAudioFiles.js <lessonNumber>
+
+Examples:
+  node server/scripts/generateAudioFiles.js --lesson 80
+  node server/scripts/generateAudioFiles.js 80
+
+Without arguments: all course content (isCourseContent) that has no AudioFile records yet.
+With --lesson / number: only vocabulary items for that lesson (must exist in DB).
+`);
+    process.exit(0);
+  }
+
+  const idx = args.findIndex((a) => a === '--lesson');
+  if (idx !== -1) {
+    const raw = args[idx + 1];
+    if (!raw || !/^\d+$/.test(String(raw))) {
+      console.error('❌ --lesson requires a lesson number, e.g. --lesson 80');
+      process.exit(1);
+    }
+    return parseInt(raw, 10);
+  }
+  if (args.length === 1 && /^\d+$/.test(args[0])) {
+    return parseInt(args[0], 10);
+  }
+  if (args.length > 0) {
+    console.error('❌ Unknown arguments:', args.join(' '));
+    console.error('   Run with --help for usage.');
+    process.exit(1);
+  }
+  return null;
+}
 
 // Spanish (US) voices - alternating between female and male
 const VOICES = [
@@ -17,6 +62,8 @@ const VOICES = [
 ];
 
 const generateAudioFiles = async () => {
+  const lessonNumberOnly = parseLessonNumberArg();
+
   try {
     // Check for GCS bucket name
     if (!process.env.GCS_BUCKET_NAME) {
@@ -159,8 +206,34 @@ const generateAudioFiles = async () => {
     console.log(`📦 Using GCS bucket: ${process.env.GCS_BUCKET_NAME}\n`);
 
     // Find all Content with isCourseContent = true
-    const allCourseContent = await Content.find({ isCourseContent: true });
-    console.log(`📚 Found ${allCourseContent.length} course content items\n`);
+    let allCourseContent = await Content.find({ isCourseContent: true });
+
+    if (lessonNumberOnly != null) {
+      const lessonDoc = await mongoose.connection.db.collection('lessons').findOne(
+        { lessonNumber: lessonNumberOnly },
+        { projection: { vocabulary: 1, title: 1 } }
+      );
+      if (!lessonDoc) {
+        console.error(`❌ No lesson with lessonNumber ${lessonNumberOnly} found. Import it first (importCourseContent.js).`);
+        process.exit(1);
+      }
+      const allowedIds = new Set(
+        (lessonDoc.vocabulary || []).map((id) => id.toString())
+      );
+      const totalBeforeFilter = allCourseContent.length;
+      allCourseContent = allCourseContent.filter((c) => allowedIds.has(c._id.toString()));
+      const titleSuffix = lessonDoc.title ? `: ${lessonDoc.title}` : '';
+      console.log(`📌 Scoped to lesson ${lessonNumberOnly}${titleSuffix}`);
+      console.log(
+        `   Course content in this lesson’s vocabulary: ${allCourseContent.length} (of ${totalBeforeFilter} total course content)\n`
+      );
+      if (allCourseContent.length === 0) {
+        console.log('⚠️  No matching course content in DB for this lesson’s vocabulary. Check import / isCourseContent.');
+        return;
+      }
+    }
+
+    console.log(`📚 Processing ${allCourseContent.length} course content item(s)\n`);
 
     // Find Content that don't have audio files yet
     const contentWithoutAudio = [];
