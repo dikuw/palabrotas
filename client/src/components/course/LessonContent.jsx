@@ -91,9 +91,10 @@ const EnglishText = styled.div`
   width: 100%;
   max-width: 100%;
   min-width: 0;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  word-break: break-word;
+  word-wrap: normal;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
 `;
 
 const SpanishText = styled.div`
@@ -104,9 +105,10 @@ const SpanishText = styled.div`
   width: 100%;
   max-width: 100%;
   min-width: 0;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  word-break: break-word;
+  word-wrap: normal;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
 `;
 
 const AudioButtonContainer = styled.div`
@@ -459,7 +461,10 @@ function FitText({ children, initialFontSize = 18, minFontSize = 11 }) {
     let size = initialFontSize;
     inner.style.fontSize = `${size}px`;
 
-    while (size > minFontSize && inner.scrollHeight > container.clientHeight) {
+    while (
+      size > minFontSize &&
+      (inner.scrollHeight > container.clientHeight || inner.scrollWidth > container.clientWidth)
+    ) {
       size = Math.max(minFontSize, size - 2);
       inner.style.fontSize = `${size}px`;
     }
@@ -491,6 +496,11 @@ function FitText({ children, initialFontSize = 18, minFontSize = 11 }) {
       </div>
     </div>
   );
+}
+
+function keepLastWordWithPunctuation(text) {
+  if (!text || typeof text !== 'string') return text;
+  return text.replace(/\s+([^\s]+)\s*$/, '\u00A0$1');
 }
 
 export default function LessonContent({ vocabulary, lesson }) {
@@ -886,14 +896,14 @@ export default function LessonContent({ vocabulary, lesson }) {
             {!isRevealed ? (
               <EnglishOnlySlot>
                 <FitText initialFontSize={20} minFontSize={12}>
-                  <EnglishText>{currentItem.description}</EnglishText>
+                  <EnglishText>{keepLastWordWithPunctuation(currentItem.description)}</EnglishText>
                 </FitText>
               </EnglishOnlySlot>
             ) : (
               <>
                 <SpanishSlot>
                   <FitText initialFontSize={22} minFontSize={12}>
-                    <SpanishText>{currentItem.title}</SpanishText>
+                    <SpanishText>{keepLastWordWithPunctuation(currentItem.title)}</SpanishText>
                   </FitText>
                 </SpanishSlot>
                 {/* START FUTURE SCOPE 
