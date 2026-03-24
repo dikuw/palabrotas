@@ -30,72 +30,74 @@
 // 29. Dejar (including dejar de + infinitive)
 // 30. Volver (including volver a + infinitive)
 // 31. Reflexive verbs (core patterns)
-// 32. Daily routine (advanced phrases)
+// 32. gustar
+// 33. caerle bien/mal
+// 34. Daily routine (advanced phrases)
 // 33. Emotions with reflexives
-// 34. Change of state verbs (ponerse, volverse, hacerse)
-// 35. Accidental “se” (se me cayó, etc.)
-// 36. Asking for clarification
-// 37. Agreeing & disagreeing
-// 38. Giving opinions naturally
-// 39. Interrupting & reacting
-// 40. Persuasion & convincing
-// 41. Apologizing & excusing
-// 42. Complaining
-// 43. Giving advice
-// 44. Making suggestions
-// 45. Small talk (real-world)
-// 46. At a restaurant (advanced)
-// 47. At a bar / ordering drinks
-// 48. Airbnb / hotel issues
-// 49. Shopping & negotiating
-// 50. Transportation problems
-// 51. At the doctor / pharmacy
-// 52. Emergencies
-// 53. Bureaucracy & paperwork
-// 54. Work & office situations
-// 55. Remote work / digital nomad life
-// 56. Basic connectors (y, pero, porque, entonces)
-// 57. Advanced connectors (sin embargo, aunque, etc.)
-// 58. Cause & effect
-// 59. Contrast & concession
-// 60. Adding information naturally
-// 61. Storytelling connectors
-// 62. Fillers & hesitation (pues, o sea, etc.)
-// 63. Talking about the past (story mode)
-// 64. Imperfect vs preterite (natural usage)
-// 65. Life experiences (pretérito perfecto)
-// 66. Talking about the future
-// 67. Hypotheticals (conditional)
-// 68. “If” clauses (real + unreal)
-// 69. Subjunctive basics (triggers in real life)
-// 70. Expressing doubt & uncertainty
-// 71. Expressing desire & recommendations
-// 72. Emotions + subjunctive
-// 73. Impersonal expressions
-// 74. Subjunctive in conversation shortcuts
-// 75. Pensar / Creer / Opinar
-// 76. Saber vs Conocer
-// 77. Parecer (seems/appears)
-// 78. Darse cuenta (realizing things)
-// 79. Recordar / Olvidar
-// 80. Saber 
-// 81. Decir
-// 82. Physical descriptions (advanced)
-// 83. Personality traits (natural speech)
-// 84. Describing situations
-// 85. Intensifiers (muy, bastante, súper, etc.)
-// 86. Diminutives & tone (-ito, -illo, etc.)
-// 87. Common idioms (mixed verbs)
-// 88. Slang across regions (neutral-focused)
-// 89. Expressions with “tener”
-// 90. Expressions with “hacer”
-// 91. Expressions with “dar”
-// 92. Expressions with “poner”
-// 93. Telling stories naturally
-// 94. Explaining problems
-// 95. Giving detailed opinions
-// 96. Arguing a point
-// 97. Flirting / dating language
-// 98. Humor & sarcasm
-// 99. Cultural expressions
-// 100. Sounding natural (putting it all together)
+// 35. Change of state verbs (ponerse, volverse, hacerse)
+// 36. Accidental “se” (se me cayó, etc.)
+// 37. Asking for clarification
+// 38. Agreeing & disagreeing
+// 39. Giving opinions naturally
+// 40. Interrupting & reacting
+// 41. Persuasion & convincing
+// 42. Apologizing & excusing
+// 43. Complaining
+// 44. Giving advice
+// 45. Making suggestions
+// 46. Small talk (real-world)
+// 47. At a restaurant (advanced)
+// 48. At a bar / ordering drinks
+// 49. Airbnb / hotel issues
+// 50. Shopping & negotiating
+// 51. Transportation problems
+// 52. At the doctor / pharmacy
+// 53. Emergencies
+// 54. Bureaucracy & paperwork
+// 55. Work & office situations
+// 56. Remote work / digital nomad life
+// 57. Basic connectors (y, pero, porque, entonces)
+// 58. Advanced connectors (sin embargo, aunque, etc.)
+// 59. Cause & effect
+// 60. Contrast & concession
+// 61. Adding information naturally
+// 62. Storytelling connectors
+// 63. Fillers & hesitation (pues, o sea, etc.)
+// 64. Talking about the past (story mode)
+// 65. Imperfect vs preterite (natural usage)
+// 66. Life experiences (pretérito perfecto)
+// 67. Talking about the future
+// 68. Hypotheticals (conditional)
+// 69. “If” clauses (real + unreal)
+// 70. Subjunctive basics (triggers in real life)
+// 71. Expressing doubt & uncertainty
+// 72. Expressing desire & recommendations
+// 73. Emotions + subjunctive
+// 74. Impersonal expressions
+// 75. Subjunctive in conversation shortcuts
+// 76. Pensar / Creer / Opinar
+// 77. Saber vs Conocer
+// 78. Parecer (seems/appears)
+// 79. Darse cuenta (realizing things)
+// 80. Recordar / Olvidar
+// 81. Saber 
+// 82. Decir
+// 83. Physical descriptions (advanced)
+// 84. Personality traits (natural speech)
+// 85. Describing situations
+// 86. Intensifiers (muy, bastante, súper, etc.)
+// 87. Diminutives & tone (-ito, -illo, etc.)
+// 88. Common idioms (mixed verbs)
+// 89. Slang across regions (neutral-focused)
+// 90. Expressions with “tener”
+// 91. Expressions with “hacer”
+// 92. Expressions with “dar”
+// 93. Expressions with “poner”
+// 94. Telling stories naturally
+// 95. Explaining problems
+// 96. Giving detailed opinions
+// 97. Arguing a point
+// 98. Flirting / dating language
+// 99. Humor & sarcasm
+// 100. Cultural expressions
+// 101. Sounding natural (putting it all together)
