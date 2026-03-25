@@ -65,6 +65,8 @@ const CardContent = styled.div`
 const EnglishOnlySlot = styled.div`
   flex: 1 1 auto;
   min-height: 0;
+  min-width: 0;
+  max-width: 100%;
   width: 100%;
   display: flex;
   align-items: center;
@@ -76,6 +78,8 @@ const EnglishOnlySlot = styled.div`
 const SpanishSlot = styled.div`
   flex: 1 1 auto;
   min-height: 2.5rem;
+  min-width: 0;
+  max-width: 100%;
   width: 100%;
   display: flex;
   align-items: center;
@@ -91,8 +95,7 @@ const EnglishText = styled.div`
   width: 100%;
   max-width: 100%;
   min-width: 0;
-  word-wrap: normal;
-  overflow-wrap: normal;
+  overflow-wrap: break-word;
   word-break: normal;
   hyphens: none;
 `;
@@ -105,8 +108,7 @@ const SpanishText = styled.div`
   width: 100%;
   max-width: 100%;
   min-width: 0;
-  word-wrap: normal;
-  overflow-wrap: normal;
+  overflow-wrap: break-word;
   word-break: normal;
   hyphens: none;
 `;
@@ -445,8 +447,9 @@ const ModalButton = styled.button`
 `;
 
 /**
- * Scales font size down so that children fit within the container height.
- * Container must have a defined height.
+ * Scales font size down so wrapped text fits the container height.
+ * Uses height-only fitting so the layout can wrap at word boundaries instead of
+ * shrinking to keep a single line (flex items need minWidth: 0 for that to work).
  */
 function FitText({ children, initialFontSize = 18, minFontSize = 11 }) {
   const containerRef = useRef(null);
@@ -461,11 +464,8 @@ function FitText({ children, initialFontSize = 18, minFontSize = 11 }) {
     let size = initialFontSize;
     inner.style.fontSize = `${size}px`;
 
-    while (
-      size > minFontSize &&
-      (inner.scrollHeight > container.clientHeight || inner.scrollWidth > container.clientWidth)
-    ) {
-      size = Math.max(minFontSize, size - 2);
+    while (size > minFontSize && inner.scrollHeight > container.clientHeight) {
+      size = Math.max(minFontSize, size - 1);
       inner.style.fontSize = `${size}px`;
     }
     setFontSize(size);
@@ -477,6 +477,8 @@ function FitText({ children, initialFontSize = 18, minFontSize = 11 }) {
       style={{
         height: '100%',
         width: '100%',
+        maxWidth: '100%',
+        minWidth: 0,
         overflow: 'hidden',
         display: 'flex',
         alignItems: 'center',
@@ -490,6 +492,10 @@ function FitText({ children, initialFontSize = 18, minFontSize = 11 }) {
           textAlign: 'center',
           width: '100%',
           maxWidth: '100%',
+          minWidth: 0,
+          boxSizing: 'border-box',
+          overflowWrap: 'break-word',
+          wordBreak: 'normal',
         }}
       >
         {children}
@@ -498,9 +504,11 @@ function FitText({ children, initialFontSize = 18, minFontSize = 11 }) {
   );
 }
 
-function keepLastWordWithPunctuation(text) {
+/** Keep closing punctuation with the last letter without a visible gap (word joiner, not NBSP). Strips a stray space before final punct if present. */
+function keepClosingPunctuationWithLastWord(text) {
   if (!text || typeof text !== 'string') return text;
-  return text.replace(/\s+([^\s]+)\s*$/, '\u00A0$1');
+  // U+2060 WORD JOINER: no break, zero width (avoids NBSP looking like a space before . ? !)
+  return text.replace(/(\S)\s*([.!?…]+)\s*$/u, '$1\u2060$2');
 }
 
 export default function LessonContent({ vocabulary, lesson }) {
@@ -896,14 +904,14 @@ export default function LessonContent({ vocabulary, lesson }) {
             {!isRevealed ? (
               <EnglishOnlySlot>
                 <FitText initialFontSize={20} minFontSize={12}>
-                  <EnglishText>{keepLastWordWithPunctuation(currentItem.description)}</EnglishText>
+                  <EnglishText>{keepClosingPunctuationWithLastWord(currentItem.description)}</EnglishText>
                 </FitText>
               </EnglishOnlySlot>
             ) : (
               <>
                 <SpanishSlot>
                   <FitText initialFontSize={22} minFontSize={12}>
-                    <SpanishText>{keepLastWordWithPunctuation(currentItem.title)}</SpanishText>
+                    <SpanishText>{keepClosingPunctuationWithLastWord(currentItem.title)}</SpanishText>
                   </FitText>
                 </SpanishSlot>
                 {/* START FUTURE SCOPE 
