@@ -54,11 +54,11 @@ With --lesson / number: only vocabulary items for that lesson (must exist in DB)
   return null;
 }
 
-// Spanish (US) voices - alternating between female and male
+// Three distinct Neural2 voices: US female/male + Spain female (only one es-US Neural2 female: A)
 const VOICES = [
-  { name: 'es-US-Neural2-A', gender: 'female' },
-  { name: 'es-US-Neural2-B', gender: 'male' },
-  { name: 'es-US-Neural2-A', gender: 'female' } // Alternate back to female
+  { name: 'es-US-Neural2-A', gender: 'female', languageCode: 'es-US' },
+  { name: 'es-US-Neural2-B', gender: 'male', languageCode: 'es-US' },
+  { name: 'es-ES-Neural2-E', gender: 'female', languageCode: 'es-ES' },
 ];
 
 const generateAudioFiles = async () => {
@@ -266,19 +266,21 @@ const generateAudioFiles = async () => {
       let contentSuccess = true;
       const audioFiles = [];
 
-      // Generate 3 audio files with alternating voices
+      // Generate 3 audio files with distinct voices
       for (let i = 0; i < 3; i++) {
         const voice = VOICES[i];
         const text = content.title; // Use the title as the text to speak
         
         try {
-          console.log(`   🎤 Generating audio ${i + 1}/3 with voice ${voice.name} (${voice.gender})...`);
+          console.log(
+            `   🎤 Generating audio ${i + 1}/3 with voice ${voice.name} (${voice.gender}, ${voice.languageCode})...`
+          );
 
           // Request audio synthesis
           const [response] = await ttsClient.synthesizeSpeech({
             input: { text },
             voice: {
-              languageCode: 'es-US',
+              languageCode: voice.languageCode,
               name: voice.name,
             },
             audioConfig: {
@@ -334,7 +336,7 @@ const generateAudioFiles = async () => {
             audioUrl,
             voice: voice.name,
             gender: voice.gender,
-            languageCode: 'es-US',
+            languageCode: voice.languageCode,
             audioFormat: 'mp3',
             order: i + 1
           });
