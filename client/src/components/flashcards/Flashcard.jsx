@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { FaQuestionCircle, FaGlobe } from 'react-icons/fa';
 import ReactCountryFlag from "react-country-flag";
 import styled from 'styled-components';
@@ -38,7 +38,8 @@ const FlashcardContainer = styled.div`
   padding: 20px;
   position: relative;
   z-index: 4;
-  height: 300px;
+  min-height: 300px;
+  height: auto;
   perspective: 1000px;
 `;
 
@@ -57,7 +58,7 @@ const BackgroundCard = styled.div`
 const FlashcardInner = styled.div`
   position: relative;
   width: 100%;
-  height: 100%;
+  min-height: 300px;
   text-align: center;
   transition: transform 0.6s;
   transform-style: preserve-3d;
@@ -67,8 +68,10 @@ const FlashcardInner = styled.div`
 
 const FlashcardFace = styled.div`
   position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 100%;
+  box-sizing: border-box;
   backface-visibility: hidden;
   display: flex;
   flex-direction: column;
@@ -81,25 +84,47 @@ const FlashcardFace = styled.div`
 `;
 
 const FlashcardFront = styled(FlashcardFace)`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
 `;
 
 const FlashcardBack = styled(FlashcardFace)`
   transform: rotateY(180deg);
+  justify-content: flex-start;
+`;
+
+/** Fills space above the footer so title + hint stay vertically centered in the face. */
+const FrontMainBlock = styled.div`
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
+  align-items: center;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+`;
+
+const FrontFooter = styled.div`
+  flex-shrink: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding-top: 0.25rem;
 `;
 
 const Title = styled.h2`
-  margin-bottom: 10px;
+  margin: 0 0 10px;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
 `;
 
 const Hint = styled.div`
   margin: 5px 0;
   font-style: italic;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
 `;
 
 const QuestionIconWrapper = styled.div`
@@ -113,11 +138,12 @@ const StyledQuestionIcon = styled(FaQuestionCircle)`
 `;
 
 const QualityButtonsContainer = styled.div`
+  flex-shrink: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  margin-top: 20px;
+  margin-top: 12px;
 `;
 
 const QualityButton = styled.button`
@@ -147,6 +173,15 @@ const ContentContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
+  max-width: 100%;
+  min-width: 0;
+
+  p {
+    margin: 0.35em 0;
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
 `;
 
 const qualityLabels = ['Again', 'Hard', 'Good', 'Easy'];
@@ -185,6 +220,9 @@ export default function Flashcard({ item, onNext, isLoading }) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [showHint, setShowHint] = useState(false);
   const [currentItem, setCurrentItem] = useState(item);
+  const innerRef = useRef(null);
+  const frontRef = useRef(null);
+  const backRef = useRef(null);
 
   useEffect(() => {
     setCurrentItem(item);
@@ -245,6 +283,40 @@ export default function Flashcard({ item, onNext, isLoading }) {
   const frontMainText = isCourseContent ? content.description : content.title;
   const backMainText = isCourseContent ? content.title : content.description;
 
+  const CARD_MIN_HEIGHT = 300;
+
+  useLayoutEffect(() => {
+    const inner = innerRef.current;
+    const front = frontRef.current;
+    const back = backRef.current;
+    if (!inner || !front || !back || isLoading) return;
+
+    const syncHeight = () => {
+      front.style.minHeight = '';
+      back.style.minHeight = '';
+      const fh = front.getBoundingClientRect().height;
+      const bh = back.getBoundingClientRect().height;
+      const h = Math.max(CARD_MIN_HEIGHT, Math.ceil(fh), Math.ceil(bh));
+      inner.style.minHeight = `${h}px`;
+      front.style.minHeight = `${h}px`;
+      back.style.minHeight = `${h}px`;
+    };
+
+    syncHeight();
+    const ro = new ResizeObserver(syncHeight);
+    ro.observe(front);
+    ro.observe(back);
+    return () => ro.disconnect();
+  }, [
+    isLoading,
+    currentItem,
+    frontMainText,
+    backMainText,
+    showHint,
+    item?.content?.exampleSentence,
+    item?.content?.hint,
+  ]);
+
   return (
     <OuterContainer>
       <FormWrapper>
@@ -254,8 +326,8 @@ export default function Flashcard({ item, onNext, isLoading }) {
               <Spinner size="40px" />
             </SpinnerContainer>
           )}
-          <FlashcardInner $isFlipped={isFlipped} $isLoading={isLoading}>
-            <FlashcardFront>
+          <FlashcardInner ref={innerRef} $isFlipped={isFlipped} $isLoading={isLoading}>
+            <FlashcardFront ref={frontRef}>
               {currentItem.content.country && !isFlipped && (
                 isAllCountriesCode(currentItem.content.country) ? (
                   <StyledGlobeIcon title={t('All regions')} aria-label={t('All regions')} />
@@ -263,19 +335,19 @@ export default function Flashcard({ item, onNext, isLoading }) {
                   <StyledFlagIcon countryCode={currentItem.content.country} svg />
                 )
               )}
-              <Title>{frontMainText}</Title>
-              {showHint && (
-                <Hint>
-                  {renderHint()}
-                </Hint>
-              )}
-              <QuestionIconWrapper>          
-                <Tooltip text={t("Show hint")}>
-                  <StyledQuestionIcon onClick={handleHint} />
-                </Tooltip>
-              </QuestionIconWrapper>
+              <FrontMainBlock>
+                <Title>{frontMainText}</Title>
+                {showHint && <Hint>{renderHint()}</Hint>}
+              </FrontMainBlock>
+              <FrontFooter>
+                <QuestionIconWrapper>
+                  <Tooltip text={t("Show hint")}>
+                    <StyledQuestionIcon onClick={handleHint} />
+                  </Tooltip>
+                </QuestionIconWrapper>
+              </FrontFooter>
             </FlashcardFront>
-            <FlashcardBack>
+            <FlashcardBack ref={backRef}>
               <ContentContainer>
                 <p>{backMainText}</p>
                 <p>{currentItem.content.exampleSentence}</p>
