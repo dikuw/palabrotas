@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
-import { FaQuestionCircle, FaGlobe } from 'react-icons/fa';
+import { FaQuestionCircle, FaGlobe, FaVolumeUp } from 'react-icons/fa';
 import ReactCountryFlag from "react-country-flag";
-import styled from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
 import { useTranslation } from 'react-i18next';
 
 import { useUserStore } from '../../store/user';
 import { useAuthStore } from '../../store/auth';
 import { useNotificationStore } from '../../store/notification';
+import { useCourseStore } from '../../store/course';
 
 import FormattedHint from './FlashcardHint';
 import Tooltip from '../shared/Tooltip';
@@ -212,17 +213,79 @@ const StyledGlobeIcon = styled(FaGlobe)`
   color: var(--primary);
 `;
 
+const pulse = keyframes`
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.7;
+  }
+`;
+
+const AudioButtonContainer = styled.div`
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  z-index: 6;
+`;
+
+const AudioIcon = styled.span`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  ${props => props.$isLoading && css`
+    animation: ${pulse} 1.5s ease-in-out infinite;
+  `}
+`;
+
+const AudioButton = styled.button`
+  padding: 0.5rem;
+  border: 2px solid var(--secondary);
+  border-radius: 50%;
+  background-color: white;
+  color: var(--primary);
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background-color: var(--primary);
+    color: white;
+    border-color: var(--primary);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.95);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+`;
+
 export default function Flashcard({ item, onNext, isLoading }) {
   const { t } = useTranslation();
   const { updateStreak } = useUserStore();
   const { authStatus } = useAuthStore();
   const addNotification = useNotificationStore(state => state.addNotification);
+  const getContentAudioFiles = useCourseStore(state => state.getContentAudioFiles);
   const [isFlipped, setIsFlipped] = useState(false);
   const [showHint, setShowHint] = useState(false);
   const [currentItem, setCurrentItem] = useState(item);
+  const [audioFiles, setAudioFiles] = useState([]);
+  const [currentAudioIndex, setCurrentAudioIndex] = useState(0);
+  const [isLoadingAudio, setIsLoadingAudio] = useState(false);
   const innerRef = useRef(null);
   const frontRef = useRef(null);
   const backRef = useRef(null);
+  const audioElementRef = useRef(null);
 
   useEffect(() => {
     setCurrentItem(item);
@@ -235,6 +298,75 @@ export default function Flashcard({ item, onNext, isLoading }) {
       setIsFlipped(false);
     }
   }, [isLoading]);
+
+  const contentId = currentItem?.content?._id;
+
+  useEffect(() => {
+    let cancelled = false;
+
+    if (audioElementRef.current) {
+      audioElementRef.current.pause();
+      audioElementRef.current = null;
+    }
+
+    if (!contentId) {
+      setAudioFiles([]);
+      setCurrentAudioIndex(0);
+      setIsLoadingAudio(false);
+      return undefined;
+    }
+
+    setIsLoadingAudio(true);
+    setAudioFiles([]);
+    setCurrentAudioIndex(0);
+
+    (async () => {
+      try {
+        const files = await getContentAudioFiles(contentId);
+        if (!cancelled) {
+          setAudioFiles(files && files.length > 0 ? files : []);
+        }
+      } catch (err) {
+        console.error('Error fetching flashcard audio:', err);
+        if (!cancelled) {
+          setAudioFiles([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoadingAudio(false);
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      if (audioElementRef.current) {
+        audioElementRef.current.pause();
+        audioElementRef.current = null;
+      }
+    };
+  }, [contentId, getContentAudioFiles]);
+
+  const handleAudioClick = (e) => {
+    e.stopPropagation();
+    if (!audioFiles.length) return;
+
+    let currentAudioIdx = currentAudioIndex || 0;
+    const nextIndex = (currentAudioIdx + 1) % audioFiles.length;
+
+    setCurrentAudioIndex(nextIndex);
+
+    if (audioElementRef.current) {
+      audioElementRef.current.pause();
+      audioElementRef.current.currentTime = 0;
+    }
+
+    const audio = new Audio(audioFiles[nextIndex].audioUrl);
+    audio.play().catch(error => {
+      console.error('Error playing audio:', error);
+    });
+    audioElementRef.current = audio;
+  };
 
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
@@ -282,6 +414,9 @@ export default function Flashcard({ item, onNext, isLoading }) {
   const isCourseContent = content?.isCourseContent === true;
   const frontMainText = isCourseContent ? content.description : content.title;
   const backMainText = isCourseContent ? content.title : content.description;
+
+  const hasAudio = audioFiles.length > 0;
+  const showAudioControl = isLoadingAudio || hasAudio;
 
   const CARD_MIN_HEIGHT = 300;
 
@@ -348,6 +483,21 @@ export default function Flashcard({ item, onNext, isLoading }) {
               </FrontFooter>
             </FlashcardFront>
             <FlashcardBack ref={backRef}>
+              {showAudioControl && (
+                <AudioButtonContainer>
+                  <AudioButton
+                    type="button"
+                    onClick={handleAudioClick}
+                    disabled={isLoadingAudio || !hasAudio}
+                    title={t('Play audio')}
+                    aria-label={t('Play audio')}
+                  >
+                    <AudioIcon $isLoading={isLoadingAudio}>
+                      <FaVolumeUp />
+                    </AudioIcon>
+                  </AudioButton>
+                </AudioButtonContainer>
+              )}
               <ContentContainer>
                 <p>{backMainText}</p>
                 <p>{currentItem.content.exampleSentence}</p>
