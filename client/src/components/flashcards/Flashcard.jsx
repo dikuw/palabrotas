@@ -116,6 +116,9 @@ const FrontFooter = styled.div`
 const Title = styled.h2`
   margin: 0 0 10px;
   max-width: 100%;
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1.35;
   overflow-wrap: break-word;
   word-break: break-word;
 `;
