@@ -58,29 +58,29 @@
 // 56. Remote work / digital nomad life
 // 57. Basic connectors (y, pero, porque, entonces)
 // 58. Advanced connectors (sin embargo, aunque, etc.)
-// 59. Cause & effect
-// 60. Contrast & concession
-// 61. Adding information naturally
-// 62. Storytelling connectors
-// 63. Fillers & hesitation (pues, o sea, etc.)
-// 64. Talking about the past (story mode)
-// 65. Imperfect vs preterite (natural usage)
-// 66. Life experiences (pretérito perfecto)
-// 67. Talking about the future
-// 68. Hypotheticals (conditional)
-// 69. “If” clauses (real + unreal)
-// 70. Subjunctive basics (triggers in real life)
+// 59. Cause, contrast & concession
+// 60. Adding information naturally
+// 61. Storytelling connectors
+// 62. Fillers & hesitation (pues, o sea, etc.)
+// 63. Discourse markers & conversation chunks
+// 64. Telling stories (past events)
+// 65. Describing background & habits (imperfect)
+// 66. Talking about life experiences (pretérito perfecto)
+// 67. Making plans & talking about the future
+// 68. Imagining possibilities (conditional)
+// 69. "If" clauses (real + unreal)
+// 70. Subjunctive basics (real-life triggers)
 // 71. Expressing doubt & uncertainty
 // 72. Expressing desire & recommendations
 // 73. Emotions + subjunctive
 // 74. Impersonal expressions
-// 75. Subjunctive in conversation shortcuts
+// 75. Subjunctive conversation shortcuts
 // 76. Pensar / Creer / Opinar
 // 77. Saber vs Conocer
-// 78. Parecer (seems/appears)
-// 79. Darse cuenta (realizing things)
+// 78. Parecer
+// 79. Darse cuenta
 // 80. Recordar / Olvidar
-// 81. Saber 
+// 81. Saber
 // 82. Decir
 // 83. Physical descriptions (advanced)
 // 84. Personality traits (natural speech)
@@ -88,16 +88,16 @@
 // 86. Intensifiers (muy, bastante, súper, etc.)
 // 87. Diminutives & tone (-ito, -illo, etc.)
 // 88. Common idioms (mixed verbs)
-// 89. Slang across regions (neutral-focused)
-// 90. Expressions with “tener”
-// 91. Expressions with “hacer”
-// 92. Expressions with “dar”
-// 93. Expressions with “poner”
-// 94. Telling stories naturally
-// 95. Explaining problems
-// 96. Giving detailed opinions
-// 97. Arguing a point
-// 98. Flirting / dating language
-// 99. Humor & sarcasm
-// 100. Cultural expressions
-// 101. Sounding natural (putting it all together)
+// 89. Everyday slang & colloquial speech
+// 90. Expressions with "tener"
+// 91. Expressions with "hacer"
+// 92. Expressions with "dar"
+// 93. Expressions with "poner"
+// 94. Telling stories like a native
+// 95. Explaining yourself
+// 96. Defending your opinion
+// 97. Winning an argument politely
+// 98. Flirting & dating language
+// 99. Humor, teasing & sarcasm
+// 100. Regional culture & expressions
+// 101. Sounding like a native (putting it all together)
