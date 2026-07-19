@@ -79,9 +79,9 @@
 // 77. Saber vs Conocer
 // 78. Parecer
 // 79. Darse cuenta
-// 80. Recordar / Olvidar
-// 81. Saber
-// 82. Decir
+// 80. Saber
+// 81. Decir
+// 82. Recordar / Olvidar
 // 83. Physical descriptions (advanced)
 // 84. Personality traits (natural speech)
 // 85. Describing situations
