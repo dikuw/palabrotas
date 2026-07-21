@@ -2,12 +2,14 @@ import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { useTranslation } from "react-i18next";
 import { useNavigate } from 'react-router-dom';
-import { FaVolumeUp, FaChevronLeft, FaChevronRight, FaComments, FaThumbsUp, FaThumbsDown, FaPlus } from 'react-icons/fa';
+import { FaVolumeUp, FaChevronLeft, FaChevronRight, FaComments, FaThumbsUp, FaThumbsDown, FaPlus, FaGlobe } from 'react-icons/fa';
+import ReactCountryFlag from "react-country-flag";
 import { useCourseStore } from '../../store/course';
 import { useChatStore } from '../../store/chat';
 import { useAuthStore } from '../../store/auth';
 import { useNotificationStore } from '../../store/notification';
 import Spinner from '../shared/Spinner';
+import { ALL_COUNTRIES_CODE, isAllCountriesCode } from '../shared/countries';
 
 const CardsContainer = styled.div`
   display: flex;
@@ -118,6 +120,23 @@ const AudioButtonContainer = styled.div`
   top: 1rem;
   right: 1rem;
   z-index: 10;
+`;
+
+const StyledFlagIcon = styled(ReactCountryFlag)`
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  font-size: 1.25rem !important;
+  z-index: 10;
+`;
+
+const StyledGlobeIcon = styled(FaGlobe)`
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  font-size: 1.25rem;
+  z-index: 10;
+  color: var(--primary);
 `;
 
 /* Match main Card.jsx StyledAddToFlashcardIcon */
@@ -840,6 +859,8 @@ export default function LessonContent({ vocabulary, lesson }) {
   const currentAudioIdx = currentAudioIndex[currentItem._id] || 0;
   const hasAudio = files.length > 0;
   const consecutiveCorrect = contentProgress[currentItem._id] || 0;
+  const countryCode = currentItem.country || ALL_COUNTRIES_CODE;
+  const regionLabel = t('All regions');
 
   const handleAddCurrentToFlashcards = async (e) => {
     e.stopPropagation();
@@ -863,6 +884,11 @@ export default function LessonContent({ vocabulary, lesson }) {
     <CardsContainer>
       <CardWrapper>
         <Card onClick={(e) => handleCardClick(currentItem._id, e)}>
+          {isAllCountriesCode(countryCode) ? (
+            <StyledGlobeIcon title={regionLabel} aria-label={regionLabel} />
+          ) : (
+            <StyledFlagIcon countryCode={String(countryCode).toUpperCase()} svg />
+          )}
           {/* START FUTURE SCOPE 
           {authStatus.user && lesson && (
             <ProgressIndicatorContainer>
