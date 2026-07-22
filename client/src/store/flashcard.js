@@ -45,15 +45,15 @@ export const useFlashcardStore = create((set, get) => ({
     set({ dueFlashcards: data });
     return data;
   },
-  updateFlashcardReview: async (flashcardId, quality) => {
+  updateFlashcardReview: async (flashcardId, quality, keepInQueue = false) => {
     const res = await fetch(`/api/flashcard/updateFlashcardReview/${flashcardId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ quality }),
+      body: JSON.stringify({ quality, keepInQueue }),
     });
     const data = await res.json();
     return data;
-  }
+  },
 }));

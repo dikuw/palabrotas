@@ -44,23 +44,17 @@ export const addFlashcard = async (req, res) => {
 export const updateFlashcardReview = async (req, res) => {
   try {
     const { flashcardId } = req.params;
-    const { quality, keepInQueue } = req.body;
+    const { quality } = req.body;
 
     const flashcard = await Flashcard.findById(flashcardId);
     if (!flashcard) {
       return res.status(404).json({ message: 'Flashcard not found' });
     }
 
-    if (keepInQueue) {
-      // If "Again" was selected, reset the nextReview to now
-      flashcard.nextReview = new Date();
-    } else {
-      // Otherwise, update the review as normal
-      await flashcard.updateReview(quality);
-    }
-
-    await flashcard.save();
-    res.json(flashcard);
+    await flashcard.updateReview(quality);
+    const result = flashcard.toObject();
+    result.previewIntervals = flashcard.previewIntervals();
+    res.json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -72,7 +66,27 @@ export const getDueFlashcards = async (req, res) => {
     const { limit = 100 } = req.query;
 
     const dueFlashcards = await Flashcard.getDueFlashcards(userId, parseInt(limit));
-    res.json(dueFlashcards);
+    const withPreviews = dueFlashcards.map((card) => {
+      const obj = card.toObject();
+      obj.previewIntervals = card.previewIntervals();
+      return obj;
+    });
+    res.json(withPreviews);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const previewIntervals = async (req, res) => {
+  try {
+    const { flashcardId } = req.params;
+    const flashcard = await Flashcard.findById(flashcardId);
+
+    if (!flashcard) {
+      return res.status(404).json({ message: 'Flashcard not found' });
+    }
+
+    res.json(flashcard.previewIntervals());
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

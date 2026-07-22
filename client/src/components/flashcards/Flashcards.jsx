@@ -64,17 +64,19 @@ export default function Flashcards() {
   const handleReviewAndNext = async (flashcardId, quality, keepInQueue) => {
     try {
       setIsLoading(true);
-      await updateFlashcardReview(flashcardId, quality, keepInQueue);
+      const updatedCard = await updateFlashcardReview(flashcardId, quality, keepInQueue);
       
       if (!keepInQueue) {
         const updatedDueFlashcards = dueFlashcards.filter(card => card._id !== flashcardId);
         useFlashcardStore.setState({ dueFlashcards: updatedDueFlashcards });
-        setCurrentIndex(prevIndex => prevIndex % updatedDueFlashcards.length);
+        setCurrentIndex(prevIndex => prevIndex % Math.max(updatedDueFlashcards.length, 1));
       } else {
-        // Move the current card to the end of the deck
-        const currentCard = dueFlashcards[currentIndex];
+        // Move the updated card to the end of the deck (Again → today)
         const remainingCards = dueFlashcards.filter((_, index) => index !== currentIndex);
-        const reorderedCards = [...remainingCards, currentCard];
+        const cardForQueue = updatedCard?._id
+          ? { ...dueFlashcards[currentIndex], ...updatedCard }
+          : dueFlashcards[currentIndex];
+        const reorderedCards = [...remainingCards, cardForQueue];
         useFlashcardStore.setState({ dueFlashcards: reorderedCards });
         setCurrentIndex(0);
       }

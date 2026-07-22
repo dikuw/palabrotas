@@ -145,9 +145,25 @@ const QualityButtonsContainer = styled.div`
   flex-shrink: 0;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-end;
   width: 100%;
   margin-top: 12px;
+`;
+
+const QualityButtonColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 22%;
+  margin: 0 1%;
+`;
+
+const IntervalLabel = styled.span`
+  font-size: 0.65rem;
+  color: #666;
+  margin-bottom: 4px;
+  line-height: 1;
+  min-height: 0.65rem;
 `;
 
 const QualityButton = styled.button`
@@ -164,8 +180,7 @@ const QualityButton = styled.button`
   cursor: pointer;
   font-size: 0.75rem;
   transition: opacity 0.3s;
-  width: 22%; // Adjusted for 4 buttons
-  margin: 0 1%;
+  width: 100%;
 
   &:hover {
     opacity: 0.8;
@@ -189,6 +204,26 @@ const ContentContainer = styled.div`
 `;
 
 const qualityLabels = ['Again', 'Hard', 'Good', 'Easy'];
+
+const formatInterval = (days, t) => {
+  if (days == null) return '';
+  if (days === 0) return t('today');
+  if (days < 30) {
+    return days === 1
+      ? t('{{count}} day', { count: days })
+      : t('{{count}} days', { count: days });
+  }
+  if (days < 365) {
+    const months = Math.max(1, Math.round(days / 30));
+    return months === 1
+      ? t('{{count}} month', { count: months })
+      : t('{{count}} months', { count: months });
+  }
+  const years = Math.round((days / 365) * 10) / 10;
+  return years === 1
+    ? t('{{count}} year', { count: years })
+    : t('{{count}} years', { count: years });
+};
 
 // Add a styled container for the spinner
 const SpinnerContainer = styled.div`
@@ -290,11 +325,18 @@ export default function Flashcard({ item, onNext, isLoading }) {
   const backRef = useRef(null);
   const audioElementRef = useRef(null);
 
+  const intervals = item?.previewIntervals ?? null;
+  const itemId = item?._id;
+  const prevItemIdRef = useRef(itemId);
+
   useEffect(() => {
     setCurrentItem(item);
-    setIsFlipped(false);
-    setShowHint(false);
-  }, [item]);
+    if (prevItemIdRef.current !== itemId) {
+      prevItemIdRef.current = itemId;
+      setIsFlipped(false);
+      setShowHint(false);
+    }
+  }, [item, itemId]);
 
   useEffect(() => {
     if (isLoading) {
@@ -451,6 +493,7 @@ export default function Flashcard({ item, onNext, isLoading }) {
     frontMainText,
     backMainText,
     showHint,
+    intervals,
     item?.content?.exampleSentence,
     item?.content?.hint,
   ]);
@@ -507,16 +550,20 @@ export default function Flashcard({ item, onNext, isLoading }) {
               </ContentContainer>
               <QualityButtonsContainer>
                 {qualityLabels.map(quality => (
-                  <QualityButton 
-                    key={quality} 
-                    $quality={quality} 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleAnswer(quality);
-                    }}
-                  >
-                    {t(quality)}
-                  </QualityButton>
+                  <QualityButtonColumn key={quality}>
+                    <IntervalLabel>
+                      {formatInterval(intervals?.[quality], t)}
+                    </IntervalLabel>
+                    <QualityButton
+                      $quality={quality}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAnswer(quality);
+                      }}
+                    >
+                      {t(quality)}
+                    </QualityButton>
+                  </QualityButtonColumn>
                 ))}
               </QualityButtonsContainer>
             </FlashcardBack>
