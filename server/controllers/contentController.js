@@ -148,7 +148,14 @@ export const getContentsByUserId = async (req, res) => {
 };
 
 export const addContent = async (req, res) => {
-  const content = req.body;
+  if (!req.isAuthenticated() || !req.user) {
+    return res.status(401).json({ success: false, message: 'You must be logged in to add content.' });
+  }
+
+  const content = {
+    ...req.body,
+    owner: req.user._id,
+  };
   const newContent = new Content(content);
   try {
     await newContent.save();

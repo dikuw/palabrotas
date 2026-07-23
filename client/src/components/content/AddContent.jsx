@@ -7,6 +7,7 @@ import { useAuthStore } from '../../store/auth';
 import { useContentStore } from '../../store/content';
 import { useNotificationStore } from '../../store/notification';
 import { ALL_COUNTRIES_CODE, countries } from '../shared/countries';
+import { NoPermissionDiv } from '../shared/index';
 
 const OuterContainer = styled.div`
   padding: 20px;
@@ -129,8 +130,8 @@ export default function AddContent() {
     country: "",
     hint: "",
     exampleSentence: "",
-    owner: authStatus.user ? authStatus.user._id : "66f97a0ef1de0db4e4c254eb",
-    author: authStatus.user ? authStatus.user.name : "Anonymous",
+    owner: authStatus.user?._id || "",
+    author: authStatus.user?.name || "",
   });
 
   const [errors, setErrors] = useState({});
@@ -169,6 +170,10 @@ export default function AddContent() {
       }
     }
   };
+
+  if (!authStatus.isLoggedIn || !authStatus.user) {
+    return <NoPermissionDiv divLabel={t("Please log in to view this page")} />;
+  }
 
   return (
     <OuterContainer>

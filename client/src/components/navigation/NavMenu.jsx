@@ -105,9 +105,11 @@ export default function NavMenu(props) {
       <Li $isActive={location.pathname === '/'}>
         <Link $isActive={location.pathname === '/'} onClick={() => handleClick('/', menuOpen)}>{t("Home")}</Link>
       </Li>
-      <Li $isActive={location.pathname === '/addContent'}>
-        <Link $isActive={location.pathname === '/addContent'} onClick={() => handleClick('/addContent', menuOpen)}>{t("Add")}</Link>
-      </Li>
+      {props.isLoggedIn && (
+        <Li $isActive={location.pathname === '/addContent'}>
+          <Link $isActive={location.pathname === '/addContent'} onClick={() => handleClick('/addContent', menuOpen)}>{t("Add")}</Link>
+        </Li>
+      )}
       {props.isLoggedIn ? (
         <>
           <Li $isActive={location.pathname === '/account'}>
