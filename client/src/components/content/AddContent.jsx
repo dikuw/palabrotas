@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { useAuthStore } from '../../store/auth';
 import { useContentStore } from '../../store/content';
 import { useNotificationStore } from '../../store/notification';
-import { countries } from '../shared/countries';
+import { ALL_COUNTRIES_CODE, countries } from '../shared/countries';
 
 const OuterContainer = styled.div`
   padding: 20px;
@@ -205,6 +205,7 @@ export default function AddContent() {
             $hasError={!!errors.country}
           >
             <option value="" disabled hidden>{t("Select a country")}</option>
+            <option value={ALL_COUNTRIES_CODE}>{t("Global")}</option>
             {countries.map((country) => (
               <option key={country.code} value={country.code}>
                 {t(country.name)}
