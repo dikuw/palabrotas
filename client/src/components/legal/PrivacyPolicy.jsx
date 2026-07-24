@@ -1,7 +1,6 @@
 import privacyPolicyHtml from './privacyPolicyContent.html?raw';
+import LegalDocument from './LegalDocument';
 
 export default function PrivacyPolicy() {
-  return (
-    <div dangerouslySetInnerHTML={{ __html: privacyPolicyHtml }} />
-  );
+  return <LegalDocument html={privacyPolicyHtml} />;
 }

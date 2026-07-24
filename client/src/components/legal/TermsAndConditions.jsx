@@ -1,7 +1,6 @@
 import termsAndConditionsHtml from './termsAndConditionsContent.html?raw';
+import LegalDocument from './LegalDocument';
 
 export default function TermsAndConditions() {
-  return (
-    <div dangerouslySetInnerHTML={{ __html: termsAndConditionsHtml }} />
-  );
+  return <LegalDocument html={termsAndConditionsHtml} />;
 }

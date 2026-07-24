@@ -1,7 +1,6 @@
 import cookiePolicyHtml from './cookiePolicyContent.html?raw';
+import LegalDocument from './LegalDocument';
 
 export default function CookiePolicy() {
-  return (
-    <div dangerouslySetInnerHTML={{ __html: cookiePolicyHtml }} />
-  );
+  return <LegalDocument html={cookiePolicyHtml} />;
 }
