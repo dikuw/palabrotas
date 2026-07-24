@@ -1,8 +1,7 @@
 import React, { useState }  from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from "react-i18next";
+import { Link, useNavigate } from 'react-router-dom';
+import { Trans, useTranslation } from "react-i18next";
 import styled from 'styled-components';
-import { InvisibleActionButton, VisibleActionButton } from '../shared/index';
 import { useAuthStore } from '../../store/auth';
 import { useNotificationStore } from '../../store/notification';
 
@@ -79,6 +78,31 @@ const Button = styled.button`
 
   &:disabled {
     opacity: 0.7;
+    cursor: not-allowed;
+  }
+`;
+
+const TermsLabel = styled.label`
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 12px 18px 4px;
+  font-size: 14px;
+  color: var(--text);
+  cursor: pointer;
+  line-height: 1.4;
+
+  input {
+    margin-top: 2px;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+  }
+
+  a {
+    color: var(--primary);
+    text-decoration: underline;
   }
 `;
 
@@ -99,6 +123,7 @@ export default function Register() {
     password: "",
     confirmPassword: "",
   });
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const [errors, setErrors] = useState({});
 
@@ -121,6 +146,9 @@ export default function Register() {
     if (formData.password !== formData.confirmPassword) {
       newErrors.password = t("Passwords do not match.");
       newErrors.confirmPassword = t("Passwords do not match.");
+    }
+    if (!acceptedTerms) {
+      newErrors.acceptedTerms = t("Please accept the Privacy Policy and Terms and Conditions.");
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -188,8 +216,29 @@ export default function Register() {
           />
           {errors.confirmPassword && <ErrorText>{errors.confirmPassword}</ErrorText>}
 
+          <TermsLabel>
+            <input
+              type="checkbox"
+              checked={acceptedTerms}
+              onChange={(e) => {
+                setAcceptedTerms(e.target.checked);
+                setErrors(prev => ({ ...prev, acceptedTerms: '' }));
+              }}
+            />
+            <span>
+              <Trans
+                i18nKey="Accept the <privacyLink>Privacy Policy</privacyLink> and <termsLink>Terms and Conditions</termsLink>"
+                components={{
+                  privacyLink: <Link to="/privacy" onClick={(e) => e.stopPropagation()} />,
+                  termsLink: <Link to="/terms" onClick={(e) => e.stopPropagation()} />,
+                }}
+              />
+            </span>
+          </TermsLabel>
+          {errors.acceptedTerms && <ErrorText>{errors.acceptedTerms}</ErrorText>}
+
           <ButtonContainer>
-            <Button type="submit" $primary>
+            <Button type="submit" $primary disabled={!acceptedTerms}>
               {t("Register")}
             </Button>
 
