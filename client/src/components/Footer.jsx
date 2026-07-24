@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
@@ -27,9 +28,11 @@ const StyledFooter = styled.footer`
 const StyledLegal = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: center;
   flex-wrap: wrap;
+  gap: 8px 16px;
   color: #FFFFFF;
-  flex:  1 100%;
+  flex: 1 100%;
   a {
     color: #FFFFFF;
   }
@@ -38,14 +41,25 @@ const StyledLegal = styled.div`
   }
 `;
 
+const LegalLinks = styled.p`
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+`;
+
 export default function Footer() {
   const { t } = useTranslation();
   return (
-    <StyledFooter >
+    <StyledFooter>
       <StyledLegal>
         <p>&copy; 2024-2026</p>
+        <LegalLinks>
+          <Link to="/privacy">{t("Privacy Policy")}</Link>
+          <Link to="/terms">{t("Terms of Use")}</Link>
+        </LegalLinks>
         <p>{t("Created with")}<a rel="noopener noreferrer" href="http://www.dikuw.com/" target="_blank"> 🖤</a></p>
       </StyledLegal>
     </StyledFooter>
   );
-};
+}

@@ -25,6 +25,9 @@ import NotificationContainer from './components/notifications/NotificationContai
 import Footer from './components/Footer';
 import AddFeedback from './components/feedback/AddFeedback';
 import AddTag from './components/tag/AddTag';
+import PrivacyPolicy from './components/legal/PrivacyPolicy';
+import CookiePolicy from './components/legal/CookiePolicy';
+import TermsAndConditions from './components/legal/TermsAndConditions';
 
 const StyledAppContainer = styled.div`
   min-height: 100vh;
@@ -188,6 +191,15 @@ function App() {
                 />
               </>
             }
+          />
+          <Route path="/privacy" 
+            element={<PrivacyPolicy />}
+          />
+          <Route path="/cookies" 
+            element={<CookiePolicy />}
+          />
+          <Route path="/terms" 
+            element={<TermsAndConditions />}
           />
         </Routes>
         <NotificationContainer />
