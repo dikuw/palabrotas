@@ -28,6 +28,7 @@ import AddTag from './components/tag/AddTag';
 import PrivacyPolicy from './components/legal/PrivacyPolicy';
 import CookiePolicy from './components/legal/CookiePolicy';
 import TermsAndConditions from './components/legal/TermsAndConditions';
+import ContactForm from './components/contact/ContactForm';
 
 const StyledAppContainer = styled.div`
   min-height: 100vh;
@@ -200,6 +201,9 @@ function App() {
           />
           <Route path="/terms" 
             element={<TermsAndConditions />}
+          />
+          <Route path="/contact" 
+            element={<ContactForm />}
           />
         </Routes>
         <NotificationContainer />

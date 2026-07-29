@@ -55,6 +55,7 @@ export default function Footer() {
       <StyledLegal>
         <p>&copy; 2024-2026</p>
         <LegalLinks>
+          <Link to="/contact">{t("Contact")}</Link>
           <Link to="/privacy">{t("Privacy Policy")}</Link>
           <Link to="/terms">{t("Terms of Use")}</Link>
         </LegalLinks>
