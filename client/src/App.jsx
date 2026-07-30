@@ -12,6 +12,8 @@ import Navigation from './components/navigation/Navigation';
 import Popup from './components/shared/Popup';
 import Register from './components/login/Register';
 import LocalLogin from './components/login/LocalLogin';
+import ForgotPassword from './components/login/ForgotPassword';
+import ResetPassword from './components/login/ResetPassword';
 import Account from './components/account/Account';
 import Flashcards from './components/flashcards/Flashcards';
 import Course from './components/course/Course';
@@ -106,13 +108,16 @@ function App() {
               <>
                 <LocalLogin
                   isLoggedIn={authStatus.isLoggedIn} 
-                  // isPasswordIncorrect={isPasswordIncorrect}
-                  // resetPasswordIncorrect={resetPasswordIncorrect}
                   loginUser={loginUser}
-                  // forgotUser={forgotUser} 
                 />
               </>
             }
+          />
+          <Route path="/forgot-password"
+            element={<ForgotPassword />}
+          />
+          <Route path="/reset-password"
+            element={<ResetPassword />}
           />
           <Route path="/content/:id" 
             element={

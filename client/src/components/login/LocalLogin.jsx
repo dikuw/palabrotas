@@ -1,9 +1,8 @@
 import React, { useState }  from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
-import { InvisibleActionButton, VisibleActionButton } from '../shared/index.js';
 import GoogleLogin from './GoogleLogin';
 
 import { useAuthStore } from '../../store/auth';
@@ -123,6 +122,15 @@ const GoogleContainer = styled.div`
   width: 100%;
 `;
 
+const ForgotLink = styled(Link)`
+  display: block;
+  text-align: center;
+  margin: 4px 0 12px;
+  font-size: 14px;
+  color: var(--primary);
+  text-decoration: underline;
+`;
+
 export default function LocalLogin(props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -166,16 +174,6 @@ export default function LocalLogin(props) {
       }
     }
   };
-  
-  const forgotClick = (event) => {
-    event.preventDefault();
-    //  TODO validate forgot password form
-    const user = {
-      email: forgotEmailRef.current.value,
-    };
-    props.forgotUser(user);
-    event.currentTarget.reset();
-  };
 
   const handleClick = (link) => {
     navigate(link);
@@ -206,6 +204,8 @@ export default function LocalLogin(props) {
             $hasError={!!errors.password}
           />
           {errors.password && <ErrorText>{errors.password}</ErrorText>}
+
+          <ForgotLink to="/forgot-password">{t('Forgot your password')}</ForgotLink>
 
           <ButtonContainer>
             <Button type="submit" $primary>

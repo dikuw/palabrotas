@@ -1,8 +1,28 @@
 import passport from 'passport';
 import crypto from 'crypto';
+import mongoose from 'mongoose';
 import User from '../models/User.js';
-// const promisify = require('es6-promisify');
-// const mail = require('../handlers/mail');
+import { sendEmail, getFrontendUrl } from '../handlers/mail.js';
+import { rateLimit } from '../handlers/rateLimit.js';
+
+const RESET_TOKEN_TTL_MS = 60 * 60 * 1000; // 1 hour
+const GENERIC_FORGOT_MESSAGE =
+  'If an account exists with that email, a reset link has been sent.';
+
+function hashResetToken(token) {
+  return crypto.createHash('sha256').update(token).digest('hex');
+}
+
+async function invalidateUserSessions(userId) {
+  try {
+    const sessions = mongoose.connection.collection('sessions');
+    await sessions.deleteMany({
+      session: new RegExp(String(userId)),
+    });
+  } catch (error) {
+    console.error('Error invalidating sessions after password reset:', error.message);
+  }
+}
 
 export const getCurrentUser = async (req, res) => {
   if (req.user) {
@@ -144,65 +164,157 @@ export const isAdmin = (req, res, next) => {
   res.redirect('/Devices');
 };
 
-export const forgot = async (req, res) => {
-  const user = await User.findOne({ email: req.body.email });
-  if (!user) {
-    req.flash('error', 'No user associated with that email. Please register a new account.');
-    return res.redirect('/register');
+export const forgotPassword = async (req, res) => {
+  try {
+    const email = String(req.body.email || '').trim().toLowerCase();
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!email || !emailPattern.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide a valid email address.',
+      });
+    }
+
+    const ip = req.ip || req.socket?.remoteAddress || 'unknown';
+    const ipLimit = rateLimit({
+      key: `forgot-ip:${ip}`,
+      limit: 5,
+      windowMs: 15 * 60 * 1000,
+    });
+    const emailLimit = rateLimit({
+      key: `forgot-email:${email}`,
+      limit: 3,
+      windowMs: 15 * 60 * 1000,
+    });
+
+    if (!ipLimit.allowed || !emailLimit.allowed) {
+      return res.status(429).json({
+        success: false,
+        message: 'Too many reset requests. Please try again later.',
+      });
+    }
+
+    const user = await User.findOne({ email });
+
+    // Always return the same success response (don't leak account existence)
+    if (!user) {
+      return res.json({ success: true, message: GENERIC_FORGOT_MESSAGE });
+    }
+
+    const rawToken = crypto.randomBytes(32).toString('hex');
+    user.resetPasswordToken = hashResetToken(rawToken);
+    user.resetPasswordExpires = new Date(Date.now() + RESET_TOKEN_TTL_MS);
+    await user.save();
+
+    const resetURL = `${getFrontendUrl()}/reset-password?token=${rawToken}`;
+
+    await sendEmail({
+      to: user.email,
+      subject: 'Reset your Palabrotas password',
+      textBody: [
+        'You requested a password reset for your Palabrotas account.',
+        '',
+        'Open this link to set a new password (expires in 1 hour):',
+        resetURL,
+        '',
+        'If you did not request this, you can ignore this email.',
+      ].join('\n'),
+      htmlBody: `
+        <p>You requested a password reset for your Palabrotas account.</p>
+        <p><a href="${resetURL}">Set a new password</a></p>
+        <p>This link expires in 1 hour.</p>
+        <p>If you did not request this, you can ignore this email.</p>
+      `,
+    });
+
+    return res.json({ success: true, message: GENERIC_FORGOT_MESSAGE });
+  } catch (error) {
+    console.error('Forgot password error:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: 'Unable to process password reset request. Please try again later.',
+    });
   }
-  user.resetPasswordToken = crypto.randomBytes(20).toString('hex');
-  user.resetPasswordExpires = Date.now() + 3600000;
-  await user.save();
-  const resetURL = `http://${req.headers.host}/account/reset/${user.resetPasswordToken}`;
-  await mail.send({
-    user,
-    subject: 'Password Reset',
-    resetURL,
-    filename: 'password-reset'
-  })
-  req.flash('success', `You have been emailed a password reset link`);
-  res.redirect('/');
 };
 
-export const reset = async (req, res) => {
-  const user = await User.findOne({
-    resetPasswordToken: req.params.token,
-    resetPasswordExpires: { $gt: Date.now() }
-  });
-  if (!user) {
-    req.flash('error', 'Password reset is invalid or has expired');
-    return res.redirect('/login');
-  }
-  res.render('reset', { title: 'Reset your Password' });
-};
+export const resetPassword = async (req, res) => {
+  try {
+    const { token, password, confirmPassword } = req.body;
 
-export const confirmPasswords = (req, res, next) => {
-  if (req.body.password === req.body['password-confirm']) {
-    next();
-    return;
-  }
-  req.flash('error', 'Passwords do not match');
-  res.redirect('back');
-};
+    if (!token || !password || !confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Token, password, and confirm password are required.',
+      });
+    }
 
-export const updateUser = async (req, res) => {
-  const user = await User.findOne({
-    resetPasswordToken: req.params.token,
-    resetPasswordExpires: { $gt: Date.now() }
-  });
-  if (!user) {
-    req.flash('error', 'Password reset is invalid or has expired');
-    return res.redirect('/login');
+    if (password !== confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Passwords do not match.',
+      });
+    }
+
+    if (String(password).length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must be at least 8 characters long.',
+      });
+    }
+
+    const hashedToken = hashResetToken(String(token));
+    const user = await User.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpires: { $gt: new Date() },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password reset link is invalid or has expired. Please request a new one.',
+      });
+    }
+
+    await user.setPassword(password);
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    await invalidateUserSessions(user._id);
+
+    try {
+      await sendEmail({
+        to: user.email,
+        subject: 'Your Palabrotas password was changed',
+        textBody: [
+          'Your Palabrotas account password was just changed.',
+          '',
+          'If this was you, no further action is needed.',
+          'If this was not you, please contact us immediately at michael@dikuw.com.',
+        ].join('\n'),
+        htmlBody: `
+          <p>Your Palabrotas account password was just changed.</p>
+          <p>If this was you, no further action is needed.</p>
+          <p>If this was not you, please contact us immediately at
+            <a href="mailto:michael@dikuw.com">michael@dikuw.com</a>.</p>
+        `,
+      });
+    } catch (mailError) {
+      console.error('Password-change confirmation email failed:', mailError.message);
+    }
+
+    return res.json({
+      success: true,
+      message: 'Password updated successfully. You can now log in.',
+    });
+  } catch (error) {
+    console.error('Reset password error:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: 'Unable to reset password. Please try again later.',
+    });
   }
-  await User.setPassword(req.body.password);
-  // const setPassword = promisify(user.setPassword, user);
-  await setPassword(req.body.password);
-  user.resetPasswordToken = undefined;
-  user.resetPasswordExpires = undefined;
-  const updatedUser = await user.save();
-  await req.login(updatedUser);
-  // req.flash('Success', 'Your password has been reset. You are logged in.');
-  // res.redirect('/');
 };
 
 export const passportGoogle = (req, res, next) => {

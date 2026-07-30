@@ -142,5 +142,33 @@ export const useAuthStore = create(
           throw error;
         }
       },
+      requestPasswordReset: async (email) => {
+        const res = await fetch('/api/auth/forgot-password', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email }),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          throw new Error(data.message || 'Unable to send reset email. Please try again.');
+        }
+        return data;
+      },
+      resetPassword: async ({ token, password, confirmPassword }) => {
+        const res = await fetch('/api/auth/reset-password', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ token, password, confirmPassword }),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          throw new Error(data.message || 'Unable to reset password. Please try again.');
+        }
+        return data;
+      },
     }),
 );
