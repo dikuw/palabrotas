@@ -170,5 +170,55 @@ export const useAuthStore = create(
         }
         return data;
       },
+      verifyEmail: async (token) => {
+        const res = await fetch('/api/auth/verify-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({ token }),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          throw new Error(data.message || 'Unable to verify email. Please try again.');
+        }
+        if (data.user) {
+          set((state) => ({
+            authStatus: {
+              ...state.authStatus,
+              isLoggedIn: state.authStatus.isLoggedIn || true,
+              user: {
+                ...(state.authStatus.user || {}),
+                ...data.user,
+              },
+              isLoading: false,
+            },
+          }));
+        }
+        return data;
+      },
+      resendVerificationEmail: async () => {
+        const res = await fetch('/api/auth/resend-verification', {
+          method: 'POST',
+          credentials: 'include',
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          throw new Error(data.message || 'Unable to send verification email. Please try again later.');
+        }
+        if (data.user) {
+          set((state) => ({
+            authStatus: {
+              ...state.authStatus,
+              user: {
+                ...(state.authStatus.user || {}),
+                ...data.user,
+              },
+            },
+          }));
+        }
+        return data;
+      },
     }),
 );

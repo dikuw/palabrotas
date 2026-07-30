@@ -29,8 +29,14 @@ passport.use(
           // If user exists but was created with local strategy, update with Google ID
           if (!existingUser.googleId) {
             existingUser.googleId = profile.id;
-            await existingUser.save();
           }
+          // Google has verified this email address
+          if (!existingUser.emailVerified) {
+            existingUser.emailVerified = true;
+            existingUser.emailVerificationToken = undefined;
+            existingUser.emailVerificationExpires = undefined;
+          }
+          await existingUser.save();
           return done(null, existingUser);
         }
 
@@ -39,6 +45,7 @@ passport.use(
           email: profile.emails[0].value,
           name: profile.displayName,
           googleId: profile.id,
+          emailVerified: true,
           // Set a random password since we won't use it
           password: Math.random().toString(36).slice(-8)
         });

@@ -14,6 +14,7 @@ import Register from './components/login/Register';
 import LocalLogin from './components/login/LocalLogin';
 import ForgotPassword from './components/login/ForgotPassword';
 import ResetPassword from './components/login/ResetPassword';
+import VerifyEmail from './components/login/VerifyEmail';
 import Account from './components/account/Account';
 import Flashcards from './components/flashcards/Flashcards';
 import Course from './components/course/Course';
@@ -31,6 +32,7 @@ import PrivacyPolicy from './components/legal/PrivacyPolicy';
 import CookiePolicy from './components/legal/CookiePolicy';
 import TermsAndConditions from './components/legal/TermsAndConditions';
 import ContactForm from './components/contact/ContactForm';
+import EmailVerificationBanner from './components/shared/EmailVerificationBanner';
 
 const StyledAppContainer = styled.div`
   min-height: 100vh;
@@ -73,6 +75,7 @@ function App() {
   return (
     <StyledAppContainer>
       <TopBanner isLoggedIn={authStatus.isLoggedIn} name={authStatus.user ? authStatus.user.name : t("guest")}/>
+      <EmailVerificationBanner />
       <Header /> 
       <Navigation isLoggedIn={authStatus.isLoggedIn} isAdmin={authStatus.user ? authStatus.user.isAdmin : false} logoutUser={logoutUser} />
       
@@ -118,6 +121,9 @@ function App() {
           />
           <Route path="/reset-password"
             element={<ResetPassword />}
+          />
+          <Route path="/verify-email"
+            element={<VerifyEmail />}
           />
           <Route path="/content/:id" 
             element={

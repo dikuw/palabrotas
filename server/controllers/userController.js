@@ -1,5 +1,6 @@
 import User from '../models/User.js';
 import Streak from '../models/Streak.js';
+import { issueEmailVerification } from '../handlers/emailVerification.js';
 
 export const validateRegister = async (req, res, next) => {
   req.sanitizeBody('name');
@@ -27,8 +28,17 @@ export const register = async (req, res, next) => {
     const user = new User({ 
       email: req.body.email, 
       name: req.body.name,
+      emailVerified: false,
     });
     await User.register(user, req.body.password);
+
+    try {
+      await issueEmailVerification(user);
+    } catch (mailError) {
+      // Don't block signup if verification email fails
+      console.error('Verification email failed after register:', mailError.message);
+    }
+
     next();
   } catch (error) {
     if (error.name === 'UserExistsError') {

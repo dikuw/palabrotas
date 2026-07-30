@@ -4,6 +4,10 @@ import mongoose from 'mongoose';
 import User from '../models/User.js';
 import { sendEmail, getFrontendUrl } from '../handlers/mail.js';
 import { rateLimit } from '../handlers/rateLimit.js';
+import {
+  findUserByVerificationToken,
+  issueEmailVerification,
+} from '../handlers/emailVerification.js';
 
 const RESET_TOKEN_TTL_MS = 60 * 60 * 1000; // 1 hour
 const GENERIC_FORGOT_MESSAGE =
@@ -11,6 +15,17 @@ const GENERIC_FORGOT_MESSAGE =
 
 function hashResetToken(token) {
   return crypto.createHash('sha256').update(token).digest('hex');
+}
+
+function publicUser(user) {
+  return {
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    isAdmin: user.isAdmin || false,
+    // Legacy accounts (no field) are treated as verified; new signups set false explicitly
+    emailVerified: user.emailVerified == null ? true : Boolean(user.emailVerified),
+  };
 }
 
 async function invalidateUserSessions(userId) {
@@ -26,7 +41,7 @@ async function invalidateUserSessions(userId) {
 
 export const getCurrentUser = async (req, res) => {
   if (req.user) {
-    res.json({ user: req.user });
+    res.json({ user: publicUser(req.user) });
   } else {
     res.json({ error: 'No user found' });
   };
@@ -64,12 +79,7 @@ export const authStatus = (req, res) => {
   if (req.isAuthenticated()) {
     res.json({
       authenticated: true,
-      user: {
-        _id: req.user._id,
-        name: req.user.name,
-        email: req.user.email,
-        isAdmin: req.user.isAdmin || false
-      }
+      user: publicUser(req.user),
     });
   } else {
     res.json({ authenticated: false, user: null });
@@ -119,12 +129,7 @@ export const login = async (req, res) => {
 
     res.json({
       authenticated: true,
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        isAdmin: user.isAdmin || false
-      }
+      user: publicUser(user),
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -319,6 +324,116 @@ export const resetPassword = async (req, res) => {
 
 export const passportGoogle = (req, res, next) => {
   passport.authenticate('google', { scope: ['profile', 'email'] })(req, res, next);
+};
+
+export const verifyEmail = async (req, res) => {
+  try {
+    const token = String(req.body.token || req.query.token || '').trim();
+    if (!token) {
+      return res.status(400).json({
+        success: false,
+        code: 'MISSING_TOKEN',
+        message: 'Verification token is required.',
+      });
+    }
+
+    const user = await findUserByVerificationToken(token);
+    if (!user) {
+      if (req.isAuthenticated?.() && req.user?.emailVerified) {
+        return res.json({
+          success: true,
+          code: 'ALREADY_VERIFIED',
+          message: 'Your email is already verified.',
+          user: publicUser(req.user),
+        });
+      }
+      return res.status(400).json({
+        success: false,
+        code: 'INVALID_OR_EXPIRED',
+        message: 'This verification link is invalid or has expired. Please request a new one.',
+      });
+    }
+
+    if (user.emailVerified) {
+      user.emailVerificationToken = undefined;
+      user.emailVerificationExpires = undefined;
+      await user.save();
+      return res.json({
+        success: true,
+        code: 'ALREADY_VERIFIED',
+        message: 'Your email is already verified.',
+        user: publicUser(user),
+      });
+    }
+
+    user.emailVerified = true;
+    user.emailVerificationToken = undefined;
+    user.emailVerificationExpires = undefined;
+    await user.save();
+
+    return res.json({
+      success: true,
+      code: 'VERIFIED',
+      message: "You're verified!",
+      user: publicUser(user),
+    });
+  } catch (error) {
+    console.error('Verify email error:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: 'Unable to verify email. Please try again later.',
+    });
+  }
+};
+
+export const resendVerificationEmail = async (req, res) => {
+  try {
+    if (!req.isAuthenticated || !req.isAuthenticated() || !req.user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Please log in to resend a verification email.',
+      });
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found.' });
+    }
+
+    if (user.emailVerified) {
+      return res.json({
+        success: true,
+        code: 'ALREADY_VERIFIED',
+        message: 'Your email is already verified.',
+        user: publicUser(user),
+      });
+    }
+
+    const userLimit = rateLimit({
+      key: `verify-resend:${user._id}`,
+      limit: 3,
+      windowMs: 60 * 60 * 1000,
+    });
+    if (!userLimit.allowed) {
+      return res.status(429).json({
+        success: false,
+        message: 'Too many verification emails requested. Please try again later.',
+      });
+    }
+
+    await issueEmailVerification(user);
+
+    return res.json({
+      success: true,
+      message: 'Verification email sent. Please check your inbox.',
+    });
+  } catch (error) {
+    console.error('Resend verification error:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: 'Unable to send verification email. Please try again later.',
+    });
+  }
 };
 
 export const googleCallback = (req, res, next) => {
