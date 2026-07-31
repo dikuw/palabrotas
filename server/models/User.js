@@ -39,6 +39,15 @@ const userSchema = new mongoose.Schema({
     unique: true,
     sparse: true
   },
+  status: {
+    type: String,
+    enum: ['active', 'deleted'],
+    default: 'active'
+  },
+  deletedAt: Date,
+  // Optional Stripe fields for when subscriptions are wired up
+  stripeCustomerId: String,
+  stripeSubscriptionId: String,
   lastLogin: Date,
   loginCount: {
     type: Number,

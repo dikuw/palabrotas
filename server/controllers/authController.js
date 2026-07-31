@@ -1,6 +1,5 @@
 import passport from 'passport';
 import crypto from 'crypto';
-import mongoose from 'mongoose';
 import User from '../models/User.js';
 import { sendEmail, getFrontendUrl } from '../handlers/mail.js';
 import { rateLimit } from '../handlers/rateLimit.js';
@@ -8,6 +7,7 @@ import {
   findUserByVerificationToken,
   issueEmailVerification,
 } from '../handlers/emailVerification.js';
+import { invalidateUserSessions } from '../handlers/sessions.js';
 
 const RESET_TOKEN_TTL_MS = 60 * 60 * 1000; // 1 hour
 const GENERIC_FORGOT_MESSAGE =
@@ -28,15 +28,8 @@ function publicUser(user) {
   };
 }
 
-async function invalidateUserSessions(userId) {
-  try {
-    const sessions = mongoose.connection.collection('sessions');
-    await sessions.deleteMany({
-      session: new RegExp(String(userId)),
-    });
-  } catch (error) {
-    console.error('Error invalidating sessions after password reset:', error.message);
-  }
+function isDeletedUser(user) {
+  return user?.status === 'deleted';
 }
 
 export const getCurrentUser = async (req, res) => {
@@ -60,6 +53,13 @@ export const passportLocal = (req, res, next) => {
       return res.status(401).json({ 
         success: false, 
         message: info?.message || 'Invalid email or password' 
+      });
+    }
+
+    if (isDeletedUser(user)) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid email or password',
       });
     }
 
@@ -116,6 +116,13 @@ export const passportTW = (req, res, next) => {
 export const login = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
+
+    if (!user || isDeletedUser(user)) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid email or password',
+      });
+    }
     
     // Update login stats
     user.lastLogin = new Date();
@@ -445,7 +452,7 @@ export const googleCallback = (req, res, next) => {
       return res.redirect(`${frontendURL}/login?error=Authentication failed`);
     }
     
-    if (!user) {
+    if (!user || isDeletedUser(user)) {
       const frontendURL = process.env.NODE_ENV === 'production'
         ? 'https://www.palabrotas.app'
         : 'http://localhost:3000';

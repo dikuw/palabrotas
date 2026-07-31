@@ -4,7 +4,17 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import User from '../models/User.js';
 
 passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+
+const deserializeUser = User.deserializeUser();
+passport.deserializeUser((id, done) => {
+  deserializeUser(id, (err, user) => {
+    if (err) return done(err);
+    if (user && user.status === 'deleted') {
+      return done(null, false);
+    }
+    return done(null, user);
+  });
+});
 
 passport.use(User.createStrategy());
 
@@ -25,7 +35,7 @@ passport.use(
         // Check if user already exists
         const existingUser = await User.findOne({ email: profile.emails[0].value });
         
-        if (existingUser) {
+        if (existingUser && existingUser.status !== 'deleted') {
           // If user exists but was created with local strategy, update with Google ID
           if (!existingUser.googleId) {
             existingUser.googleId = profile.id;

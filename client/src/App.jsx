@@ -16,6 +16,7 @@ import ForgotPassword from './components/login/ForgotPassword';
 import ResetPassword from './components/login/ResetPassword';
 import VerifyEmail from './components/login/VerifyEmail';
 import Account from './components/account/Account';
+import AccountDeleted from './components/account/AccountDeleted';
 import Flashcards from './components/flashcards/Flashcards';
 import Course from './components/course/Course';
 import Chat from './components/chat/Chat';
@@ -140,6 +141,9 @@ function App() {
                 />
               </>
             }
+          />
+          <Route path="/account-deleted"
+            element={<AccountDeleted />}
           />
           <Route path="/flashcards" 
             element={

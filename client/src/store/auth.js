@@ -220,5 +220,21 @@ export const useAuthStore = create(
         }
         return data;
       },
+      deleteAccount: async (confirmation) => {
+        const res = await fetch('/api/user/delete-account', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({ confirmation }),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          throw new Error(data.message || 'Unable to delete account. Please try again later.');
+        }
+        set({ authStatus: { isLoggedIn: false, user: null, isLoading: false } });
+        return data;
+      },
     }),
 );

@@ -1,7 +1,7 @@
 import express from 'express';
 import passport from 'passport';
 import { login, isAdmin } from '../controllers/authController.js';
-import { register, getUsers, updateStreak, getCurrentStreak, getLongestStreak, getAppIntro, setAppIntro } from '../controllers/userController.js';
+import { register, getUsers, updateStreak, getCurrentStreak, getLongestStreak, getAppIntro, setAppIntro, deleteAccount } from '../controllers/userController.js';
 
 const router = express.Router();
 
@@ -13,6 +13,7 @@ router.post('/register',
   passport.authenticate('local'),
   login
 );
+router.post('/delete-account', deleteAccount);
 router.get('/getUsers', isAdmin, getUsers);
 router.put('/updateStreak/:userId', updateStreak);
 router.get('/getCurrentStreak/:userId', getCurrentStreak);

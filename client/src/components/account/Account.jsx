@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 import { useContentStore } from '../../store/content';
 import { useAuthStore } from '../../store/auth';
 import { useUserStore } from '../../store/user';
@@ -10,6 +11,7 @@ import Banner from '../header/Banner';
 import AccountGrid from './AccountGrid';
 import Streak from './Streak';
 import Spinner from '../shared/Spinner';
+import DeleteAccountModal from './DeleteAccountModal';
 
 const StyledWrapperDiv = styled.div`
   width: 90%;
@@ -67,10 +69,45 @@ const StatusText = styled.p`
   font-size: 0.9rem;
 `;
 
+const DangerZone = styled.div`
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid #ddd;
+`;
+
+const DangerTitle = styled.h2`
+  font-size: 1.1rem;
+  margin: 0 0 8px;
+  color: #c0392b;
+`;
+
+const DangerText = styled.p`
+  margin: 0 0 14px;
+  color: #555;
+  font-size: 0.95rem;
+  line-height: 1.4;
+`;
+
+const DeleteAccountButton = styled.button`
+  padding: 8px 16px;
+  border-radius: 24px;
+  border: 1px solid #c0392b;
+  background: white;
+  color: #c0392b;
+  font-weight: bold;
+  cursor: pointer;
+
+  &:hover {
+    background: #c0392b;
+    color: white;
+  }
+`;
+
 export default function Account() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { getContentsByUserId } = useContentStore();
-  const { authStatus, resendVerificationEmail } = useAuthStore();
+  const { authStatus, resendVerificationEmail, deleteAccount } = useAuthStore();
   const { getCurrentStreak, getLongestStreak } = useUserStore();
   const [userContents, setUserContents] = useState([]);
   const [currentStreak, setCurrentStreak] = useState(0);
@@ -79,6 +116,9 @@ export default function Account() {
   const [isStreakLoading, setIsStreakLoading] = useState(true);
   const [isResending, setIsResending] = useState(false);
   const [resendMessage, setResendMessage] = useState('');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
 
   useEffect(() => {
     async function fetchData() {
@@ -123,6 +163,18 @@ export default function Account() {
     }
   };
 
+  const handleDeleteConfirm = async (confirmation) => {
+    setIsDeleting(true);
+    setDeleteError('');
+    try {
+      await deleteAccount(confirmation);
+      navigate('/account-deleted', { replace: true });
+    } catch (error) {
+      setDeleteError(error.message || t('Unable to delete account. Please try again later.'));
+      setIsDeleting(false);
+    }
+  };
+
   if (!authStatus.isLoggedIn || !authStatus.user) {
     return <NoPermissionDiv divLabel={t("Please log in to view this page")}></NoPermissionDiv>
   }
@@ -156,6 +208,30 @@ export default function Account() {
         </SpinnerContainer>
       ) : (
         <AccountGrid contents={userContents} />
+      )}
+
+      <DangerZone>
+        <DangerTitle>{t('Delete Account')}</DangerTitle>
+        <DangerText>
+          {t('Permanently delete your account and anonymize your personal data. This cannot be undone.')}
+        </DangerText>
+        <DeleteAccountButton type="button" onClick={() => {
+          setDeleteError('');
+          setShowDeleteModal(true);
+        }}>
+          {t('Delete Account')}
+        </DeleteAccountButton>
+      </DangerZone>
+
+      {showDeleteModal && (
+        <DeleteAccountModal
+          isDeleting={isDeleting}
+          error={deleteError}
+          onCancel={() => {
+            if (!isDeleting) setShowDeleteModal(false);
+          }}
+          onConfirm={handleDeleteConfirm}
+        />
       )}
     </StyledWrapperDiv>
   )

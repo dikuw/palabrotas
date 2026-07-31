@@ -1,6 +1,9 @@
 import User from '../models/User.js';
+import Content from '../models/Content.js';
 import Streak from '../models/Streak.js';
 import { issueEmailVerification } from '../handlers/emailVerification.js';
+import { cancelActiveSubscription } from '../handlers/stripe.js';
+import { invalidateUserSessions } from '../handlers/sessions.js';
 
 export const validateRegister = async (req, res, next) => {
   req.sanitizeBody('name');
@@ -227,6 +230,102 @@ export const getUsers = async (req, res) => {
   } catch (error) {
     console.error('Error fetching users:', error);
     res.status(500).json({ message: 'Error fetching users' });
+  }
+};
+
+/**
+ * Soft-delete / anonymize the authenticated user's account.
+ * Requires body.confirmation === 'DELETE'.
+ */
+export const deleteAccount = async (req, res) => {
+  try {
+    if (!req.isAuthenticated?.() || !req.user) {
+      return res.status(401).json({
+        success: false,
+        message: 'You must be logged in to delete your account.',
+      });
+    }
+
+    if (req.body?.confirmation !== 'DELETE') {
+      return res.status(400).json({
+        success: false,
+        message: 'Please type DELETE to confirm account deletion.',
+      });
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found.',
+      });
+    }
+
+    if (user.status === 'deleted') {
+      return res.status(400).json({
+        success: false,
+        message: 'This account has already been deleted.',
+      });
+    }
+
+    const userId = user._id;
+
+    // 1. Cancel active Stripe subscription first (no-op if not configured)
+    await cancelActiveSubscription(user);
+
+    // 2. Anonymize denormalized author on Content owned by this user
+    //    (match by owner ObjectId — reliable; author string is updated in the same step)
+    await Content.updateMany(
+      { owner: userId },
+      { $set: { author: 'Deleted User' } }
+    );
+
+    // 3. Anonymize the User record (do not hard-delete)
+    await User.findByIdAndUpdate(userId, {
+      $set: {
+        email: `deleted-user-${userId}@deleted.palabrotas.app`,
+        name: 'Deleted User',
+        emailVerified: false,
+        loginHistory: [],
+        status: 'deleted',
+        deletedAt: new Date(),
+      },
+      $unset: {
+        hash: '',
+        salt: '',
+        googleId: '',
+        resetPasswordToken: '',
+        resetPasswordExpires: '',
+        emailVerificationToken: '',
+        emailVerificationExpires: '',
+        stripeCustomerId: '',
+        stripeSubscriptionId: '',
+      },
+    });
+
+    // 4. Invalidate all sessions for this user
+    await invalidateUserSessions(userId);
+
+    // 5. Log out the current request session
+    await new Promise((resolve) => {
+      req.logout((err) => {
+        if (err) {
+          console.error('Logout after account deletion:', err.message);
+        }
+        resolve();
+      });
+    });
+
+    return res.json({
+      success: true,
+      message: 'Your account has been deleted.',
+    });
+  } catch (error) {
+    console.error('Error deleting account:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Unable to delete account. Please try again later.',
+    });
   }
 };
 
