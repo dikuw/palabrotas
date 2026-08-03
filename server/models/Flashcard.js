@@ -40,6 +40,7 @@ flashcardSchema.index({ user: 1, content: 1 }, { unique: true });
 const MINIMUM_INTERVAL = 1;
 const MAXIMUM_INTERVAL = 3650; // 10 years
 const MINIMUM_EASE = 1.3;
+const DEFAULT_EASE = 2.5;
 const HARD_FACTOR = 1.2;
 const EASY_BONUS = 1.3;
 
@@ -60,11 +61,19 @@ flashcardSchema.methods.calculateNextReviewState = function(quality) {
   const nextReviewCount = this.reviewCount + 1;
   const priorInterval = Math.max(this.interval, 1);
 
-  // SM-2 ease update
-  const ease = Math.max(
-    MINIMUM_EASE,
-    this.ease + (0.1 - (5 - numericQuality) * (0.08 + (5 - numericQuality) * 0.02))
-  );
+  // Anki-style ease: Good does not punish; Again/Hard decrease; Easy increases.
+  // (The classic SM-2 q-formula lowered ease on every Good and crushed cards to 1.3.)
+  let ease = this.ease ?? DEFAULT_EASE;
+  if (numericQuality === 0) {
+    ease = Math.max(MINIMUM_EASE, ease - 0.2);
+  } else if (numericQuality === 2) {
+    ease = Math.max(MINIMUM_EASE, ease - 0.15);
+  } else if (numericQuality === 5) {
+    ease = ease + 0.15;
+  } else if (numericQuality === 3 && ease < DEFAULT_EASE) {
+    // Heal historically crushed ease on successful Good reviews
+    ease = Math.min(DEFAULT_EASE, ease + 0.15);
+  }
 
   let interval;
 
@@ -72,24 +81,20 @@ flashcardSchema.methods.calculateNextReviewState = function(quality) {
     // Again → show again today (relearning)
     interval = 0;
   } else if (this.reviewCount === 0) {
-    // First review (leaving new/learning)
+    // First review (graduating from new)
+    // Anki defaults: Hard/Good graduate at 1 day, Easy at 4
     if (numericQuality === 2) interval = 1;       // Hard
-    else if (numericQuality === 3) interval = 3;  // Good
+    else if (numericQuality === 3) interval = 1;  // Good
     else interval = 4;                             // Easy
-  } else if (this.reviewCount === 1) {
-    // Second review
-    if (numericQuality === 2) interval = 3;       // Hard
-    else if (numericQuality === 3) interval = 6;  // Good
-    else interval = Math.round(6 * EASY_BONUS);   // Easy (~8)
   } else if (numericQuality === 2) {
-    // Mature Hard
+    // Hard: modest bump (may stay flat at very low intervals)
     interval = Math.max(MINIMUM_INTERVAL, Math.round(priorInterval * HARD_FACTOR));
   } else if (numericQuality === 3) {
-    // Mature Good
-    interval = Math.max(MINIMUM_INTERVAL, Math.round(priorInterval * ease));
+    // Good: previous × ease, and always at least +1 day so growth can't stall
+    interval = Math.max(priorInterval + 1, Math.round(priorInterval * ease));
   } else {
-    // Mature Easy
-    interval = Math.max(MINIMUM_INTERVAL, Math.round(priorInterval * ease * EASY_BONUS));
+    // Easy: previous × ease × easy-bonus, also at least +1 day
+    interval = Math.max(priorInterval + 1, Math.round(priorInterval * ease * EASY_BONUS));
   }
 
   if (interval > 0) {
