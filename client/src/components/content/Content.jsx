@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaChevronDown, FaChevronUp, FaGlobe } from 'react-icons/fa';
+import { FaChevronDown, FaChevronUp, FaGlobe, FaPlus } from 'react-icons/fa';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
@@ -8,6 +8,7 @@ import ReactCountryFlag from "react-country-flag";
 import { useAuthStore } from '../../store/auth';
 import { useContentStore } from '../../store/content';
 import { useCommentStore } from '../../store/comment';
+import { useFlashcardStore } from '../../store/flashcard';
 import { useNotificationStore } from '../../store/notification';
 
 import CommentForm from '../comment/CommentForm';
@@ -88,6 +89,40 @@ const AuthorInfo = styled.p`
   color: var(--gray);
 `;
 
+const AuthorRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+`;
+
+const AddToFlashcardsButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 24px;
+  border: 1px solid var(--primary);
+  background: white;
+  color: var(--primary);
+  font-weight: bold;
+  font-size: 0.85rem;
+  cursor: pointer;
+  flex-shrink: 0;
+
+  &:hover:not(:disabled) {
+    background: var(--primary);
+    color: white;
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+`;
+
 const TagContainer = styled.div`
   display: flex;
   align-items: flex-start;
@@ -150,11 +185,13 @@ const Content = () => {
   const { authStatus } = useAuthStore();
   const { getContentById } = useContentStore();
   const { comments, getCommentsByContentId, addComment } = useCommentStore();
+  const { addFlashcard } = useFlashcardStore();
   const addNotification = useNotificationStore(state => state.addNotification);
   const [content, setContent] = useState(null);
   const [showAddTag, setShowAddTag] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [isAddingFlashcard, setIsAddingFlashcard] = useState(false);
 
   useEffect(() => {
     const fetchContentAndComments = async () => {
@@ -193,6 +230,31 @@ const Content = () => {
     setRefreshTrigger(prev => prev + 1);
   };
 
+  const handleAddToFlashcard = async () => {
+    if (!authStatus.isLoggedIn || !authStatus.user?._id) {
+      addNotification(t('Please log in to add flashcards'), 'info');
+      return;
+    }
+
+    setIsAddingFlashcard(true);
+    try {
+      const result = await addFlashcard({
+        userId: authStatus.user._id,
+        contentId: content._id,
+      });
+      if (result.success) {
+        addNotification(t('Added to flashcards successfully!'), 'success');
+      } else {
+        addNotification(result.message, 'info');
+      }
+    } catch (error) {
+      console.error('Error adding to flashcards:', error);
+      addNotification(t('Failed to add to flashcards. Please try again.'), 'error');
+    } finally {
+      setIsAddingFlashcard(false);
+    }
+  };
+
   if (!content) {
     return <div>{t('Loading...')}</div>;
   }
@@ -216,7 +278,20 @@ const Content = () => {
           {content.exampleSentence && (
             <ExampleSentence>{content.exampleSentence}</ExampleSentence>
           )}
-          <AuthorInfo>{t('Created by')}: {displayAuthor(content)}</AuthorInfo>
+          <AuthorRow>
+            <AuthorInfo>{t('Created by')}: {displayAuthor(content)}</AuthorInfo>
+            {authStatus.isLoggedIn && (
+              <AddToFlashcardsButton
+                type="button"
+                onClick={handleAddToFlashcard}
+                disabled={isAddingFlashcard}
+                title={t('Add to Flashcards')}
+              >
+                <FaPlus aria-hidden />
+                {isAddingFlashcard ? t('Adding...') : t('Add to Flashcards')}
+              </AddToFlashcardsButton>
+            )}
+          </AuthorRow>
           <TagContainer>
             <TagGrid 
               contentId={content._id} 
