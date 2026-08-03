@@ -14,6 +14,7 @@ import CommentForm from '../comment/CommentForm';
 import TagGrid from '../tag/TagGrid';
 import AddTagToContent from '../tag/AddTagToContent';
 import { isAllCountriesCode } from '../shared/countries';
+import { displayAuthor } from '../../utils/displayAuthor';
 
 const OuterContainer = styled.div`
   padding: 20px;
@@ -215,7 +216,7 @@ const Content = () => {
           {content.exampleSentence && (
             <ExampleSentence>{content.exampleSentence}</ExampleSentence>
           )}
-          <AuthorInfo>{t('Created by')}: {content.author}</AuthorInfo>
+          <AuthorInfo>{t('Created by')}: {displayAuthor(content)}</AuthorInfo>
           <TagContainer>
             <TagGrid 
               contentId={content._id} 

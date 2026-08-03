@@ -22,9 +22,19 @@ export const getContentsSortedByVoteDesc = async (req, res) => {
     // Get vote counts for all content
     const voteCounts = await Vote.getVoteCounts();
 
-    // Get all content with their tags using aggregation
+    // Get all content with their tags using aggregation.
+    // Resolve author from the live User record so deleted accounts show "Deleted User"
+    // even if the denormalized author string was missed or is stale.
     const contents = await Content.aggregate([
       { $match: { show: true, isCourseContent: { $ne: true } } },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'owner',
+          foreignField: '_id',
+          as: 'ownerUser'
+        }
+      },
       {
         $lookup: {
           from: 'contenttags',
@@ -42,12 +52,23 @@ export const getContentsSortedByVoteDesc = async (req, res) => {
         }
       },
       {
+        $addFields: {
+          ownerDoc: { $arrayElemAt: ['$ownerUser', 0] },
+        }
+      },
+      {
         $project: {
           _id: { $toString: '$_id' }, // Convert _id to string
           title: 1,
           description: 1,
           country: 1,
-          author: 1,
+          author: {
+            $cond: [
+              { $eq: ['$ownerDoc.status', 'deleted'] },
+              'Deleted User',
+              { $ifNull: ['$ownerDoc.name', '$author'] },
+            ],
+          },
           show: 1,
           createdAt: 1,
           updatedAt: 1,

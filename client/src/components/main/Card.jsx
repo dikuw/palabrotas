@@ -11,6 +11,7 @@ import { useFlashcardStore } from '../../store/flashcard';
 import { useVoteStore } from '../../store/vote';
 import { useNotificationStore } from '../../store/notification';
 import { countries, isAllCountriesCode } from '../shared/countries';
+import { displayAuthor } from '../../utils/displayAuthor';
 
 function getCountryNameByCode(code) {
   if (!code || isAllCountriesCode(code)) return '';
@@ -199,7 +200,7 @@ export default function Card({ item, showEditIcon }) {
           <p>{item.title}</p>
           <p>{item.description}</p>
         </figcaption>
-        <StyledAuthorText>{t('created by')}: {item.author}</StyledAuthorText> 
+        <StyledAuthorText>{t('created by')}: {displayAuthor(item)}</StyledAuthorText> 
         {authStatus.isLoggedIn && (
           <StyledAddToFlashcardIcon 
             onClick={handleAddToFlashcard} 
