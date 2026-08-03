@@ -40,6 +40,7 @@ const ContentContainer = styled.div`
   border-radius: 9px;
   border: 1px solid #000;
   padding: 20px;
+  padding-bottom: 48px;
   position: relative;
   z-index: 4;
 `;
@@ -89,32 +90,21 @@ const AuthorInfo = styled.p`
   color: var(--gray);
 `;
 
-const AuthorRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 4px;
-`;
-
 const AddToFlashcardsButton = styled.button`
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: 24px;
-  border: 1px solid var(--primary);
-  background: white;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  padding: 0;
+  border: none;
+  background: none;
   color: var(--primary);
-  font-weight: bold;
-  font-size: 0.85rem;
+  font-size: 1rem;
   cursor: pointer;
-  flex-shrink: 0;
+  z-index: 5;
+  line-height: 0;
 
   &:hover:not(:disabled) {
-    background: var(--primary);
-    color: white;
+    color: var(--secondary);
   }
 
   &:disabled {
@@ -278,20 +268,7 @@ const Content = () => {
           {content.exampleSentence && (
             <ExampleSentence>{content.exampleSentence}</ExampleSentence>
           )}
-          <AuthorRow>
-            <AuthorInfo>{t('Created by')}: {displayAuthor(content)}</AuthorInfo>
-            {authStatus.isLoggedIn && (
-              <AddToFlashcardsButton
-                type="button"
-                onClick={handleAddToFlashcard}
-                disabled={isAddingFlashcard}
-                title={t('Add to Flashcards')}
-              >
-                <FaPlus aria-hidden />
-                {isAddingFlashcard ? t('Adding...') : t('Add to Flashcards')}
-              </AddToFlashcardsButton>
-            )}
-          </AuthorRow>
+          <AuthorInfo>{t('Created by')}: {displayAuthor(content)}</AuthorInfo>
           <TagContainer>
             <TagGrid 
               contentId={content._id} 
@@ -331,6 +308,17 @@ const Content = () => {
               </>
             )}
           </CommentSection>
+          {authStatus.isLoggedIn && (
+            <AddToFlashcardsButton
+              type="button"
+              onClick={handleAddToFlashcard}
+              disabled={isAddingFlashcard}
+              title={t('Add to Flashcards')}
+              aria-label={t('Add to Flashcards')}
+            >
+              <FaPlus aria-hidden />
+            </AddToFlashcardsButton>
+          )}
         </ContentContainer>
         {[0, 1, 2].map((index) => (
           <BackgroundCard key={index} $index={index} />
