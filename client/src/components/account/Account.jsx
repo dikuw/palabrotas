@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useContentStore } from '../../store/content';
 import { useAuthStore } from '../../store/auth';
 import { useUserStore } from '../../store/user';
 import { NoPermissionDiv } from '../shared/index';
 import { useTranslation } from 'react-i18next';
+import {
+  canStartSubscription,
+  EMAIL_NOT_VERIFIED_MESSAGE,
+  hasActiveSubscription,
+} from '../../utils/subscriptionGate';
 
 import Banner from '../header/Banner';
 import AccountGrid from './AccountGrid';
@@ -69,6 +74,56 @@ const StatusText = styled.p`
   font-size: 0.9rem;
 `;
 
+const SubscriptionCard = styled.div`
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 9px;
+  padding: 16px;
+  margin-bottom: 20px;
+`;
+
+const SubscriptionTitle = styled.div`
+  font-weight: bold;
+  margin-bottom: 8px;
+`;
+
+const SubscriptionActions = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+`;
+
+const PrimaryButton = styled.button`
+  padding: 8px 16px;
+  border-radius: 24px;
+  border: none;
+  background: var(--primary);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+`;
+
+const SecondaryButton = styled.button`
+  padding: 8px 16px;
+  border-radius: 24px;
+  border: 1px solid var(--primary);
+  background: white;
+  color: var(--primary);
+  font-weight: bold;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+`;
+
 const DangerZone = styled.div`
   margin-top: 40px;
   padding-top: 24px;
@@ -103,11 +158,34 @@ const DeleteAccountButton = styled.button`
   }
 `;
 
+function subscriptionLabel(status, t) {
+  switch (status) {
+    case 'active':
+      return t('Active');
+    case 'past_due':
+      return t('Past due');
+    case 'canceled':
+      return t('Canceled');
+    case 'incomplete':
+      return t('Incomplete');
+    default:
+      return t('None');
+  }
+}
+
 export default function Account() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { getContentsByUserId } = useContentStore();
-  const { authStatus, resendVerificationEmail, deleteAccount } = useAuthStore();
+  const {
+    authStatus,
+    resendVerificationEmail,
+    deleteAccount,
+    startCheckout,
+    openBillingPortal,
+    getCurrentUser,
+  } = useAuthStore();
   const { getCurrentStreak, getLongestStreak } = useUserStore();
   const [userContents, setUserContents] = useState([]);
   const [currentStreak, setCurrentStreak] = useState(0);
@@ -119,6 +197,8 @@ export default function Account() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState('');
+  const [billingMessage, setBillingMessage] = useState('');
+  const [isBillingLoading, setIsBillingLoading] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -150,6 +230,22 @@ export default function Account() {
     fetchData();
   }, [authStatus.isLoggedIn, authStatus.user, getContentsByUserId, getCurrentStreak, getLongestStreak]);
 
+  useEffect(() => {
+    const checkout = searchParams.get('checkout');
+    if (!checkout) return;
+
+    if (checkout === 'success') {
+      setBillingMessage(t('Checkout complete. If your subscription is not active yet, wait a moment and refresh.'));
+      getCurrentUser?.();
+    } else if (checkout === 'cancel') {
+      setBillingMessage(t('Checkout canceled.'));
+    }
+
+    const next = new URLSearchParams(searchParams);
+    next.delete('checkout');
+    setSearchParams(next, { replace: true });
+  }, [searchParams, setSearchParams, getCurrentUser, t]);
+
   const handleResend = async () => {
     setIsResending(true);
     setResendMessage('');
@@ -160,6 +256,32 @@ export default function Account() {
       setResendMessage(error.message || t('Unable to send verification email. Please try again later.'));
     } finally {
       setIsResending(false);
+    }
+  };
+
+  const handleSubscribe = async (plan) => {
+    setBillingMessage('');
+    if (!canStartSubscription(authStatus.user)) {
+      setBillingMessage(t(EMAIL_NOT_VERIFIED_MESSAGE));
+      return;
+    }
+    setIsBillingLoading(true);
+    try {
+      await startCheckout(plan);
+    } catch (error) {
+      setBillingMessage(error.message || t('Unable to start checkout. Please try again later.'));
+      setIsBillingLoading(false);
+    }
+  };
+
+  const handleManageBilling = async () => {
+    setBillingMessage('');
+    setIsBillingLoading(true);
+    try {
+      await openBillingPortal();
+    } catch (error) {
+      setBillingMessage(error.message || t('Unable to open billing portal. Please try again later.'));
+      setIsBillingLoading(false);
     }
   };
 
@@ -179,6 +301,9 @@ export default function Account() {
     return <NoPermissionDiv divLabel={t("Please log in to view this page")}></NoPermissionDiv>
   }
 
+  const subscribed = hasActiveSubscription(authStatus.user);
+  const status = authStatus.user.subscriptionStatus || 'none';
+
   return (
     <StyledWrapperDiv>
       {authStatus.user.emailVerified === false && (
@@ -193,6 +318,42 @@ export default function Account() {
           {resendMessage && <StatusText>{resendMessage}</StatusText>}
         </VerificationCard>
       )}
+
+      <SubscriptionCard>
+        <SubscriptionTitle>{t('Subscription')}</SubscriptionTitle>
+        <VerificationText>
+          {t('Status')}: {subscriptionLabel(status, t)}
+        </VerificationText>
+        <VerificationText>
+          {t('Lessons 1–15 are free. An active subscription unlocks lessons 16+.')}
+        </VerificationText>
+        <SubscriptionActions>
+          {!subscribed && (
+            <>
+              <PrimaryButton
+                type="button"
+                onClick={() => handleSubscribe('monthly')}
+                disabled={isBillingLoading}
+              >
+                {isBillingLoading ? t('Loading...') : t('Subscribe monthly')}
+              </PrimaryButton>
+              <PrimaryButton
+                type="button"
+                onClick={() => handleSubscribe('yearly')}
+                disabled={isBillingLoading}
+              >
+                {isBillingLoading ? t('Loading...') : t('Subscribe yearly')}
+              </PrimaryButton>
+            </>
+          )}
+          {(authStatus.user.hasStripeCustomer || subscribed) && (
+            <SecondaryButton type="button" onClick={handleManageBilling} disabled={isBillingLoading}>
+              {t('Manage billing')}
+            </SecondaryButton>
+          )}
+        </SubscriptionActions>
+        {billingMessage && <StatusText>{billingMessage}</StatusText>}
+      </SubscriptionCard>
 
       <Streak
         currentStreak={currentStreak}

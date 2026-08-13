@@ -288,6 +288,7 @@ export const deleteAccount = async (req, res) => {
         emailVerified: false,
         loginHistory: [],
         status: 'deleted',
+        subscriptionStatus: 'none',
         deletedAt: new Date(),
       },
       $unset: {

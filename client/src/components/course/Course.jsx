@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from "react-i18next";
+import { Link } from 'react-router-dom';
 import { useCourseStore } from '../../store/course';
+import { useAuthStore } from '../../store/auth';
+import { canAccessLesson, FREE_LESSON_MAX, SUBSCRIPTION_REQUIRED_MESSAGE } from '../../utils/subscriptionGate';
 import Lesson from './Lesson';
 import Spinner from '../shared/Spinner';
 
@@ -83,12 +86,26 @@ const SpinnerContainer = styled.div`
   height: 300px;
 `;
 
+const LockedMessage = styled.div`
+  text-align: center;
+  padding: 2rem 1rem;
+  color: #444;
+  line-height: 1.5;
+`;
+
+const AccountLink = styled(Link)`
+  color: var(--primary);
+  font-weight: bold;
+`;
+
 export default function Course(props) {
   const { t } = useTranslation();
+  const { authStatus } = useAuthStore();
   const { lessons, currentLesson, lessonContent, getLessons, getLesson, getLessonContent } = useCourseStore();
   const [selectedLesson, setSelectedLesson] = useState('');
   const [isLoadingLessons, setIsLoadingLessons] = useState(true);
   const [isLoadingLesson, setIsLoadingLesson] = useState(false);
+  const [accessError, setAccessError] = useState('');
 
   useEffect(() => {
     const loadLessons = async () => {
@@ -108,6 +125,7 @@ export default function Course(props) {
     if (selectedLesson) {
       const loadLesson = async () => {
         setIsLoadingLesson(true);
+        setAccessError('');
         try {
           await Promise.all([
             getLesson(selectedLesson),
@@ -115,16 +133,25 @@ export default function Course(props) {
           ]);
         } catch (error) {
           console.error('Error loading lesson:', error);
+          setAccessError(error.message || t(SUBSCRIPTION_REQUIRED_MESSAGE));
         } finally {
           setIsLoadingLesson(false);
         }
       };
       loadLesson();
     }
-  }, [selectedLesson, getLesson, getLessonContent]);
+  }, [selectedLesson, getLesson, getLessonContent, t]);
 
   const handleLessonChange = (e) => {
-    setSelectedLesson(e.target.value);
+    const lessonId = e.target.value;
+    const lesson = lessons.find((l) => l._id === lessonId);
+    if (lesson && !canAccessLesson(authStatus.user, lesson.lessonNumber)) {
+      setSelectedLesson(lessonId);
+      setAccessError(t(SUBSCRIPTION_REQUIRED_MESSAGE));
+      return;
+    }
+    setAccessError('');
+    setSelectedLesson(lessonId);
   };
 
   if (isLoadingLessons) {
@@ -139,6 +166,11 @@ export default function Course(props) {
     );
   }
 
+  const selectedMeta = lessons.find((l) => l._id === selectedLesson);
+  const isLocked =
+    Boolean(selectedMeta) &&
+    !canAccessLesson(authStatus.user, selectedMeta.lessonNumber);
+
   return (
     <>
       <StyledCourseContainer>
@@ -150,14 +182,18 @@ export default function Course(props) {
                 onChange={handleLessonChange}
               >
                 <option value="">{t("Select a lesson...")}</option>
-                {lessons.map((lesson) => (
-                  <option key={lesson._id} value={lesson._id}>
-                    {t("Lesson")} {lesson.lessonNumber}
-                  </option>
-                ))}
+                {lessons.map((lesson) => {
+                  const locked = !canAccessLesson(authStatus.user, lesson.lessonNumber);
+                  return (
+                    <option key={lesson._id} value={lesson._id}>
+                      {t("Lesson")} {lesson.lessonNumber}
+                      {locked ? ` (${t('locked')})` : ''}
+                    </option>
+                  );
+                })}
               </LessonDropdown>
             )}
-            {currentLesson && (
+            {currentLesson && !isLocked && (
               <LessonInfo>
                 <LessonTitleText>
                   {currentLesson.title.replace(/^Lesson \d+:\s*/i, '')}
@@ -169,6 +205,14 @@ export default function Course(props) {
             <SpinnerContainer>
               <Spinner size="40px" />
             </SpinnerContainer>
+          ) : isLocked || accessError ? (
+            <LockedMessage>
+              <p>{accessError || t(SUBSCRIPTION_REQUIRED_MESSAGE)}</p>
+              <p>
+                {t('Lessons 1–{{max}} are free.', { max: FREE_LESSON_MAX })}{' '}
+                <AccountLink to="/account">{t('Subscribe on your Account page')}</AccountLink>
+              </p>
+            </LockedMessage>
           ) : (
             <Lesson lesson={currentLesson} vocabulary={lessonContent} isLoading={isLoadingLesson} />
           )}
@@ -177,4 +221,3 @@ export default function Course(props) {
     </>
   );
 }
-

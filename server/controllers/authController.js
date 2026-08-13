@@ -25,6 +25,8 @@ function publicUser(user) {
     isAdmin: user.isAdmin || false,
     // Legacy accounts (no field) are treated as verified; new signups set false explicitly
     emailVerified: user.emailVerified == null ? true : Boolean(user.emailVerified),
+    subscriptionStatus: user.subscriptionStatus || 'none',
+    hasStripeCustomer: Boolean(user.stripeCustomerId),
   };
 }
 

@@ -236,5 +236,37 @@ export const useAuthStore = create(
         set({ authStatus: { isLoggedIn: false, user: null, isLoading: false } });
         return data;
       },
+      startCheckout: async (plan = 'monthly') => {
+        const res = await fetch('/api/stripe/create-checkout-session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({ plan }),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success || !data.url) {
+          const error = new Error(data.message || 'Unable to start checkout. Please try again later.');
+          error.code = data.code;
+          throw error;
+        }
+        window.location.href = data.url;
+        return data;
+      },
+      openBillingPortal: async () => {
+        const res = await fetch('/api/stripe/create-portal-session', {
+          method: 'POST',
+          credentials: 'include',
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success || !data.url) {
+          const error = new Error(data.message || 'Unable to open billing portal. Please try again later.');
+          error.code = data.code;
+          throw error;
+        }
+        window.location.href = data.url;
+        return data;
+      },
     }),
 );

@@ -10,6 +10,7 @@ import voteRouter from './voteRoutes.js';
 import tagRouter from './tagRoutes.js';
 import courseRouter from './courseRoutes.js';
 import contactRouter from './contactRoutes.js';
+import stripeRouter from './stripeRoutes.js';
 
 export default (app) => {
   app.use("/api/auth", authRouter);
@@ -24,4 +25,5 @@ export default (app) => {
   app.use("/api/tag", tagRouter);
   app.use("/api/course", courseRouter);
   app.use("/api/contact", contactRouter);
+  app.use("/api/stripe", stripeRouter);
 };

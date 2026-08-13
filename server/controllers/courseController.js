@@ -4,20 +4,44 @@ import Content from '../models/Content.js';
 import AudioFile from '../models/AudioFile.js';
 import LessonProgress from '../models/LessonProgress.js';
 import Flashcard from '../models/Flashcard.js';
+import { canAccessLesson, FREE_LESSON_MAX } from '../handlers/stripe.js';
+
+function subscriptionRequiredResponse(res) {
+  return res.status(403).json({
+    success: false,
+    code: 'SUBSCRIPTION_REQUIRED',
+    message: `Lessons ${FREE_LESSON_MAX + 1}+ require an active subscription.`,
+    freeLessonMax: FREE_LESSON_MAX,
+  });
+}
+
+async function assertLessonAccess(req, res, lesson) {
+  if (!lesson) return false;
+  if (canAccessLesson(req.user, lesson.lessonNumber)) return true;
+  subscriptionRequiredResponse(res);
+  return false;
+}
 
 export const getLessons = async (req, res) => {
   try {
     const lessons = await Lesson.find({ show: true })
-      .sort({ lessonNumber: 1 });
-    
+      .sort({ lessonNumber: 1 })
+      .select('title lessonNumber description show');
+
     if (!lessons.length) {
       return res.status(404).json({ 
         success: false, 
         error: 'No lessons found' 
       });
     }
+
+    const data = lessons.map((lesson) => {
+      const obj = lesson.toObject();
+      obj.locked = !canAccessLesson(req.user, lesson.lessonNumber);
+      return obj;
+    });
     
-    res.status(200).json({ success: true, data: lessons });
+    res.status(200).json({ success: true, data, freeLessonMax: FREE_LESSON_MAX });
   } catch (error) {
     console.error("Error in get lessons:", error.message);
     res.status(500).json({ success: false, message: error.message });
@@ -35,6 +59,8 @@ export const getLesson = async (req, res) => {
         error: 'Lesson not found' 
       });
     }
+
+    if (!(await assertLessonAccess(req, res, lesson))) return;
     
     res.status(200).json({ success: true, data: lesson });
   } catch (error) {
@@ -54,6 +80,8 @@ export const getLessonContent = async (req, res) => {
         error: 'Lesson not found' 
       });
     }
+
+    if (!(await assertLessonAccess(req, res, lesson))) return;
     
     // Get vocabulary content items
     const vocabulary = await Content.find({ 
@@ -111,7 +139,7 @@ export const recordProgress = async (req, res) => {
     // Use direct MongoDB query to bypass autopopulate middleware
     const lessonDoc = await mongoose.connection.db.collection('lessons').findOne(
       { _id: new mongoose.Types.ObjectId(lessonId) },
-      { projection: { vocabulary: 1 } }
+      { projection: { vocabulary: 1, lessonNumber: 1 } }
     );
     
     if (!lessonDoc) {
@@ -120,6 +148,10 @@ export const recordProgress = async (req, res) => {
         success: false, 
         error: 'Lesson not found' 
       });
+    }
+
+    if (!canAccessLesson(req.user, lessonDoc.lessonNumber)) {
+      return subscriptionRequiredResponse(res);
     }
     
     const lesson = { vocabulary: lessonDoc.vocabulary };
@@ -342,7 +374,7 @@ export const addCourseContentFlashcard = async (req, res) => {
 
     const lessonDoc = await mongoose.connection.db.collection('lessons').findOne(
       { _id: new mongoose.Types.ObjectId(lessonId) },
-      { projection: { vocabulary: 1 } }
+      { projection: { vocabulary: 1, lessonNumber: 1 } }
     );
 
     if (!lessonDoc) {
@@ -350,6 +382,10 @@ export const addCourseContentFlashcard = async (req, res) => {
         success: false,
         error: 'Lesson not found',
       });
+    }
+
+    if (!canAccessLesson(req.user, lessonDoc.lessonNumber)) {
+      return subscriptionRequiredResponse(res);
     }
 
     const content = await Content.findById(contentId);

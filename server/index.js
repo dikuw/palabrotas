@@ -12,9 +12,17 @@ const port = process.env.PORT || 5000;
 
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { stripeWebhook } from './controllers/stripeController.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+// Stripe webhooks require the raw body for signature verification
+app.post(
+  '/api/stripe/webhook',
+  express.raw({ type: 'application/json' }),
+  stripeWebhook
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

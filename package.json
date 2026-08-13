@@ -36,6 +36,7 @@
     "passport-local-mongoose": "^8.0.0",
     "postmark": "^5.1.0",
     "react-router-dom": "^6.26.2",
+    "stripe": "^22.5.0",
     "styled-components": "^6.1.13",
     "zustand": "^5.0.0-rc.2"
   }

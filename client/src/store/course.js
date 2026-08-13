@@ -9,7 +9,9 @@ export const useCourseStore = create((set, get) => ({
   setLessonContent: (content) => set({ lessonContent: content }),
   getLessons: async () => {
     try {
-      const res = await fetch("/api/course/getLessons");
+      const res = await fetch("/api/course/getLessons", {
+        credentials: 'include',
+      });
       const data = await res.json();
       
       if (res.ok && data.success) {
@@ -26,36 +28,44 @@ export const useCourseStore = create((set, get) => ({
   },
   getLesson: async (lessonId) => {
     try {
-      const res = await fetch(`/api/course/getLesson/${lessonId}`);
+      const res = await fetch(`/api/course/getLesson/${lessonId}`, {
+        credentials: 'include',
+      });
       const data = await res.json();
       
       if (res.ok && data.success) {
         set({ currentLesson: data.data });
         return data.data;
       } else {
-        console.error("Error fetching lesson:", data.message || "Unknown error");
-        return null;
+        const error = new Error(data.message || "Unknown error");
+        error.code = data.code;
+        throw error;
       }
     } catch (error) {
       console.error("Error in getLesson:", error);
-      return null;
+      set({ currentLesson: null });
+      throw error;
     }
   },
   getLessonContent: async (lessonId) => {
     try {
-      const res = await fetch(`/api/course/getLessonContent/${lessonId}`);
+      const res = await fetch(`/api/course/getLessonContent/${lessonId}`, {
+        credentials: 'include',
+      });
       const data = await res.json();
       
       if (res.ok && data.success) {
         set({ lessonContent: data.data });
         return data.data;
       } else {
-        console.error("Error fetching lesson content:", data.message || "Unknown error");
-        return [];
+        const error = new Error(data.message || "Unknown error");
+        error.code = data.code;
+        throw error;
       }
     } catch (error) {
       console.error("Error in getLessonContent:", error);
-      return [];
+      set({ lessonContent: [] });
+      throw error;
     }
   },
   getContentAudioFiles: async (contentId) => {
