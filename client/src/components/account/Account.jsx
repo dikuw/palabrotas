@@ -11,6 +11,7 @@ import {
   EMAIL_NOT_VERIFIED_MESSAGE,
   hasActiveSubscription,
 } from '../../utils/subscriptionGate';
+import { useNotificationStore } from '../../store/notification';
 
 import Banner from '../header/Banner';
 import AccountGrid from './AccountGrid';
@@ -109,21 +110,6 @@ const PrimaryButton = styled.button`
   }
 `;
 
-const SecondaryButton = styled.button`
-  padding: 8px 16px;
-  border-radius: 24px;
-  border: 1px solid var(--primary);
-  background: white;
-  color: var(--primary);
-  font-weight: bold;
-  cursor: pointer;
-
-  &:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-  }
-`;
-
 const DangerZone = styled.div`
   margin-top: 40px;
   padding-top: 24px;
@@ -187,6 +173,7 @@ export default function Account() {
     getCurrentUser,
   } = useAuthStore();
   const { getCurrentStreak, getLongestStreak } = useUserStore();
+  const addNotification = useNotificationStore((state) => state.addNotification);
   const [userContents, setUserContents] = useState([]);
   const [currentStreak, setCurrentStreak] = useState(0);
   const [longestStreak, setLongestStreak] = useState(0);
@@ -235,16 +222,31 @@ export default function Account() {
     if (!checkout) return;
 
     if (checkout === 'success') {
-      setBillingMessage(t('Checkout complete. If your subscription is not active yet, wait a moment and refresh.'));
+      addNotification(t('Thank you for subscribing!'), 'success');
+      setBillingMessage(t('Your subscription is being activated. Paid lessons unlock in a moment.'));
+      // Webhook may land slightly after redirect — refresh a few times
       getCurrentUser?.();
-    } else if (checkout === 'cancel') {
+      const t1 = setTimeout(() => getCurrentUser?.(), 1500);
+      const t2 = setTimeout(() => getCurrentUser?.(), 4000);
+      const next = new URLSearchParams(searchParams);
+      next.delete('checkout');
+      setSearchParams(next, { replace: true });
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+      };
+    }
+
+    if (checkout === 'cancel') {
+      addNotification(t('Checkout canceled.'), 'info');
       setBillingMessage(t('Checkout canceled.'));
     }
 
     const next = new URLSearchParams(searchParams);
     next.delete('checkout');
     setSearchParams(next, { replace: true });
-  }, [searchParams, setSearchParams, getCurrentUser, t]);
+    return undefined;
+  }, [searchParams, setSearchParams, getCurrentUser, t, addNotification]);
 
   const handleResend = async () => {
     setIsResending(true);
@@ -346,12 +348,21 @@ export default function Account() {
               </PrimaryButton>
             </>
           )}
-          {(authStatus.user.hasStripeCustomer || subscribed) && (
-            <SecondaryButton type="button" onClick={handleManageBilling} disabled={isBillingLoading}>
-              {t('Manage billing')}
-            </SecondaryButton>
+          {(authStatus.user.hasStripeCustomer || subscribed || status === 'past_due' || status === 'canceled') && (
+            <PrimaryButton
+              type="button"
+              onClick={handleManageBilling}
+              disabled={isBillingLoading}
+            >
+              {isBillingLoading ? t('Loading...') : t('Manage subscription')}
+            </PrimaryButton>
           )}
         </SubscriptionActions>
+        {subscribed && (
+          <VerificationText style={{ marginTop: 12 }}>
+            {t('Use Manage subscription to update payment details or cancel.')}
+          </VerificationText>
+        )}
         {billingMessage && <StatusText>{billingMessage}</StatusText>}
       </SubscriptionCard>
 
