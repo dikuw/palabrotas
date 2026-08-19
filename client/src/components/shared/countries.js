@@ -1,10 +1,32 @@
 /** Course / lesson vocabulary uses this instead of a single country code. */
 export const ALL_COUNTRIES_CODE = 'all';
+export const LATIN_AMERICA_CODE = 'latam';
+export const EUROPE_CODE = 'europe';
 
 export function isAllCountriesCode(code) {
   if (code === undefined || code === null) return false;
   return String(code).trim().toLowerCase() === ALL_COUNTRIES_CODE;
 }
+
+export function isLatinAmericaCode(code) {
+  if (code === undefined || code === null) return false;
+  return String(code).trim().toLowerCase() === LATIN_AMERICA_CODE;
+}
+
+export function isEuropeCode(code) {
+  if (code === undefined || code === null) return false;
+  return String(code).trim().toLowerCase() === EUROPE_CODE;
+}
+
+export function isRegionCode(code) {
+  return isAllCountriesCode(code) || isLatinAmericaCode(code) || isEuropeCode(code);
+}
+
+export const regionOptions = [
+  { name: 'Global', code: ALL_COUNTRIES_CODE },
+  { name: 'Latin America', code: LATIN_AMERICA_CODE },
+  { name: 'Europe', code: EUROPE_CODE },
+];
 
 export const countries = [
   { name: "Argentina", code: "AR" },
@@ -29,3 +51,13 @@ export const countries = [
   { name: "Uruguay", code: "UY" },
   { name: "Venezuela", code: "VE" }
 ];
+
+export function getRegionLabel(code, t) {
+  if (!code) return '';
+  if (isAllCountriesCode(code)) return t('All regions');
+  if (isLatinAmericaCode(code)) return t('Latin America');
+  if (isEuropeCode(code)) return t('Europe');
+  const upper = String(code).toUpperCase();
+  const found = countries.find((c) => c.code === upper);
+  return found ? t(found.name) : upper;
+}

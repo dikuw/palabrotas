@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
-import { FaQuestionCircle, FaGlobe, FaVolumeUp } from 'react-icons/fa';
-import ReactCountryFlag from "react-country-flag";
+import { FaQuestionCircle, FaVolumeUp } from 'react-icons/fa';
 import styled, { keyframes, css } from 'styled-components';
 import { useTranslation } from 'react-i18next';
 
@@ -12,7 +11,7 @@ import { useCourseStore } from '../../store/course';
 import FormattedHint from './FlashcardHint';
 import Tooltip from '../shared/Tooltip';
 import Spinner from '../shared/Spinner';
-import { isAllCountriesCode } from '../shared/countries';
+import CountryBadge from '../shared/CountryBadge';
 
 const OuterContainer = styled.div`
   padding: 20px;
@@ -234,21 +233,11 @@ const SpinnerContainer = styled.div`
   z-index: 5;
 `;
 
-const StyledFlagIcon = styled(ReactCountryFlag)`
+const CountryBadgeWrap = styled.div`
   position: absolute;
   top: 10px;
   left: 15px;
-  font-size: 1.25rem !important;
   z-index: 6;
-`;
-
-const StyledGlobeIcon = styled(FaGlobe)`
-  position: absolute;
-  top: 10px;
-  left: 15px;
-  font-size: 1.25rem;
-  z-index: 6;
-  color: var(--primary);
 `;
 
 const pulse = keyframes`
@@ -510,11 +499,9 @@ export default function Flashcard({ item, onNext, isLoading }) {
           <FlashcardInner ref={innerRef} $isFlipped={isFlipped} $isLoading={isLoading}>
             <FlashcardFront ref={frontRef}>
               {currentItem.content.country && !isFlipped && (
-                isAllCountriesCode(currentItem.content.country) ? (
-                  <StyledGlobeIcon title={t('All regions')} aria-label={t('All regions')} />
-                ) : (
-                  <StyledFlagIcon countryCode={currentItem.content.country} svg />
-                )
+                <CountryBadgeWrap>
+                  <CountryBadge code={currentItem.content.country} size="1.25rem" t={t} />
+                </CountryBadgeWrap>
               )}
               <FrontMainBlock>
                 <Title>{frontMainText}</Title>

@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { FaChevronDown, FaChevronUp, FaGlobe, FaPlus } from 'react-icons/fa';
+import { FaChevronDown, FaChevronUp, FaPlus } from 'react-icons/fa';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-import ReactCountryFlag from "react-country-flag";
 
 import { useAuthStore } from '../../store/auth';
 import { useContentStore } from '../../store/content';
@@ -14,7 +13,7 @@ import { useNotificationStore } from '../../store/notification';
 import CommentForm from '../comment/CommentForm';
 import TagGrid from '../tag/TagGrid';
 import AddTagToContent from '../tag/AddTagToContent';
-import { isAllCountriesCode } from '../shared/countries';
+import CountryBadge from '../shared/CountryBadge';
 import { displayAuthor } from '../../utils/displayAuthor';
 
 const OuterContainer = styled.div`
@@ -67,12 +66,6 @@ const ContentHeader = styled.div`
 const Title = styled.h1`
   font-size: 2rem;
   color: var(--primary);
-`;
-
-const HeaderGlobeIcon = styled(FaGlobe)`
-  font-size: 1.5rem;
-  color: var(--primary);
-  flex-shrink: 0;
 `;
 
 const Description = styled.p`
@@ -249,20 +242,13 @@ const Content = () => {
     return <div>{t('Loading...')}</div>;
   }
 
-  const regionLabel = t('All regions');
-
   return (
     <OuterContainer>
       <FormWrapper>
         <ContentContainer>
           <ContentHeader>
             <Title>{content.title}</Title>
-            {content.country &&
-              (isAllCountriesCode(content.country) ? (
-                <HeaderGlobeIcon title={regionLabel} aria-label={regionLabel} />
-              ) : (
-                <ReactCountryFlag countryCode={content.country} svg />
-              ))}
+            {content.country && <CountryBadge code={content.country} size="1.5rem" t={t} />}
           </ContentHeader>
           <Description>{content.description}</Description>
           {content.exampleSentence && (

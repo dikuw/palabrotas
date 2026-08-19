@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 
 import { useContentStore } from '../../store/content';
 import { useNotificationStore } from '../../store/notification';
-import { countries } from '../shared/countries';
+import { countries, regionOptions } from '../shared/countries';
 
 const OuterContainer = styled.div`
   padding: 20px;
@@ -250,6 +250,11 @@ export default function EditContent() {
             $hasError={!!errors.country}
           >
             <option value="" disabled hidden>{t("Select a country")}</option>
+            {regionOptions.map((region) => (
+              <option key={region.code} value={region.code}>
+                {t(region.name)}
+              </option>
+            ))}
             {countries.map((country) => (
               <option key={country.code} value={country.code}>
                 {t(country.name)}

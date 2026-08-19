@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { useContentStore } from '../../store/content';
 import { useTagStore } from '../../store/tag';
 
-import { countries } from '../shared/countries';
+import { countries, regionOptions } from '../shared/countries';
 
 
 const SearchInputWrapper = styled.div`
@@ -184,12 +184,16 @@ export default function SearchBar() {
     }
   }, [clearSearch, searchContents]);
 
-  const countryOptions = React.useMemo(() => 
-    countries.map(country => ({
+  const countryOptions = React.useMemo(() => [
+    ...regionOptions.map((region) => ({
+      value: region.code,
+      label: t(region.name),
+    })),
+    ...countries.map((country) => ({
       value: country.code,
-      label: t(`${country.name}`)
-    }))
-  , [t]);
+      label: t(country.name),
+    })),
+  ], [t]);
 
   const tagOptions = React.useMemo(() => 
     tags?.map(tag => ({

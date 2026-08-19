@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaEdit, FaPlus, FaChevronUp, FaChevronDown, FaGlobe } from 'react-icons/fa';
-import ReactCountryFlag from "react-country-flag";
+import { FaEdit, FaPlus, FaChevronUp, FaChevronDown } from 'react-icons/fa';
 import { useTranslation } from "react-i18next";
 import styled from 'styled-components';
 
@@ -10,15 +9,9 @@ import { useContentStore } from '../../store/content';
 import { useFlashcardStore } from '../../store/flashcard';
 import { useVoteStore } from '../../store/vote';
 import { useNotificationStore } from '../../store/notification';
-import { countries, isAllCountriesCode } from '../shared/countries';
+import { getRegionLabel } from '../shared/countries';
+import CountryBadge from '../shared/CountryBadge';
 import { displayAuthor } from '../../utils/displayAuthor';
-
-function getCountryNameByCode(code) {
-  if (!code || isAllCountriesCode(code)) return '';
-  const upper = String(code).toUpperCase();
-  const found = countries.find((c) => c.code === upper);
-  return found?.name ?? upper;
-}
 
 const CardContainer = styled.div`
   position: relative;
@@ -63,15 +56,6 @@ const FlagIconWrapper = styled.span`
   left: 10px;
   line-height: 0;
   cursor: default;
-`;
-
-const StyledFlagIcon = styled(ReactCountryFlag)`
-  font-size: 1rem !important;
-`;
-
-const StyledGlobeIcon = styled(FaGlobe)`
-  font-size: 1rem;
-  color: var(--primary);
 `;
 
 const StyledEditIcon = styled(FaEdit)`
@@ -176,9 +160,7 @@ export default function Card({ item, showEditIcon }) {
     }
   };
 
-  const countryLabel =
-    item.country &&
-    (isAllCountriesCode(item.country) ? t('All regions') : getCountryNameByCode(item.country));
+  const countryLabel = item.country && getRegionLabel(item.country, t);
 
   return (
     <CardContainer onClick={handleClick}>
@@ -186,11 +168,7 @@ export default function Card({ item, showEditIcon }) {
       <StyledGridFigure>
         {item.country && (
           <FlagIconWrapper title={countryLabel || undefined} aria-label={countryLabel || undefined}>
-            {isAllCountriesCode(item.country) ? (
-              <StyledGlobeIcon aria-hidden />
-            ) : (
-              <StyledFlagIcon countryCode={item.country} svg />
-            )}
+            <CountryBadge code={item.country} t={t} />
           </FlagIconWrapper>
         )}
         {showEditIcon && (
