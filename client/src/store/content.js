@@ -17,8 +17,11 @@ export const useContentStore = create((set, get) => ({
         "Content-Type": "application/json",
       },
       body: JSON.stringify(newContent),
-    })
+    });
     const data = await res.json();
+    if (!res.ok || data.success === false) {
+      throw new Error(data.message || 'Adding content failed. Please try again.');
+    }
     set((state) => ({ contents: [...state.contents, data.data] }));
     return data;
   },

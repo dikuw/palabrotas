@@ -168,20 +168,37 @@ export const getContentsByUserId = async (req, res) => {
   }
 };
 
+const CONTENT_ADD_LIMIT = 50;
+const CONTENT_ADD_WINDOW_MS = 24 * 60 * 60 * 1000;
+
 export const addContent = async (req, res) => {
   if (!req.isAuthenticated() || !req.user) {
     return res.status(401).json({ success: false, message: 'You must be logged in to add content.' });
   }
 
-  const content = {
-    ...req.body,
-    owner: req.user._id,
-  };
-  const newContent = new Content(content);
   try {
+    const windowStart = new Date(Date.now() - CONTENT_ADD_WINDOW_MS);
+    const recentCount = await Content.countDocuments({
+      owner: req.user._id,
+      createdAt: { $gte: windowStart },
+    });
+
+    if (recentCount >= CONTENT_ADD_LIMIT) {
+      return res.status(429).json({
+        success: false,
+        code: 'CONTENT_ADD_RATE_LIMIT',
+        message: `You can add up to ${CONTENT_ADD_LIMIT} items in a 24-hour period. Please try again later.`,
+      });
+    }
+
+    const content = {
+      ...req.body,
+      owner: req.user._id,
+    };
+    const newContent = new Content(content);
     await newContent.save();
     res.status(201).json({ success: true, data: newContent });
-  } catch(error) {
+  } catch (error) {
     console.error("Error in add content:", error.message);
     res.status(500).json({ success: false, message: error });
   }

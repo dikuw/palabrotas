@@ -164,7 +164,9 @@ export default function AddContent() {
           addNotification('Added successfully', 'success');
         }
       } catch (error) {
-        setErrors({ general: error.message || t('Adding content failed. Please try again.') });
+        setErrors({
+          general: t(error.message || 'Adding content failed. Please try again.'),
+        });
       } finally {
         setIsSubmitting(false);
       }

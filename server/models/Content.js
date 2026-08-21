@@ -51,6 +51,8 @@ const contentSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
+contentSchema.index({ owner: 1, createdAt: -1 });
+
 function autopopulate(next) {
   this.populate('owner');
   next();
